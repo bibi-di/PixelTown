@@ -450,3 +450,30 @@ socket.on("roomCreated",(code)=>{
     alert("방 코드 : " + code);
 
 });
+// ======================
+// 방 만들기
+// ======================
+
+window.createRoom = function(){
+
+    console.log("방 만들기 클릭");
+
+    socket.emit("createRoom");
+
+};
+
+
+
+socket.on("roomCreated",(code)=>{
+
+    console.log("방 생성:", code);
+
+    const box = document.getElementById("myRoomCode");
+
+    if(box){
+
+        box.innerHTML = "내 방 코드 : " + code;
+
+    }
+
+});
