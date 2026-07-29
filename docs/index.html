@@ -2,30 +2,21 @@
 <html lang="ko">
 
 <head>
-
 <meta charset="UTF-8">
-
 <title>PixelTown</title>
-
 <link rel="stylesheet" href="./style.css">
-
 </head>
-
 
 <body>
 
-
-<!-- 로비 -->
 
 <div id="loginBox">
 
 <h1>PixelTown</h1>
 
-
 <button onclick="createRoom()">
 방 만들기
 </button>
-
 
 <p id="myRoomCode"></p>
 
@@ -33,22 +24,15 @@
 <hr>
 
 
-<input 
-id="inviteCode"
-placeholder="초대 코드 입력"
->
-
+<input id="inviteCode" placeholder="초대 코드 입력">
 
 <br>
-
 
 <button onclick="joinRoom()">
 입장
 </button>
 
-
 <p id="message"></p>
-
 
 </div>
 
@@ -56,41 +40,27 @@ placeholder="초대 코드 입력"
 
 
 
-<!-- 캐릭터 선택 -->
-
 <div id="characterSelect" style="display:none;">
-
 
 <h2>캐릭터 선택</h2>
 
-
-<input
-id="nickname"
-placeholder="닉네임"
->
-
+<input id="nickname" placeholder="닉네임">
 
 <br>
-
 
 <button onclick="startGame()">
 게임 시작
 </button>
 
-
 </div>
 
 
 
 
 
-
-<!-- 게임 화면 -->
-
 <div id="gameScreen" style="display:none;">
 
-
-<canvas
+<canvas 
 id="gameCanvas"
 width="800"
 height="600">
@@ -100,15 +70,11 @@ height="600">
 
 <div id="chatBox">
 
-
 <div id="messages"></div>
 
-
-<input
+<input 
 id="chatInput"
-placeholder="Enter로 채팅"
->
-
+placeholder="Enter로 채팅">
 
 </div>
 
@@ -117,19 +83,11 @@ placeholder="Enter로 채팅"
 
 
 
-
-
-
-
-<!-- socket.io 연결 -->
+<!-- 반드시 한번만 -->
 
 <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
 
-
-<!-- 게임 코드 -->
-
 <script src="./game.js"></script>
-
 
 
 </body>

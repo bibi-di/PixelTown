@@ -36,18 +36,13 @@ let chatBubbles = {};
 
 let mapImage = new Image();
 
-mapImage.src="/assets/map.png";
+mapImage.src="./assets/map.png";
 
 
-
-let images = {
-
-    front:new Image(),
-    back:new Image(),
-    left:new Image(),
-    right:new Image()
-
-};
+images.front.src="./assets/female.front.png";
+images.back.src="./assets/female.back.png";
+images.left.src="./assets/female.left.png";
+images.right.src="./assets/female.right.png";
 
 
 
