@@ -436,3 +436,17 @@ document.addEventListener(
 
 
 });
+function createRoom(){
+
+    console.log("방 만들기 클릭");
+
+    socket.emit("createRoom");
+
+}
+
+
+socket.on("roomCreated",(code)=>{
+
+    alert("방 코드 : " + code);
+
+});
