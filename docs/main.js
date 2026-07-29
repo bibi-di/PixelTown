@@ -477,3 +477,110 @@ socket.on("roomCreated",(code)=>{
     }
 
 });
+// ======================
+// 채팅 시스템
+// ======================
+
+
+// 채팅 보내기
+
+const chatInput = document.getElementById("chatInput");
+
+
+if(chatInput){
+
+
+    chatInput.addEventListener(
+        "keydown",
+        function(e){
+
+
+            if(e.key === "Enter"){
+
+
+                let text =
+                chatInput.value.trim();
+
+
+
+                if(text === "")
+                return;
+
+
+
+                socket.emit(
+                    "chat",
+                    text
+                );
+
+
+                chatInput.value="";
+
+
+            }
+
+
+        }
+    );
+
+
+}
+
+
+
+
+// 채팅 받기
+
+
+socket.on(
+    "chat",
+    function(data){
+
+
+
+        const messages =
+        document.getElementById(
+            "messages"
+        );
+
+
+
+        if(!messages)
+        return;
+
+
+
+        let div =
+        document.createElement(
+            "div"
+        );
+
+
+
+        div.innerHTML =
+        data.name +
+        " : " +
+        data.text;
+
+
+
+        messages.appendChild(
+            div
+        );
+
+
+
+        // 최대 10개만 표시
+
+        while(messages.children.length > 10){
+
+            messages.removeChild(
+                messages.firstChild
+            );
+
+        }
+
+
+
+    }
+);
