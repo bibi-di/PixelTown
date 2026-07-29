@@ -1,0 +1,470 @@
+/* =====================
+   기본
+===================== */
+
+*{
+
+    box-sizing:border-box;
+
+}
+
+
+body{
+
+    margin:0;
+
+    width:100vw;
+
+    height:100vh;
+
+    overflow:hidden;
+
+    background:#222;
+
+    font-family:Arial,sans-serif;
+
+    color:white;
+
+}
+
+
+
+
+
+
+
+/* =====================
+   로비
+===================== */
+
+
+#loginBox{
+
+
+    position:absolute;
+
+
+    top:50%;
+
+
+    left:50%;
+
+
+    transform:translate(-50%,-50%);
+
+
+
+    width:350px;
+
+
+
+    padding:40px;
+
+
+
+    background:rgba(30,30,30,0.95);
+
+
+
+    border-radius:20px;
+
+
+
+    text-align:center;
+
+
+
+    box-shadow:0 0 30px black;
+
+
+}
+
+
+
+#loginBox h1{
+
+
+    font-size:40px;
+
+
+    margin-bottom:30px;
+
+
+}
+
+
+
+
+
+
+
+/* =====================
+   캐릭터 선택
+===================== */
+
+
+#characterSelect{
+
+
+    position:absolute;
+
+
+    top:50%;
+
+
+    left:50%;
+
+
+    transform:translate(-50%,-50%);
+
+
+
+    width:350px;
+
+
+
+    padding:40px;
+
+
+
+    background:rgba(30,30,30,0.95);
+
+
+
+    border-radius:20px;
+
+
+
+    text-align:center;
+
+
+
+    box-shadow:0 0 30px black;
+
+
+}
+
+
+
+
+
+
+/* =====================
+   입력
+===================== */
+
+
+input{
+
+
+    width:240px;
+
+
+    height:40px;
+
+
+    margin:10px;
+
+
+    padding-left:15px;
+
+
+    border-radius:10px;
+
+
+    border:none;
+
+
+    font-size:15px;
+
+
+}
+
+
+
+
+
+
+
+/* =====================
+   버튼
+===================== */
+
+
+button{
+
+
+    width:180px;
+
+
+    height:45px;
+
+
+    margin:8px;
+
+
+    border:none;
+
+
+    border-radius:12px;
+
+
+    background:#4caf50;
+
+
+    color:white;
+
+
+    font-size:16px;
+
+
+    cursor:pointer;
+
+
+}
+
+
+
+button:hover{
+
+
+    background:#66bb6a;
+
+
+}
+
+
+
+
+
+
+
+/* =====================
+   게임 화면
+===================== */
+
+
+#gameScreen{
+
+
+    width:100vw;
+
+
+    height:100vh;
+
+
+
+    display:flex;
+
+
+
+    justify-content:center;
+
+
+
+    align-items:center;
+
+
+
+}
+
+
+
+
+
+
+
+canvas{
+
+
+    width:800px;
+
+
+    height:600px;
+
+
+
+    background:black;
+
+
+
+    border:3px solid #555;
+
+
+
+    image-rendering:pixelated;
+
+
+}
+
+
+
+
+
+
+
+
+/* =====================
+   채팅
+===================== */
+
+
+#chatBox{
+
+
+    position:fixed;
+
+
+
+    left:20px;
+
+
+
+    bottom:20px;
+
+
+
+    width:300px;
+
+
+
+    padding:12px;
+
+
+
+    background:rgba(0,0,0,.65);
+
+
+
+    border-radius:15px;
+
+
+
+}
+
+
+
+
+
+#messages{
+
+
+    height:140px;
+
+
+
+    overflow:hidden;
+
+
+
+    line-height:22px;
+
+
+
+    font-size:14px;
+
+
+
+}
+
+
+
+#messages div{
+
+
+    background:rgba(255,255,255,.15);
+
+
+
+    padding-left:8px;
+
+
+
+    border-radius:5px;
+
+
+
+    margin-bottom:3px;
+
+
+
+}
+
+
+
+
+
+
+#chatInput{
+
+
+    width:100%;
+
+
+    margin:0;
+
+
+}
+
+
+
+
+
+
+
+/* =====================
+   머리 위 말풍선
+===================== */
+
+
+#speechBubble{
+
+
+    position:absolute;
+
+
+
+    display:none;
+
+
+
+    background:white;
+
+
+
+    color:black;
+
+
+
+    padding:8px 12px;
+
+
+
+    border-radius:15px;
+
+
+
+    font-size:13px;
+
+
+
+}
+
+
+
+
+
+
+
+::-webkit-scrollbar{
+
+    display:none;
+
+}
+#messages div{
+
+    border-radius:20px;
+
+    padding:6px 12px;
+
+}

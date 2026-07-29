@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>PixelTown</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+
+<!-- =====================
+     로비 화면
+===================== -->
+
+<div id="loginBox">
+
+
+<h1>PixelTown</h1>
+
+
+
+<button onclick="createRoom()">
+방 만들기
+</button>
+
+
+
+<p id="myRoomCode"></p>
+
+
+
+<hr>
+
+
+
+<input 
+id="inviteCode"
+placeholder="초대 코드 입력"
+>
+
+
+
+<br>
+
+
+
+<button onclick="joinRoom()">
+입장
+</button>
+
+
+
+<p id="message"></p>
+
+
+</div>
+
+
+
+
+
+
+
+<!-- =====================
+     캐릭터 선택
+===================== -->
+
+
+<div id="characterSelect" style="display:none;">
+
+
+<h2>캐릭터 선택</h2>
+
+
+
+<input
+id="nickname"
+placeholder="닉네임"
+>
+
+
+
+<br>
+
+
+
+<button onclick="startGame()">
+게임 시작
+</button>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<!-- =====================
+     게임 화면
+===================== -->
+
+
+<div id="gameScreen" style="display:none;">
+
+
+
+<canvas
+id="gameCanvas"
+width="800"
+height="600">
+</canvas>
+
+
+
+
+
+<!-- 채팅 -->
+
+<div id="chatBox">
+
+
+<div id="messages"></div>
+
+
+
+<input
+id="chatInput"
+placeholder="Enter로 채팅"
+>
+
+
+
+</div>
+
+
+
+
+
+
+<!-- 캐릭터 위 말풍선 -->
+
+<div id="speechBubble"></div>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<script src="/socket.io/socket.io.js"></script>
+
+<script src="game.js"></script>
+
+
+</body>
+
+</html>
