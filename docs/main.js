@@ -12,7 +12,7 @@ const socket = io(
 
 
 // ======================
-// 기본 변수
+// 변수
 // ======================
 
 let canvas;
@@ -33,11 +33,7 @@ let player = {
 };
 
 
-
 let players = {};
-
-
-// 채팅 말풍선 저장
 
 let chatBubbles = {};
 
@@ -50,41 +46,28 @@ let chatBubbles = {};
 
 let mapImage = new Image();
 
-mapImage.src =
-"./assets/map.png";
+mapImage.src="./assets/map.png";
 
 
 
 let images = {
 
     front:new Image(),
-
     back:new Image(),
-
     left:new Image(),
-
     right:new Image()
 
 };
 
 
 
-images.front.src =
-"./assets/female.front.png";
-
-images.back.src =
-"./assets/female.back.png";
-
-images.left.src =
-"./assets/female.left.png";
-
-images.right.src =
-"./assets/female.right.png";
+images.front.src="./assets/female.front.png";
+images.back.src="./assets/female.back.png";
+images.left.src="./assets/female.left.png";
+images.right.src="./assets/female.right.png";
 
 
-
-let myImage =
-images.front;
+let myImage = images.front;
 
 
 
@@ -92,7 +75,7 @@ images.front;
 
 
 // ======================
-// 서버 연결 확인
+// 서버 연결
 // ======================
 
 socket.on(
@@ -100,7 +83,7 @@ socket.on(
 ()=>{
 
     console.log(
-        "서버 연결:",
+        "서버 연결",
         socket.id
     );
 
@@ -146,7 +129,6 @@ socket.on(
     "내 방 코드 : "+code;
 
 
-
 });
 
 
@@ -175,7 +157,7 @@ window.joinRoom=function(){
     if(roomCode===""){
 
         alert(
-            "초대 코드를 입력하세요"
+            "코드를 입력하세요"
         );
 
         return;
@@ -191,7 +173,6 @@ window.joinRoom=function(){
 
 
 };
-
 
 
 
@@ -219,7 +200,6 @@ window.startGame=function(){
         nickname="Player";
 
     }
-
 
 
 
@@ -264,15 +244,11 @@ window.startGame=function(){
 
 
 
-
     socket.emit(
         "joinRoom",
         {
-
             code:roomCode,
-
             name:nickname
-
         }
     );
 
@@ -280,11 +256,11 @@ window.startGame=function(){
 
     setupChat();
 
-
     draw();
 
 
 };
+
 
 
 
@@ -309,23 +285,24 @@ function draw(){
 
 
     if(!started)
-    return;
+        return;
 
 
 
     ctx.clearRect(
         0,
         0,
-        canvas.width,
-        canvas.height
+        800,
+        600
     );
 
 
 
+    // ======================
     // 맵
+    // ======================
 
     if(mapImage.complete){
-
 
         ctx.drawImage(
             mapImage,
@@ -341,20 +318,19 @@ function draw(){
 
 
 
-
+    // ======================
     // 플레이어
+    // ======================
 
     for(let id in players){
 
 
-
-        let p =
-        players[id];
+        let p = players[id];
 
 
 
         let img =
-        id===socket.id
+        id === socket.id
         ?
         myImage
         :
@@ -362,6 +338,8 @@ function draw(){
 
 
 
+
+        // 캐릭터
 
         ctx.drawImage(
 
@@ -381,31 +359,31 @@ function draw(){
 
 
 
-
         // ======================
-        // 닉네임 타원형
+        // 닉네임 카드
         // ======================
 
 
         ctx.font =
-        "bold 12px Arial";
+        "bold 13px Arial";
 
 
 
         let nameWidth =
         ctx.measureText(
             p.name
-        ).width + 28;
+        ).width + 35;
 
 
 
         let nameX =
-        p.x + 30 - nameWidth/2;
+        p.x + 30 - nameWidth / 2;
 
 
 
         let nameY =
-        p.y - 35;
+        p.y - 50;
+
 
 
 
@@ -426,9 +404,9 @@ function draw(){
 
             nameWidth,
 
-            22,
+            26,
 
-            12
+            15
 
         );
 
@@ -442,7 +420,6 @@ function draw(){
         "black";
 
 
-
         ctx.textAlign =
         "center";
 
@@ -452,9 +429,9 @@ function draw(){
 
             p.name,
 
-            p.x+30,
+            p.x + 30,
 
-            nameY+15
+            nameY + 18
 
         );
 
@@ -462,19 +439,21 @@ function draw(){
 
 
 
+
+
         // ======================
-        // 채팅 말풍선
+        // 말풍선
         // ======================
 
 
         let bubble =
-        chatBubbles[p.id];
+        chatBubbles[p.name];
 
 
 
         if(
             bubble &&
-            Date.now()-bubble.time < 5000
+            Date.now() - bubble.time < 5000
         ){
 
 
@@ -487,26 +466,28 @@ function draw(){
             let bubbleWidth =
             ctx.measureText(
                 bubble.text
-            ).width + 35;
+            ).width + 45;
 
 
 
-            if(bubbleWidth < 70){
+            if(bubbleWidth < 80){
 
-                bubbleWidth = 70;
+                bubbleWidth = 80;
 
             }
 
 
 
 
+
             let bubbleX =
-            p.x + 30 - bubbleWidth/2;
+            p.x + 30 - bubbleWidth / 2;
 
 
 
             let bubbleY =
-            p.y - 80;
+            p.y - 95;
+
 
 
 
@@ -519,7 +500,6 @@ function draw(){
             ctx.beginPath();
 
 
-
             ctx.roundRect(
 
                 bubbleX,
@@ -528,12 +508,11 @@ function draw(){
 
                 bubbleWidth,
 
-                32,
+                36,
 
-                15
+                18
 
             );
-
 
 
             ctx.fill();
@@ -548,20 +527,29 @@ function draw(){
 
 
             ctx.moveTo(
-                p.x+30,
-                bubbleY+32
+
+                p.x + 30,
+
+                bubbleY + 36
+
             );
 
 
             ctx.lineTo(
-                p.x+24,
-                bubbleY+42
+
+                p.x + 20,
+
+                bubbleY + 48
+
             );
 
 
             ctx.lineTo(
-                p.x+38,
-                bubbleY+32
+
+                p.x + 40,
+
+                bubbleY + 36
+
             );
 
 
@@ -585,16 +573,14 @@ function draw(){
 
                 bubble.text,
 
-                p.x+30,
+                p.x + 30,
 
-                bubbleY+21
+                bubbleY + 23
 
             );
 
 
-
         }
-
 
 
 
@@ -602,9 +588,7 @@ function draw(){
         "left";
 
 
-
     }
-
 
 
 
@@ -612,7 +596,10 @@ function draw(){
         draw
     );
 
+
 }
+
+
 
 
 
@@ -624,25 +611,21 @@ function draw(){
 // 이동
 // ======================
 
-
 document.addEventListener(
 "keydown",
 (e)=>{
 
 
     if(!started)
-    return;
+        return;
 
 
-
-
-    // 채팅 입력 중이면 이동 금지
 
     if(
         document.activeElement &&
-        document.activeElement.id==="chatInput"
+        document.activeElement.id === "chatInput"
     )
-    return;
+        return;
 
 
 
@@ -650,65 +633,49 @@ document.addEventListener(
 
     if(e.key==="w"){
 
-
         player.y -= player.speed;
 
-        myImage =
-        images.back;
-
+        myImage = images.back;
 
     }
-
 
 
 
     if(e.key==="s"){
 
-
         player.y += player.speed;
 
-        myImage =
-        images.front;
-
+        myImage = images.front;
 
     }
-
-
 
 
 
     if(e.key==="a"){
 
-
         player.x -= player.speed;
 
-        myImage =
-        images.left;
-
+        myImage = images.left;
 
     }
-
-
 
 
 
     if(e.key==="d"){
 
-
         player.x += player.speed;
 
-        myImage =
-        images.right;
-
+        myImage = images.right;
 
     }
 
 
 
 
-
     socket.emit(
+
         "move",
+
         {
 
             x:player.x,
@@ -716,14 +683,14 @@ document.addEventListener(
             y:player.y
 
         }
+
     );
 
 
 });
 // ======================
-// 채팅 시스템
+// 채팅 설정
 // ======================
-
 
 function setupChat(){
 
@@ -748,18 +715,13 @@ function setupChat(){
 
 
 
-
-    input.onkeydown =
-    function(e){
-
+    input.onkeydown=function(e){
 
 
         if(e.key==="Enter"){
 
 
-
             e.preventDefault();
-
 
 
 
@@ -768,11 +730,8 @@ function setupChat(){
 
 
 
-
-
             if(text==="")
-            return;
-
+                return;
 
 
 
@@ -784,10 +743,7 @@ function setupChat(){
 
 
 
-
-
             input.value="";
-
 
 
         }
@@ -805,11 +761,9 @@ function setupChat(){
 
 
 
-
 // ======================
 // 채팅 받기
 // ======================
-
 
 socket.on(
 "chat",
@@ -824,9 +778,7 @@ socket.on(
 
 
 
-
-
-    // 화면 채팅창
+    // 채팅창 출력
 
     const box =
     document.getElementById(
@@ -838,8 +790,7 @@ socket.on(
     if(box){
 
 
-
-        const div =
+        let div =
         document.createElement(
             "div"
         );
@@ -871,37 +822,21 @@ socket.on(
 
 
 
-    // 캐릭터 말풍선
+    // ======================
+    // 머리 위 말풍선 저장
+    // ======================
 
 
-    for(let id in players){
+    chatBubbles[data.name]={
 
 
-
-        if(
-            players[id].name === data.name
-        ){
+        text:data.text,
 
 
-
-            chatBubbles[id]={
-
-
-                text:data.text,
+        time:Date.now()
 
 
-                time:Date.now()
-
-
-            };
-
-
-
-        }
-
-
-    }
-
+    };
 
 
 
@@ -915,9 +850,8 @@ socket.on(
 
 
 // ======================
-// 이미지 로딩 확인
+// 이미지 확인
 // ======================
-
 
 mapImage.onload=function(){
 
@@ -936,3 +870,11 @@ images.front.onload=function(){
     );
 
 };
+
+
+
+
+
+console.log(
+    "main.js 로딩 완료"
+);
