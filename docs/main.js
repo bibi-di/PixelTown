@@ -32,13 +32,14 @@ let players = {};
 
 
 
+
 // ======================
 // 이미지
 // ======================
 
 let mapImage = new Image();
 
-mapImage.src = "./assets/map.png";
+mapImage.src="./assets/map.png";
 
 
 let images = {
@@ -62,14 +63,15 @@ let myImage = images.front;
 
 
 
+
 // ======================
-// 연결 확인
+// 서버 연결 확인
 // ======================
 
 socket.on("connect",()=>{
 
     console.log(
-        "서버 연결 성공:",
+        "서버 연결:",
         socket.id
     );
 
@@ -79,48 +81,52 @@ socket.on("connect",()=>{
 
 
 
+
 // ======================
 // 방 만들기
 // ======================
 
+window.createRoom = function(){
 
-function createRoom(){
 
-    console.log("방 만들기 클릭");
+    console.log(
+        "방 만들기"
+    );
 
 
     socket.emit(
         "createRoom"
     );
 
-}
 
+};
 
 
 
 
 socket.on(
-    "roomCreated",
-    (code)=>{
+"roomCreated",
+(code)=>{
 
 
-        console.log(
-            "생성된 방:",
-            code
-        );
+    roomCode = code;
 
 
-        roomCode = code;
+    document.getElementById(
+        "myRoomCode"
+    ).innerHTML =
+    "내 방 코드 : " + code;
 
 
-        document.getElementById(
-            "myRoomCode"
-        ).innerHTML =
-        "내 방 코드 : " + code;
+
+    console.log(
+        "방 코드:",
+        code
+    );
 
 
-    }
-);
+});
+
 
 
 
@@ -132,8 +138,7 @@ socket.on(
 // 방 입장
 // ======================
 
-
-function joinRoom(){
+window.joinRoom = function(){
 
 
     roomCode =
@@ -146,7 +151,7 @@ function joinRoom(){
     if(roomCode===""){
 
         alert(
-            "초대 코드를 입력하세요"
+            "코드를 입력하세요"
         );
 
         return;
@@ -160,7 +165,8 @@ function joinRoom(){
     ).style.display="block";
 
 
-}
+};
+
 
 
 
@@ -172,8 +178,7 @@ function joinRoom(){
 // 게임 시작
 // ======================
 
-
-function startGame(){
+window.startGame = function(){
 
 
     nickname =
@@ -182,11 +187,13 @@ function startGame(){
     ).value;
 
 
+
     if(nickname===""){
 
         nickname="익명";
 
     }
+
 
 
 
@@ -203,6 +210,7 @@ function startGame(){
     document.getElementById(
         "gameScreen"
     ).style.display="block";
+
 
 
 
@@ -224,6 +232,7 @@ function startGame(){
 
 
 
+
     socket.emit(
         "joinRoom",
         {
@@ -237,9 +246,14 @@ function startGame(){
 
 
 
+    setupChat();
+
+
     draw();
 
-}
+
+};
+
 
 
 
@@ -251,15 +265,15 @@ function startGame(){
 // 플레이어 받기
 // ======================
 
-
 socket.on(
-    "players",
-    (data)=>{
+"players",
+(data)=>{
 
-        players=data;
+    players=data;
 
-    }
-);
+});
+
+
 
 
 
@@ -268,9 +282,8 @@ socket.on(
 
 
 // ======================
-// 그리기
+// 화면 출력
 // ======================
-
 
 function draw(){
 
@@ -319,17 +332,11 @@ function draw(){
 
 
         ctx.drawImage(
-
             img,
-
             p.x,
-
             p.y,
-
             60,
-
             80
-
         );
 
 
@@ -338,7 +345,7 @@ function draw(){
 
         ctx.fillRect(
             p.x,
-            p.y-20,
+            p.y-25,
             80,
             20
         );
@@ -352,8 +359,8 @@ function draw(){
 
         ctx.fillText(
             p.name,
-            p.x,
-            p.y-5
+            p.x+5,
+            p.y-10
         );
 
 
@@ -363,8 +370,9 @@ function draw(){
 
     requestAnimationFrame(draw);
 
-
 }
+
+
 
 
 
@@ -376,13 +384,19 @@ function draw(){
 // 이동
 // ======================
 
-
 document.addEventListener(
 "keydown",
 (e)=>{
 
 
     if(!started)
+    return;
+
+
+
+    if(
+    document.activeElement.id==="chatInput"
+    )
     return;
 
 
@@ -395,7 +409,6 @@ document.addEventListener(
     }
 
 
-
     if(e.key==="s"){
 
         player.y+=player.speed;
@@ -404,14 +417,12 @@ document.addEventListener(
     }
 
 
-
     if(e.key==="a"){
 
         player.x-=player.speed;
         myImage=images.left;
 
     }
-
 
 
     if(e.key==="d"){
@@ -436,151 +447,119 @@ document.addEventListener(
 
 
 });
-function createRoom(){
-
-    console.log("방 만들기 클릭");
-
-    socket.emit("createRoom");
-
-}
 
 
-socket.on("roomCreated",(code)=>{
 
-    alert("방 코드 : " + code);
 
-});
+
+
+
+
+
+
 // ======================
-// 방 만들기
+// 채팅
 // ======================
 
-window.createRoom = function(){
-
-    console.log("방 만들기 클릭");
-
-    socket.emit("createRoom");
-
-};
+function setupChat(){
 
 
-
-socket.on("roomCreated",(code)=>{
-
-    console.log("방 생성:", code);
-
-    const box = document.getElementById("myRoomCode");
-
-    if(box){
-
-        box.innerHTML = "내 방 코드 : " + code;
-
-    }
-
-});
-// ======================
-// 채팅 시스템
-// ======================
-
-
-// 채팅 보내기
-
-const chatInput = document.getElementById("chatInput");
-
-
-if(chatInput){
-
-
-    chatInput.addEventListener(
-        "keydown",
-        function(e){
-
-
-            if(e.key === "Enter"){
-
-
-                let text =
-                chatInput.value.trim();
-
-
-
-                if(text === "")
-                return;
-
-
-
-                socket.emit(
-                    "chat",
-                    text
-                );
-
-
-                chatInput.value="";
-
-
-            }
-
-
-        }
+    const input =
+    document.getElementById(
+        "chatInput"
     );
 
 
+
+    if(!input){
+
+        console.log(
+            "chatInput 없음"
+        );
+
+        return;
+
+    }
+
+
+
+    input.onkeydown = function(e){
+
+
+
+        if(e.key==="Enter"){
+
+
+            e.preventDefault();
+
+
+
+            let text =
+            input.value.trim();
+
+
+
+            if(text==="")
+            return;
+
+
+
+            socket.emit(
+                "chat",
+                text
+            );
+
+
+
+            input.value="";
+
+
+        }
+
+
+    };
+
+
 }
 
 
 
 
-// 채팅 받기
 
 
 socket.on(
-    "chat",
-    function(data){
+"chat",
+(data)=>{
+
+
+    const box =
+    document.getElementById(
+        "messages"
+    );
 
 
 
-        const messages =
-        document.getElementById(
-            "messages"
-        );
+    if(!box)
+    return;
 
 
 
-        if(!messages)
-        return;
+    const div =
+    document.createElement(
+        "div"
+    );
 
 
 
-        let div =
-        document.createElement(
-            "div"
-        );
+    div.innerText =
+    data.name+
+    " : "+
+    data.text;
 
 
 
-        div.innerHTML =
-        data.name +
-        " : " +
-        data.text;
+    box.appendChild(div);
 
 
 
-        messages.appendChild(
-            div
-        );
-
-
-
-        // 최대 10개만 표시
-
-        while(messages.children.length > 10){
-
-            messages.removeChild(
-                messages.firstChild
-            );
-
-        }
-
-
-
-    }
-);
+});
