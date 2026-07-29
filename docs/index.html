@@ -7,7 +7,7 @@
 
 <title>PixelTown</title>
 
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="./style.css">
 
 </head>
 
@@ -15,16 +15,11 @@
 <body>
 
 
-
-<!-- =====================
-     로비 화면
-===================== -->
+<!-- 로비 -->
 
 <div id="loginBox">
 
-
 <h1>PixelTown</h1>
-
 
 
 <button onclick="createRoom()">
@@ -32,13 +27,10 @@
 </button>
 
 
-
 <p id="myRoomCode"></p>
 
 
-
 <hr>
-
 
 
 <input 
@@ -47,15 +39,12 @@ placeholder="초대 코드 입력"
 >
 
 
-
 <br>
-
 
 
 <button onclick="joinRoom()">
 입장
 </button>
-
 
 
 <p id="message"></p>
@@ -67,18 +56,12 @@ placeholder="초대 코드 입력"
 
 
 
-
-
-<!-- =====================
-     캐릭터 선택
-===================== -->
-
+<!-- 캐릭터 선택 -->
 
 <div id="characterSelect" style="display:none;">
 
 
 <h2>캐릭터 선택</h2>
-
 
 
 <input
@@ -87,15 +70,12 @@ placeholder="닉네임"
 >
 
 
-
 <br>
-
 
 
 <button onclick="startGame()">
 게임 시작
 </button>
-
 
 
 </div>
@@ -105,16 +85,9 @@ placeholder="닉네임"
 
 
 
-
-
-
-<!-- =====================
-     게임 화면
-===================== -->
-
+<!-- 게임 화면 -->
 
 <div id="gameScreen" style="display:none;">
-
 
 
 <canvas
@@ -125,15 +98,10 @@ height="600">
 
 
 
-
-
-<!-- 채팅 -->
-
 <div id="chatBox">
 
 
 <div id="messages"></div>
-
 
 
 <input
@@ -142,18 +110,7 @@ placeholder="Enter로 채팅"
 >
 
 
-
 </div>
-
-
-
-
-
-
-<!-- 캐릭터 위 말풍선 -->
-
-<div id="speechBubble"></div>
-
 
 
 </div>
@@ -164,11 +121,15 @@ placeholder="Enter로 채팅"
 
 
 
-
+<!-- socket.io 연결 -->
 
 <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+
+
+<!-- 게임 코드 -->
+
 <script src="./game.js"></script>
-<script src="game.js"></script>
+
 
 
 </body>
