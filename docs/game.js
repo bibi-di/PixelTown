@@ -36,20 +36,20 @@ let chatBubbles = {};
 
 let mapImage = new Image();
 
-mapImage.src="./assets/map.png";
+mapImage.src="/PixelTown/assets/map.png";
 
 
-images.front.src="./assets/female.front.png";
-images.back.src="./assets/female.back.png";
-images.left.src="./assets/female.left.png";
-images.right.src="./assets/female.right.png";
+images.front.src="/PixelTown/assets/female.front.png";
+images.back.src="/PixelTown/assets/female.back.png";
+images.left.src="/PixelTown/assets/female.left.png";
+images.right.src="/PixelTown/assets/female.right.png";
 
 
 
-images.front.src="/assets/female.front.png";
-images.back.src="/assets/female.back.png";
-images.left.src="/assets/female.left.png";
-images.right.src="/assets/female.right.png";
+images.front.src="/PixelTown/assets/female.front.png";
+images.back.src="/PixelTown/assets/female.back.png";
+images.left.src="/PixelTown/assets/female.left.png";
+images.right.src="/PixelTown/assets/female.right.png";
 
 
 
