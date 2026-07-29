@@ -5,7 +5,10 @@ console.log("main.js 실행");
 // 서버 연결
 // ======================
 
-const socket = io("https://pixeltown-server.onrender.com");
+const socket = io(
+    "https://pixeltown-server.onrender.com"
+);
+
 
 
 // ======================
@@ -18,17 +21,23 @@ let ctx;
 let started = false;
 
 let roomCode = "";
+
 let nickname = "";
 
 
+
 let player = {
+
     x:350,
     y:250,
     speed:5
+
 };
 
 
+
 let players = {};
+
 
 
 
@@ -37,25 +46,37 @@ let players = {};
 // 이미지
 // ======================
 
+
 let mapImage = new Image();
 
 mapImage.src="./assets/map.png";
 
 
+
 let images = {
 
+
     front:new Image(),
+
     back:new Image(),
+
     left:new Image(),
+
     right:new Image()
+
 
 };
 
 
+
 images.front.src="./assets/female.front.png";
+
 images.back.src="./assets/female.back.png";
+
 images.left.src="./assets/female.left.png";
+
 images.right.src="./assets/female.right.png";
+
 
 
 let myImage = images.front;
@@ -64,14 +85,18 @@ let myImage = images.front;
 
 
 
+
 // ======================
-// 서버 연결 확인
+// 연결 확인
 // ======================
 
-socket.on("connect",()=>{
+
+socket.on(
+"connect",
+()=>{
 
     console.log(
-        "서버 연결:",
+        "서버 연결 성공",
         socket.id
     );
 
@@ -86,7 +111,8 @@ socket.on("connect",()=>{
 // 방 만들기
 // ======================
 
-window.createRoom = function(){
+
+window.createRoom=function(){
 
 
     console.log(
@@ -95,11 +121,16 @@ window.createRoom = function(){
 
 
     socket.emit(
-        "createRoom"
+        "createRoom",
+        {
+            name:"Player"
+        }
     );
 
 
 };
+
+
 
 
 
@@ -115,12 +146,11 @@ socket.on(
     document.getElementById(
         "myRoomCode"
     ).innerHTML =
-    "내 방 코드 : " + code;
-
+    "내 방 코드 : "+code;
 
 
     console.log(
-        "방 코드:",
+        "방 생성",
         code
     );
 
@@ -133,25 +163,26 @@ socket.on(
 
 
 
-
 // ======================
 // 방 입장
 // ======================
 
-window.joinRoom = function(){
+
+window.joinRoom=function(){
 
 
     roomCode =
     document.getElementById(
         "inviteCode"
-    ).value.trim();
+    ).value
+    .trim();
 
 
 
     if(roomCode===""){
 
         alert(
-            "코드를 입력하세요"
+            "초대 코드를 입력하세요"
         );
 
         return;
@@ -173,24 +204,26 @@ window.joinRoom = function(){
 
 
 
-
 // ======================
 // 게임 시작
 // ======================
 
-window.startGame = function(){
+
+window.startGame=function(){
+
 
 
     nickname =
     document.getElementById(
         "nickname"
-    ).value;
+    ).value
+    .trim();
 
 
 
     if(nickname===""){
 
-        nickname="익명";
+        nickname="Player";
 
     }
 
@@ -202,9 +235,11 @@ window.startGame = function(){
     ).style.display="none";
 
 
+
     document.getElementById(
         "characterSelect"
     ).style.display="none";
+
 
 
     document.getElementById(
@@ -214,11 +249,11 @@ window.startGame = function(){
 
 
 
-
     canvas =
     document.getElementById(
         "gameCanvas"
     );
+
 
 
     ctx =
@@ -261,15 +296,19 @@ window.startGame = function(){
 
 
 
+
 // ======================
-// 플레이어 받기
+// 플레이어 수신
 // ======================
+
 
 socket.on(
 "players",
 (data)=>{
 
+
     players=data;
+
 
 });
 
@@ -282,10 +321,12 @@ socket.on(
 
 
 // ======================
-// 화면 출력
+// 화면 그리기
 // ======================
 
+
 function draw(){
+
 
 
     if(!started)
@@ -296,13 +337,14 @@ function draw(){
     ctx.clearRect(
         0,
         0,
-        800,
-        600
+        canvas.width,
+        canvas.height
     );
 
 
 
     if(mapImage.complete){
+
 
         ctx.drawImage(
             mapImage,
@@ -312,14 +354,21 @@ function draw(){
             600
         );
 
+
     }
+
+
+
 
 
 
     for(let id in players){
 
 
-        let p = players[id];
+
+        let p =
+        players[id];
+
 
 
         let img =
@@ -331,36 +380,60 @@ function draw(){
 
 
 
+
         ctx.drawImage(
+
             img,
+
             p.x,
+
             p.y,
+
             60,
+
             80
+
         );
 
 
 
+
+
+
+        // 이름표
+
+
         ctx.fillStyle="white";
 
+
         ctx.fillRect(
+
             p.x,
+
             p.y-25,
+
             80,
+
             20
+
         );
 
 
 
         ctx.fillStyle="black";
 
+
         ctx.font="12px Arial";
 
 
         ctx.fillText(
+
             p.name,
+
             p.x+5,
+
             p.y-10
+
         );
 
 
@@ -368,7 +441,11 @@ function draw(){
 
 
 
-    requestAnimationFrame(draw);
+
+    requestAnimationFrame(
+        draw
+    );
+
 
 }
 
@@ -384,9 +461,11 @@ function draw(){
 // 이동
 // ======================
 
+
 document.addEventListener(
 "keydown",
 (e)=>{
+
 
 
     if(!started)
@@ -394,48 +473,64 @@ document.addEventListener(
 
 
 
+
     if(
-    document.activeElement.id==="chatInput"
+        document.activeElement &&
+        document.activeElement.id==="chatInput"
     )
     return;
+
+
 
 
 
     if(e.key==="w"){
 
         player.y-=player.speed;
+
         myImage=images.back;
 
     }
 
 
+
     if(e.key==="s"){
 
         player.y+=player.speed;
+
         myImage=images.front;
 
     }
 
 
+
     if(e.key==="a"){
 
         player.x-=player.speed;
+
         myImage=images.left;
 
     }
 
 
+
     if(e.key==="d"){
 
         player.x+=player.speed;
+
         myImage=images.right;
 
     }
 
 
 
+
+
+
     socket.emit(
+
         "move",
+
         {
 
             x:player.x,
@@ -443,7 +538,9 @@ document.addEventListener(
             y:player.y
 
         }
+
     );
+
 
 
 });
@@ -456,10 +553,10 @@ document.addEventListener(
 
 
 
-
 // ======================
 // 채팅
 // ======================
+
 
 function setupChat(){
 
@@ -474,7 +571,7 @@ function setupChat(){
     if(!input){
 
         console.log(
-            "chatInput 없음"
+            "채팅창 없음"
         );
 
         return;
@@ -483,11 +580,14 @@ function setupChat(){
 
 
 
-    input.onkeydown = function(e){
+
+
+    input.onkeydown=function(e){
 
 
 
         if(e.key==="Enter"){
+
 
 
             e.preventDefault();
@@ -499,8 +599,10 @@ function setupChat(){
 
 
 
+
             if(text==="")
             return;
+
 
 
 
@@ -512,6 +614,7 @@ function setupChat(){
 
 
             input.value="";
+
 
 
         }
@@ -527,9 +630,19 @@ function setupChat(){
 
 
 
+
+
+
 socket.on(
 "chat",
 (data)=>{
+
+
+    console.log(
+        "채팅 수신",
+        data
+    );
+
 
 
     const box =
@@ -558,7 +671,14 @@ socket.on(
 
 
 
-    box.appendChild(div);
+    box.appendChild(
+        div
+    );
+
+
+
+    box.scrollTop =
+    box.scrollHeight;
 
 
 
