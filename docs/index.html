@@ -2,10 +2,16 @@
 <html lang="ko">
 
 <head>
+
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>PixelTown</title>
+
 <link rel="stylesheet" href="./style.css">
+
 </head>
+
 
 <body>
 
@@ -14,9 +20,11 @@
 
 <h1>PixelTown</h1>
 
+
 <button onclick="createRoom()">
 방 만들기
 </button>
+
 
 <p id="myRoomCode"></p>
 
@@ -24,33 +32,38 @@
 <hr>
 
 
-<input id="inviteCode" placeholder="초대 코드 입력">
+<input id="inviteCode" placeholder="초대 코드">
 
-<br>
 
 <button onclick="joinRoom()">
 입장
 </button>
 
+
 <p id="message"></p>
+
 
 </div>
 
 
 
 
-
 <div id="characterSelect" style="display:none;">
+
 
 <h2>캐릭터 선택</h2>
 
+
 <input id="nickname" placeholder="닉네임">
 
-<br>
+
+<br><br>
+
 
 <button onclick="startGame()">
 게임 시작
 </button>
+
 
 </div>
 
@@ -60,31 +73,29 @@
 
 <div id="gameScreen" style="display:none;">
 
-<canvas 
+
+<canvas
 id="gameCanvas"
 width="800"
 height="600">
 </canvas>
 
 
-
 <div id="chatBox">
 
 <div id="messages"></div>
 
-<input 
-id="chatInput"
-placeholder="Enter로 채팅">
+<input id="chatInput" placeholder="채팅">
 
 </div>
 
 
 </div>
+
 
 
 
 <!-- 반드시 한번만 -->
-
 <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
 
 <script src="./game.js"></script>
@@ -93,5 +104,3 @@ placeholder="Enter로 채팅">
 </body>
 
 </html>
-<script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
-<script src="./game.js"></script>

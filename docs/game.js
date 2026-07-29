@@ -1,46 +1,42 @@
 const socket = io("https://pixeltown-server.onrender.com");
 
 
-// =====================
-// 기본
-// =====================
-
 let canvas;
 let ctx;
 
-let started = false;
+let started=false;
 
-let roomCode = "";
-let nickname = "";
+let roomCode="";
 
-let player = {
+let nickname="";
+
+
+let player={
     x:350,
     y:250,
     speed:5
 };
 
-let players = {};
 
-let chatBubbles = {};
+let players={};
 
 
-// =====================
-// 이미지
-// =====================
 
-let mapImage = new Image();
+let mapImage=new Image();
 
 mapImage.src="./assets/map.png";
 
 
-let images = {
 
-    front:new Image(),
-    back:new Image(),
-    left:new Image(),
-    right:new Image()
+let images={
+
+front:new Image(),
+back:new Image(),
+left:new Image(),
+right:new Image()
 
 };
+
 
 
 images.front.src="./assets/female.front.png";
@@ -49,391 +45,343 @@ images.left.src="./assets/female.left.png";
 images.right.src="./assets/female.right.png";
 
 
-let myImage = images.front;
+let myImage=images.front;
 
 
 
-// =====================
+// =================
 // 방 만들기
-// =====================
+// =================
 
 function createRoom(){
 
-    console.log("방 만들기 클릭");
+console.log("create room");
 
-    socket.emit("createRoom");
+socket.emit("createRoom");
 
 }
 
 
+
 socket.on("roomCreated",(code)=>{
 
-    roomCode = code;
 
-    document.getElementById("myRoomCode").innerHTML =
-    "내 방 코드 : " + code;
+roomCode=code;
+
+
+document.getElementById("myRoomCode").innerHTML=
+"방 코드 : "+code;
 
 
 });
 
 
 
-// =====================
-// 입장
-// =====================
 
+// =================
+// 입장
+// =================
 
 function joinRoom(){
 
-    roomCode =
-    document.getElementById("inviteCode").value
-    .toUpperCase();
+
+roomCode=
+document.getElementById("inviteCode").value;
 
 
-    if(roomCode===""){
+if(roomCode===""){
 
-        alert("코드를 입력하세요");
-        return;
+alert("코드 입력");
 
-    }
+return;
+
+}
 
 
-    document.getElementById("characterSelect")
-    .style.display="block";
+document.getElementById("characterSelect")
+.style.display="block";
 
 
 }
 
 
 
-// =====================
-// 게임 시작
-// =====================
+
+// =================
+// 시작
+// =================
 
 
 function startGame(){
 
 
-    nickname =
-    document.getElementById("nickname").value;
+nickname=
+document.getElementById("nickname").value;
 
 
-    if(nickname===""){
-        nickname="익명";
-    }
-
-
-    document.getElementById("loginBox")
-    .style.display="none";
-
-
-    document.getElementById("characterSelect")
-    .style.display="none";
-
-
-    document.getElementById("gameScreen")
-    .style.display="flex";
+if(nickname==="")
+nickname="익명";
 
 
 
-    canvas =
-    document.getElementById("gameCanvas");
+document.getElementById("loginBox")
+.style.display="none";
 
 
-    ctx =
-    canvas.getContext("2d");
+document.getElementById("characterSelect")
+.style.display="none";
 
 
-    started=true;
-
-
-
-    socket.emit("joinRoom",{
-
-        code:roomCode,
-
-        name:nickname
-
-    });
+document.getElementById("gameScreen")
+.style.display="block";
 
 
 
-    draw();
+canvas=
+document.getElementById("gameCanvas");
+
+
+ctx=
+canvas.getContext("2d");
+
+
+started=true;
+
+
+
+socket.emit("joinRoom",{
+
+
+code:roomCode,
+
+name:nickname
+
+
+});
+
+
+
+draw();
 
 
 }
 
 
 
-// =====================
+
+// =================
 // 플레이어 받기
-// =====================
+// =================
 
 
 socket.on("players",(data)=>{
 
-    players=data;
+
+players=data;
+
 
 });
 
 
 
 
-// =====================
-// 그리기
-// =====================
 
+
+// =================
+// 화면
+// =================
 
 function draw(){
 
 
-    if(!started)
-    return;
-
-
-    ctx.clearRect(
-        0,
-        0,
-        canvas.width,
-        canvas.height
-    );
+if(!started)
+return;
 
 
 
-    // 배경
-
-    if(mapImage.complete &&
-       mapImage.naturalWidth>0){
-
-
-        ctx.drawImage(
-
-            mapImage,
-
-            0,
-            0,
-
-            800,
-            600
-
-        );
-
-
-    }else{
-
-
-        ctx.fillStyle="black";
-
-        ctx.fillRect(
-            0,
-            0,
-            800,
-            600
-        );
-
-
-    }
+ctx.clearRect(
+0,
+0,
+800,
+600
+);
 
 
 
 
+// 배경
 
-    // 캐릭터
-
-
-    for(let id in players){
-
-
-        let p = players[id];
+if(
+mapImage.complete &&
+mapImage.naturalWidth>0
+){
 
 
-        let img =
-        id===socket.id
-        ? myImage
-        : images.front;
+ctx.drawImage(
+
+mapImage,
+
+0,
+
+0,
+
+800,
+
+600
+
+);
 
 
-
-        if(img.complete &&
-           img.naturalWidth>0){
-
-
-            ctx.drawImage(
-
-                img,
-
-                p.x,
-
-                p.y,
-
-                60,
-
-                80
-
-            );
-
-        }
+}
+else{
 
 
+ctx.fillStyle="black";
 
-        // 이름
+ctx.fillRect(
+0,
+0,
+800,
+600
+);
 
-
-        ctx.fillStyle="white";
-
-        ctx.font="14px Arial";
-
-        ctx.textAlign="center";
-
-
-        ctx.fillText(
-
-            p.name,
-
-            p.x+30,
-
-            p.y-10
-
-        );
-
-
-
-    }
-
-
-
-    requestAnimationFrame(draw);
 
 }
 
 
 
-// =====================
+
+
+// 캐릭터
+
+
+for(let id in players){
+
+
+let p=players[id];
+
+
+let img=
+id===socket.id
+?
+myImage
+:
+images.front;
+
+
+
+if(
+img.complete &&
+img.naturalWidth>0
+){
+
+
+ctx.drawImage(
+
+img,
+
+p.x,
+
+p.y,
+
+60,
+
+80
+
+);
+
+
+}
+
+
+
+ctx.fillStyle="white";
+
+ctx.font="14px Arial";
+
+ctx.textAlign="center";
+
+
+ctx.fillText(
+
+p.name,
+
+p.x+30,
+
+p.y-10
+
+);
+
+
+
+}
+
+
+
+requestAnimationFrame(draw);
+
+
+}
+
+
+
+
+// =================
 // 이동
-// =====================
+// =================
 
 
-document.addEventListener("keydown",(e)=>{
+document.addEventListener(
+"keydown",
+(e)=>{
 
 
-    if(!started)
-    return;
+if(!started)
+return;
 
 
-    if(e.key==="w"){
 
-        player.y-=player.speed;
+if(e.key==="w"){
 
-        myImage=images.back;
+player.y-=player.speed;
+myImage=images.back;
 
-    }
+}
 
 
-    if(e.key==="s"){
+if(e.key==="s"){
 
-        player.y+=player.speed;
+player.y+=player.speed;
+myImage=images.front;
 
-        myImage=images.front;
+}
 
-    }
 
+if(e.key==="a"){
 
-    if(e.key==="a"){
+player.x-=player.speed;
+myImage=images.left;
 
-        player.x-=player.speed;
+}
 
-        myImage=images.left;
 
-    }
+if(e.key==="d"){
 
+player.x+=player.speed;
+myImage=images.right;
 
-    if(e.key==="d"){
+}
 
-        player.x+=player.speed;
 
-        myImage=images.right;
 
-    }
+socket.emit(
+"move",
+{
+x:player.x,
+y:player.y
+}
+);
 
-
-
-    socket.emit("move",{
-
-        x:player.x,
-
-        y:player.y
-
-    });
-
-
-
-});
-
-
-
-// =====================
-// 채팅
-// =====================
-
-
-document.addEventListener("keydown",(e)=>{
-
-
-    if(e.key==="Enter"){
-
-
-        let input =
-        document.getElementById("chatInput");
-
-
-        if(document.activeElement===input){
-
-
-            if(input.value.trim()!==""){
-
-
-                socket.emit(
-                    "chat",
-                    input.value
-                );
-
-
-                input.value="";
-
-            }
-
-
-        }else{
-
-
-            input.focus();
-
-        }
-
-
-    }
-
-
-});
-
-
-
-socket.on("chat",(data)=>{
-
-
-    let box =
-    document.getElementById("messages");
-
-
-    let div =
-    document.createElement("div");
-
-
-    div.innerHTML =
-    data.name+" : "+data.text;
-
-
-    box.appendChild(div);
 
 
 });
