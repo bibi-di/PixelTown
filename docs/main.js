@@ -21,9 +21,7 @@ let ctx;
 let started = false;
 
 let roomCode = "";
-
 let nickname = "";
-
 
 
 let player = {
@@ -39,6 +37,10 @@ let player = {
 let players = {};
 
 
+// 채팅 말풍선 저장
+
+let chatBubbles = {};
+
 
 
 
@@ -46,15 +48,14 @@ let players = {};
 // 이미지
 // ======================
 
-
 let mapImage = new Image();
 
-mapImage.src="./assets/map.png";
+mapImage.src =
+"./assets/map.png";
 
 
 
 let images = {
-
 
     front:new Image(),
 
@@ -64,22 +65,26 @@ let images = {
 
     right:new Image()
 
-
 };
 
 
 
-images.front.src="./assets/female.front.png";
+images.front.src =
+"./assets/female.front.png";
 
-images.back.src="./assets/female.back.png";
+images.back.src =
+"./assets/female.back.png";
 
-images.left.src="./assets/female.left.png";
+images.left.src =
+"./assets/female.left.png";
 
-images.right.src="./assets/female.right.png";
+images.right.src =
+"./assets/female.right.png";
 
 
 
-let myImage = images.front;
+let myImage =
+images.front;
 
 
 
@@ -87,16 +92,15 @@ let myImage = images.front;
 
 
 // ======================
-// 연결 확인
+// 서버 연결 확인
 // ======================
-
 
 socket.on(
 "connect",
 ()=>{
 
     console.log(
-        "서버 연결 성공",
+        "서버 연결:",
         socket.id
     );
 
@@ -111,13 +115,7 @@ socket.on(
 // 방 만들기
 // ======================
 
-
 window.createRoom=function(){
-
-
-    console.log(
-        "방 만들기"
-    );
 
 
     socket.emit(
@@ -129,7 +127,6 @@ window.createRoom=function(){
 
 
 };
-
 
 
 
@@ -149,13 +146,9 @@ socket.on(
     "내 방 코드 : "+code;
 
 
-    console.log(
-        "방 생성",
-        code
-    );
-
 
 });
+
 
 
 
@@ -167,14 +160,14 @@ socket.on(
 // 방 입장
 // ======================
 
-
 window.joinRoom=function(){
 
 
     roomCode =
     document.getElementById(
         "inviteCode"
-    ).value
+    )
+    .value
     .trim();
 
 
@@ -193,7 +186,8 @@ window.joinRoom=function(){
 
     document.getElementById(
         "characterSelect"
-    ).style.display="block";
+    )
+    .style.display="block";
 
 
 };
@@ -208,15 +202,14 @@ window.joinRoom=function(){
 // 게임 시작
 // ======================
 
-
 window.startGame=function(){
-
 
 
     nickname =
     document.getElementById(
         "nickname"
-    ).value
+    )
+    .value
     .trim();
 
 
@@ -230,21 +223,26 @@ window.startGame=function(){
 
 
 
+
     document.getElementById(
         "loginBox"
-    ).style.display="none";
+    )
+    .style.display="none";
 
 
 
     document.getElementById(
         "characterSelect"
-    ).style.display="none";
+    )
+    .style.display="none";
 
 
 
     document.getElementById(
         "gameScreen"
-    ).style.display="block";
+    )
+    .style.display="block";
+
 
 
 
@@ -253,7 +251,6 @@ window.startGame=function(){
     document.getElementById(
         "gameCanvas"
     );
-
 
 
     ctx =
@@ -293,40 +290,22 @@ window.startGame=function(){
 
 
 
-
-
-
-
 // ======================
-// 플레이어 수신
+// 플레이어 받기
 // ======================
-
 
 socket.on(
 "players",
 (data)=>{
 
-
     players=data;
 
-
 });
-
-
-
-
-
-
-
-
-
 // ======================
 // 화면 그리기
 // ======================
 
-
 function draw(){
-
 
 
     if(!started)
@@ -343,6 +322,8 @@ function draw(){
 
 
 
+    // 맵
+
     if(mapImage.complete){
 
 
@@ -354,13 +335,14 @@ function draw(){
             600
         );
 
-
     }
 
 
 
 
 
+
+    // 플레이어
 
     for(let id in players){
 
@@ -400,41 +382,225 @@ function draw(){
 
 
 
-        // 이름표
+        // ======================
+        // 닉네임 타원형
+        // ======================
 
 
-        ctx.fillStyle="white";
+        ctx.font =
+        "bold 12px Arial";
 
 
-        ctx.fillRect(
 
-            p.x,
+        let nameWidth =
+        ctx.measureText(
+            p.name
+        ).width + 28;
 
-            p.y-25,
 
-            80,
 
-            20
+        let nameX =
+        p.x + 30 - nameWidth/2;
+
+
+
+        let nameY =
+        p.y - 35;
+
+
+
+
+        ctx.fillStyle =
+        "white";
+
+
+
+        ctx.beginPath();
+
+
+        ctx.roundRect(
+
+            nameX,
+
+            nameY,
+
+            nameWidth,
+
+            22,
+
+            12
 
         );
 
 
+        ctx.fill();
 
-        ctx.fillStyle="black";
 
 
-        ctx.font="12px Arial";
+
+        ctx.fillStyle =
+        "black";
+
+
+
+        ctx.textAlign =
+        "center";
+
 
 
         ctx.fillText(
 
             p.name,
 
-            p.x+5,
+            p.x+30,
 
-            p.y-10
+            nameY+15
 
         );
+
+
+
+
+
+        // ======================
+        // 채팅 말풍선
+        // ======================
+
+
+        let bubble =
+        chatBubbles[p.id];
+
+
+
+        if(
+            bubble &&
+            Date.now()-bubble.time < 5000
+        ){
+
+
+
+            ctx.font =
+            "13px Arial";
+
+
+
+            let bubbleWidth =
+            ctx.measureText(
+                bubble.text
+            ).width + 35;
+
+
+
+            if(bubbleWidth < 70){
+
+                bubbleWidth = 70;
+
+            }
+
+
+
+
+            let bubbleX =
+            p.x + 30 - bubbleWidth/2;
+
+
+
+            let bubbleY =
+            p.y - 80;
+
+
+
+
+            ctx.fillStyle =
+            "white";
+
+
+
+            ctx.beginPath();
+
+
+
+            ctx.roundRect(
+
+                bubbleX,
+
+                bubbleY,
+
+                bubbleWidth,
+
+                32,
+
+                15
+
+            );
+
+
+
+            ctx.fill();
+
+
+
+
+
+            // 말풍선 꼬리
+
+            ctx.beginPath();
+
+
+            ctx.moveTo(
+                p.x+30,
+                bubbleY+32
+            );
+
+
+            ctx.lineTo(
+                p.x+24,
+                bubbleY+42
+            );
+
+
+            ctx.lineTo(
+                p.x+38,
+                bubbleY+32
+            );
+
+
+            ctx.fill();
+
+
+
+
+
+
+            ctx.fillStyle =
+            "black";
+
+
+            ctx.textAlign =
+            "center";
+
+
+
+            ctx.fillText(
+
+                bubble.text,
+
+                p.x+30,
+
+                bubbleY+21
+
+            );
+
+
+
+        }
+
+
+
+
+        ctx.textAlign =
+        "left";
+
 
 
     }
@@ -446,10 +612,7 @@ function draw(){
         draw
     );
 
-
 }
-
-
 
 
 
@@ -467,12 +630,13 @@ document.addEventListener(
 (e)=>{
 
 
-
     if(!started)
     return;
 
 
 
+
+    // 채팅 입력 중이면 이동 금지
 
     if(
         document.activeElement &&
@@ -486,51 +650,65 @@ document.addEventListener(
 
     if(e.key==="w"){
 
-        player.y-=player.speed;
 
-        myImage=images.back;
+        player.y -= player.speed;
+
+        myImage =
+        images.back;
+
 
     }
+
 
 
 
     if(e.key==="s"){
 
-        player.y+=player.speed;
 
-        myImage=images.front;
+        player.y += player.speed;
+
+        myImage =
+        images.front;
+
 
     }
+
+
 
 
 
     if(e.key==="a"){
 
-        player.x-=player.speed;
 
-        myImage=images.left;
+        player.x -= player.speed;
+
+        myImage =
+        images.left;
+
 
     }
+
+
 
 
 
     if(e.key==="d"){
 
-        player.x+=player.speed;
 
-        myImage=images.right;
+        player.x += player.speed;
+
+        myImage =
+        images.right;
+
 
     }
-
 
 
 
 
 
     socket.emit(
-
         "move",
-
         {
 
             x:player.x,
@@ -538,23 +716,12 @@ document.addEventListener(
             y:player.y
 
         }
-
     );
 
 
-
 });
-
-
-
-
-
-
-
-
-
 // ======================
-// 채팅
+// 채팅 시스템
 // ======================
 
 
@@ -571,7 +738,7 @@ function setupChat(){
     if(!input){
 
         console.log(
-            "채팅창 없음"
+            "chatInput 없음"
         );
 
         return;
@@ -582,7 +749,8 @@ function setupChat(){
 
 
 
-    input.onkeydown=function(e){
+    input.onkeydown =
+    function(e){
 
 
 
@@ -594,8 +762,10 @@ function setupChat(){
 
 
 
+
             let text =
             input.value.trim();
+
 
 
 
@@ -606,10 +776,13 @@ function setupChat(){
 
 
 
+
             socket.emit(
                 "chat",
                 text
             );
+
+
 
 
 
@@ -633,9 +806,15 @@ function setupChat(){
 
 
 
+// ======================
+// 채팅 받기
+// ======================
+
+
 socket.on(
 "chat",
 (data)=>{
+
 
 
     console.log(
@@ -645,6 +824,10 @@ socket.on(
 
 
 
+
+
+    // 화면 채팅창
+
     const box =
     document.getElementById(
         "messages"
@@ -652,34 +835,104 @@ socket.on(
 
 
 
-    if(!box)
-    return;
+    if(box){
 
 
 
-    const div =
-    document.createElement(
-        "div"
-    );
+        const div =
+        document.createElement(
+            "div"
+        );
 
 
 
-    div.innerText =
-    data.name+
-    " : "+
-    data.text;
+        div.innerText =
+
+        data.name+
+        " : "+
+        data.text;
 
 
 
-    box.appendChild(
-        div
-    );
+        box.appendChild(
+            div
+        );
 
 
 
-    box.scrollTop =
-    box.scrollHeight;
+        box.scrollTop =
+        box.scrollHeight;
+
+
+    }
+
+
+
+
+
+
+    // 캐릭터 말풍선
+
+
+    for(let id in players){
+
+
+
+        if(
+            players[id].name === data.name
+        ){
+
+
+
+            chatBubbles[id]={
+
+
+                text:data.text,
+
+
+                time:Date.now()
+
+
+            };
+
+
+
+        }
+
+
+    }
+
 
 
 
 });
+
+
+
+
+
+
+
+
+// ======================
+// 이미지 로딩 확인
+// ======================
+
+
+mapImage.onload=function(){
+
+    console.log(
+        "맵 로딩 완료"
+    );
+
+};
+
+
+
+images.front.onload=function(){
+
+    console.log(
+        "캐릭터 로딩 완료"
+    );
+
+};
