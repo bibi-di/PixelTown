@@ -7,20 +7,26 @@ const app = express();
 
 const server = http.createServer(app);
 
-const io = new Server(server);
+
+// GitHub Pages 허용
+const io = new Server(server, {
+    cors: {
+        origin: "*",
+        methods: ["GET", "POST"]
+    }
+});
 
 
-app.use(express.static("public"));
-
+app.get("/", (req,res)=>{
+    res.send("PixelTown Server Running");
+});
 
 
 // 방 저장
 let rooms = {};
 
 
-
-// 코드 생성
-
+// 방 코드 생성
 function createCode(){
 
     let code;
@@ -32,8 +38,7 @@ function createCode(){
         .substring(2,7)
         .toUpperCase();
 
-    }
-    while(rooms[code]);
+    }while(rooms[code]);
 
 
     return code;
@@ -42,210 +47,123 @@ function createCode(){
 
 
 
-
-
-
-
 io.on("connection",(socket)=>{
 
 
-console.log("접속:",socket.id);
+    console.log("접속:",socket.id);
 
 
 
-
-// 방 만들기
-
-socket.on("createRoom",()=>{
+    // 방 만들기
+    socket.on("createRoom",(data)=>{
 
 
-    let code=createCode();
+        let code=createCode();
 
 
-    rooms[code]={};
+        rooms[code]={};
 
 
+        socket.join(code);
 
-    socket.emit(
-        "roomCreated",
-        code
-    );
+        socket.room=code;
 
 
-});
+        rooms[code][socket.id]={
 
+            x:350,
+            y:250,
+            name:data?.name || "Player",
+            id:socket.id
 
-
-
-
-
-
-
-// 방 입장
-
-socket.on("joinRoom",(data)=>{
-
-
-    let code=data.code;
-
-
-
-    if(!rooms[code]){
+        };
 
 
         socket.emit(
-            "joinError",
-            "없는 방입니다."
+            "roomCreated",
+            code
         );
 
 
-        return;
+        io.to(code).emit(
+            "players",
+            rooms[code]
+        );
 
-    }
 
+    });
 
 
 
 
-    socket.join(code);
+    // 방 참가
+    socket.on("joinRoom",(data)=>{
 
 
-    socket.room=code;
+        let code=data.code;
 
 
+        if(!rooms[code]){
 
-    rooms[code][socket.id]={
 
+            socket.emit(
+                "joinError",
+                "없는 방입니다."
+            );
 
-        x:350,
-
-        y:250,
-
-        name:data.name,
-
-        id:socket.id
-
-
-    };
-
-
-
-
-
-    io.to(code).emit(
-        "players",
-        rooms[code]
-    );
-
-
-});
-
-
-
-
-
-
-
-
-
-// 이동
-
-socket.on("move",(pos)=>{
-
-
-    let room=socket.room;
-
-
-    if(!room)return;
-
-
-
-    let player=
-    rooms[room][socket.id];
-
-
-
-    if(player){
-
-
-        player.x=pos.x;
-
-        player.y=pos.y;
-
-
-    }
-
-
-
-
-    io.to(room).emit(
-        "players",
-        rooms[room]
-    );
-
-
-});
-
-
-
-
-
-
-
-
-// 채팅
-
-socket.on("chat",(text)=>{
-
-
-    let room=socket.room;
-
-
-    if(!room)return;
-
-
-
-    let player=
-    rooms[room][socket.id];
-
-
-
-    io.to(room).emit(
-
-        "chat",
-
-        {
-
-            name:player.name,
-
-            text:text
+            return;
 
         }
 
-    );
 
 
-});
+        socket.join(code);
 
-
-
-
+        socket.room=code;
 
 
 
+        rooms[code][socket.id]={
 
-// 종료
+            x:350,
+            y:250,
+            name:data.name || "Player",
+            id:socket.id
 
-socket.on("disconnect",()=>{
-
-
-    let room=socket.room;
-
-
-    if(room && rooms[room]){
+        };
 
 
-        delete rooms[room][socket.id];
+
+        io.to(code).emit(
+            "players",
+            rooms[code]
+        );
+
+
+    });
+
+
+
+
+    // 이동
+    socket.on("move",(pos)=>{
+
+
+        let room=socket.room;
+
+        if(!room)return;
+
+
+
+        let player=rooms[room][socket.id];
+
+
+        if(player){
+
+            player.x=pos.x;
+            player.y=pos.y;
+
+        }
 
 
 
@@ -255,30 +173,78 @@ socket.on("disconnect",()=>{
         );
 
 
-    }
+    });
+
+
+
+
+    // 채팅
+    socket.on("chat",(text)=>{
+
+
+        let room=socket.room;
+
+        if(!room)return;
+
+
+        let player=rooms[room][socket.id];
+
+
+        if(player){
+
+            io.to(room).emit(
+                "chat",
+                {
+                    name:player.name,
+                    text:text
+                }
+            );
+
+        }
+
+
+    });
+
+
+
+
+    // 종료
+    socket.on("disconnect",()=>{
+
+
+        let room=socket.room;
+
+
+        if(room && rooms[room]){
+
+
+            delete rooms[room][socket.id];
+
+
+            io.to(room).emit(
+                "players",
+                rooms[room]
+            );
+
+
+        }
+
+
+    });
 
 
 });
 
 
 
-});
 
-
-
-
-
-
-
-
-const PORT=
-process.env.PORT || 3000;
+const PORT=process.env.PORT || 3000;
 
 
 server.listen(PORT,()=>{
 
-console.log(
-"PixelTown Server Start : "+PORT
-);
+    console.log(
+        "PixelTown Server Start : "+PORT
+    );
 
 });
