@@ -885,10 +885,9 @@ if(moveX !== 0 || moveY !== 0){
 
 
 
-    player.x += moveX * player.speed;
+    player.x = Math.round(player.x + moveX * player.speed);
 
-    player.y += moveY * player.speed;
-
+player.y = Math.round(player.y + moveY * player.speed);
 
 
     isMoving=true;
