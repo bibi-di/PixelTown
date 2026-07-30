@@ -2,232 +2,109 @@
 <html lang="ko">
 
 <head>
-
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>PixelTown</title>
-
 <link rel="stylesheet" href="./style.css">
-
 </head>
 
-
 <body>
-
-
 
 <!-- ======================
      로비
 ====================== -->
-
-
 <div id="loginBox">
-
-
 <h1>PixelTown</h1>
-
-
 
 <button onclick="createRoom()">
 방 만들기
 </button>
 
-
-
 <p id="myRoomCode"></p>
 
-
-
 <hr>
-
-
 
 <input
 id="inviteCode"
 placeholder="초대 코드 입력">
 
-
-
 <button onclick="joinRoom()">
 입장
 </button>
 
-
-
 <p id="message"></p>
-
-
 </div>
-
-
-
-
 
 <!-- ======================
      캐릭터 선택
 ====================== -->
-
-
 <div id="characterSelect"
 style="display:none;">
 
-
-
 <div class="characterWindow">
-
-
-
 <h2>
 아바타 선택
 </h2>
 
-
-
-
 <div class="avatarFrame">
-
-
 <img
 id="selectedAvatar"
 src="./assets/tile000.png">
-
-
 </div>
 
-
-
-
-
 <div class="avatarControl">
-
-
 <button onclick="prevAvatar()">
 ◀
 </button>
-
-
-
 <button onclick="nextAvatar()">
 ▶
 </button>
-
-
-
 </div>
-
-
-
-
 
 <p class="avatarName">
 귀여운 소녀
 </p>
 
-
-
-
-
 <input
 id="nickname"
 placeholder="닉네임">
 
-
-
-
-
 <button
 class="startButton"
 onclick="startGame()">
-
 게임 시작
-
 </button>
-
-
-
-
-
 </div>
-
-
 </div>
-
-
-
-
-
-
 
 <!-- ======================
      게임 화면
 ====================== -->
-
-
 <div id="gameScreen"
 style="display:none;">
-
-
-
-
 
 <canvas
 id="gameCanvas"
 width="800"
 height="600">
-
 </canvas>
-
-
-
-
-
 
 <!-- ======================
      채팅창
 ====================== -->
-
-
 <div id="chatBox">
-
-
-
 <div id="messages">
-
-
 </div>
-
-
-
 
 <input
 id="chatInput"
 placeholder="Enter 입력으로 채팅">
-
-
 </div>
 
-
-
-
-
 </div>
-
-
-
-
-
-
-
 
 <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
-
-
 <script src="./main.js"></script>
 
-
-
 </body>
-
 </html>
