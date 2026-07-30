@@ -23,27 +23,35 @@ let roomCode = "";
 let nickname = "";
 
 
+
 let player = {
 
     x:350,
     y:250,
+
     speed:3,
+
     vx:0,
     vy:0
 
 };
 
 
+
 let players = {};
-let chatBubbles = {};
+
 let sideMessages = [];
+
 let playerRadius = 35;
+
+
 
 // ======================
 // 키
 // ======================
 
 let keys = {};
+
 
 
 // ======================
@@ -75,8 +83,9 @@ let avatarList = [
 let avatarIndex = 0;
 
 
+
 // ======================
-// 방향 애니메이션
+// 애니메이션
 // ======================
 
 let lastDirection = "front";
@@ -88,12 +97,13 @@ let lastWalkTime = 0;
 let isMoving = false;
 
 
+
 let animationImages = {
 
-front:[],
-back:[],
-right:[],
-left:[]
+    front:[],
+    back:[],
+    right:[],
+    left:[]
 
 };
 
@@ -103,53 +113,70 @@ let animationFiles = {
 
 
 front:[
+
 "tile000.png",
 "tile001.png",
 "tile002.png",
 "tile003.png"
+
 ],
 
 
 back:[
+
 "tile004.png",
 "tile005.png",
 "tile006.png",
 "tile007.png"
-],
 
-
-right:[
-"tile012.png",
-"tile013.png",
-"tile014.png",
-"tile015.png"
 ],
 
 
 left:[
+
 "tile008.png",
 "tile009.png",
 "tile010.png",
 "tile011.png"
+
+],
+
+
+right:[
+
+"tile012.png",
+"tile013.png",
+"tile014.png",
+"tile015.png"
+
 ]
+
 
 };
 
 
 
+
 for(let dir in animationFiles){
+
 
     animationFiles[dir].forEach(file=>{
 
+
         let img = new Image();
+
 
         img.src="./assets/"+file;
 
+
         animationImages[dir].push(img);
+
 
     });
 
+
 }
+
 
 
 
@@ -159,29 +186,39 @@ for(let dir in animationFiles){
 
 let mapImage = new Image();
 
+
 mapImage.src="./assets/office.png";
 
 
 
+
 // ======================
-// 연결
+// 서버 연결 확인
 // ======================
 
 socket.on(
 "connect",
 ()=>{
 
+
 console.log(
 "서버 연결",
 socket.id
 );
 
+
 });
+
+
+
+
+
 // ======================
 // 방 만들기
 // ======================
 
 window.createRoom=function(){
+
 
     socket.emit(
         "createRoom",
@@ -190,7 +227,10 @@ window.createRoom=function(){
         }
     );
 
+
 };
+
+
 
 
 
@@ -198,14 +238,18 @@ socket.on(
 "roomCreated",
 (code)=>{
 
+
     roomCode = code;
+
 
     document.getElementById(
         "myRoomCode"
     ).innerHTML =
     "내 방 코드 : "+code;
 
+
 });
+
 
 
 
@@ -216,6 +260,7 @@ socket.on(
 
 window.joinRoom=function(){
 
+
     roomCode =
     document.getElementById(
         "inviteCode"
@@ -224,13 +269,18 @@ window.joinRoom=function(){
     .trim();
 
 
+
     if(roomCode===""){
+
 
         alert("코드를 입력하세요");
 
+
         return;
 
+
     }
+
 
 
     document.getElementById(
@@ -239,7 +289,9 @@ window.joinRoom=function(){
     .style.display="block";
 
 
+
 };
+
 
 
 
@@ -249,6 +301,7 @@ window.joinRoom=function(){
 // ======================
 
 window.startGame=function(){
+
 
 
     nickname =
@@ -265,6 +318,8 @@ window.startGame=function(){
         nickname="Player";
 
     }
+
+
 
 
 
@@ -289,6 +344,7 @@ window.startGame=function(){
 
 
 
+
     canvas =
     document.getElementById(
         "gameCanvas"
@@ -307,19 +363,17 @@ window.startGame=function(){
 
 
     socket.emit(
-
         "joinRoom",
-
         {
             code:roomCode,
             name:nickname
         }
-
     );
 
 
 
     setupChat();
+
 
     draw();
 
@@ -329,37 +383,31 @@ window.startGame=function(){
 
 
 
+
 // ======================
-// 플레이어
+// 플레이어 데이터
 // ======================
 
 socket.on(
-
 "players",
-
 (data)=>{
+
 
     players=data;
 
-}
 
-);
-
-
-
-
+});
 // ======================
 // 아바타 선택
 // ======================
 
 window.nextAvatar=function(){
 
+
     avatarIndex++;
 
 
-    if(
-        avatarIndex >= avatarList.length
-    ){
+    if(avatarIndex >= avatarList.length){
 
         avatarIndex=0;
 
@@ -368,18 +416,18 @@ window.nextAvatar=function(){
 
     updateAvatar();
 
+
 };
 
 
 
 window.prevAvatar=function(){
 
+
     avatarIndex--;
 
 
-    if(
-        avatarIndex < 0
-    ){
+    if(avatarIndex < 0){
 
         avatarIndex =
         avatarList.length-1;
@@ -389,19 +437,24 @@ window.prevAvatar=function(){
 
     updateAvatar();
 
+
 };
+
+
 
 
 
 function updateAvatar(){
 
+
     document.getElementById(
         "selectedAvatar"
-    )
-    .src =
+    ).src =
     avatarList[avatarIndex];
 
+
 }
+
 
 
 
@@ -412,8 +465,9 @@ function updateAvatar(){
 
 function draw(){
 
+
     if(!started)
-    return;
+        return;
 
 
 
@@ -428,6 +482,7 @@ function draw(){
 
     if(mapImage.complete){
 
+
         ctx.drawImage(
             mapImage,
             0,
@@ -436,7 +491,9 @@ function draw(){
             600
         );
 
+
     }
+
 
 
 
@@ -449,8 +506,9 @@ function draw(){
 
 
         if(
-        Date.now()-lastWalkTime > 120
+            Date.now()-lastWalkTime > 120
         ){
+
 
             walkFrame++;
 
@@ -465,7 +523,9 @@ function draw(){
             lastWalkTime =
             Date.now();
 
+
         }
+
 
 
         img =
@@ -482,159 +542,242 @@ function draw(){
         img =
         animationImages[lastDirection][0];
 
+
     }
 
 
 
-   ctx.drawImage(
 
-    img,
 
-    player.x,
+    ctx.drawImage(
 
-    player.y,
+        img,
 
-    60,
+        player.x,
 
-    80
+        player.y,
 
-);
+        60,
 
+        80
 
-// ======================
-// 닉네임 표시
-// ======================
+    );
 
-let nameWidth =
-ctx.measureText(nickname).width + 30;
 
 
-ctx.fillStyle="white";
 
-ctx.beginPath();
 
-ctx.roundRect(
-    player.x + 30 - nameWidth/2,
-    player.y - 35,
-    nameWidth,
-    24,
-    12
-);
+    // ======================
+    // 닉네임
+    // ======================
 
-ctx.fill();
 
+    ctx.font="14px Arial";
 
 
-ctx.fillStyle="black";
+    let nameWidth =
+    ctx.measureText(nickname).width + 30;
 
-ctx.font="14px Arial";
 
-ctx.textAlign="center";
 
+    ctx.fillStyle="white";
 
-ctx.fillText(
 
-    nickname,
+    ctx.beginPath();
 
-    player.x + 30,
 
-    player.y - 18
+    ctx.roundRect(
 
-);
+        player.x + 30 - nameWidth/2,
 
-// ======================
-// 오른쪽 채팅 표시
-// ======================
+        player.y - 35,
 
+        nameWidth,
 
-let chatX = 650;
-let chatY = 40;
+        24,
 
+        12
 
-ctx.textAlign="left";
+    );
 
 
-sideMessages.forEach((msg,index)=>{
+    ctx.fill();
 
 
-ctx.fillStyle="rgba(255,255,255,0.9)";
 
+    ctx.fillStyle="black";
 
-ctx.beginPath();
 
-ctx.roundRect(
+    ctx.textAlign="center";
 
-chatX,
 
-chatY + index*55,
+    ctx.fillText(
 
-130,
+        nickname,
 
-45,
+        player.x + 30,
 
-15
+        player.y - 18
 
-);
+    );
 
-ctx.fill();
 
 
 
-ctx.fillStyle="black";
 
-ctx.font="13px Arial";
+    // ======================
+    // 채팅 표시
+    // ======================
 
 
-ctx.fillText(
+    let chatX=650;
 
-msg.name,
+    let chatY=40;
 
-chatX+10,
 
-chatY+18+index*55
 
-);
+    ctx.textAlign="left";
 
 
 
-ctx.fillText(
+    sideMessages.forEach((msg,index)=>{
 
-msg.text,
 
-chatX+10,
+        ctx.fillStyle=
+        "rgba(255,255,255,0.9)";
 
-chatY+35+index*55
 
-);
 
+        ctx.beginPath();
 
 
-});
+
+        ctx.roundRect(
+
+            chatX,
+
+            chatY+index*55,
+
+            130,
+
+            45,
+
+            15
+
+        );
+
+
+
+        ctx.fill();
+
+
+
+        ctx.fillStyle="black";
+
+        ctx.font="13px Arial";
+
+
+
+        ctx.fillText(
+
+            msg.name,
+
+            chatX+10,
+
+            chatY+18+index*55
+
+        );
+
+
+
+        ctx.fillText(
+
+            msg.text,
+
+            chatX+10,
+
+            chatY+35+index*55
+
+        );
+
+
+    });
+
+
 
 
     requestAnimationFrame(draw);
 
+
 }
+
+
+
+
+
+
 // ======================
 // 키 입력
 // ======================
+
 
 document.addEventListener(
 "keydown",
 (e)=>{
 
-    keys[e.key.toLowerCase()] = true;
+
+    let key =
+    e.key.toLowerCase();
+
+
+
+    if(
+        key==="w" ||
+        key==="a" ||
+        key==="s" ||
+        key==="d"
+    ){
+
+        e.preventDefault();
+
+    }
+
+
+
+    keys[key]=true;
+
+
 
 });
+
+
 
 
 document.addEventListener(
 "keyup",
 (e)=>{
 
-    keys[e.key.toLowerCase()] = false;
+
+    keys[e.key.toLowerCase()]=false;
+
 
 });
+
+
+
+
+
+window.addEventListener(
+"blur",
+()=>{
+
+
+    keys={};
+
+
+});
+
+
 
 
 
@@ -648,370 +791,185 @@ function updatePlayer(){
 
     if(!started){
 
+
         requestAnimationFrame(updatePlayer);
 
         return;
+
 
     }
 
 
 
-    let moveX = 0;
-    let moveY = 0;
+
+
+    let moveX=0;
+
+    let moveY=0;
+
+
 
 
 
     if(keys["w"]){
 
-        moveY = -1;
+
+        moveY=-1;
+
         lastDirection="back";
+
 
     }
 
 
     if(keys["s"]){
 
-        moveY = 1;
+
+        moveY=1;
+
         lastDirection="front";
+
 
     }
 
 
     if(keys["a"]){
 
-        moveX = -1;
+
+        moveX=-1;
+
         lastDirection="left";
+
 
     }
 
 
     if(keys["d"]){
 
-        moveX = 1;
+
+        moveX=1;
+
         lastDirection="right";
+
 
     }
 
 
 
-    // 이동 입력 있을 때만 이동
-    if(moveX !== 0 || moveY !==0){
+
+
+
+    isMoving=false;
+
+
+
+
+
+    if(moveX!==0 || moveY!==0){
+
 
 
         let length =
         Math.sqrt(
-            moveX*moveX +
+            moveX*moveX+
             moveY*moveY
         );
 
 
-        moveX /= length;
-        moveY /= length;
+
+        moveX/=length;
+
+        moveY/=length;
 
 
 
-        player.vx = moveX * player.speed;
-        player.vy = moveY * player.speed;
+
+
+        player.x +=
+        moveX * player.speed;
+
+
+
+        player.y +=
+        moveY * player.speed;
+
+
+
 
 
         isMoving=true;
 
 
     }
-    else{
-
-
-        // 키 떼면 즉시 정지
-        player.vx = 0;
-        player.vy = 0;
-
-
-        isMoving=false;
-
-        walkFrame=0;
-
-
-    }
 
 
 
-    player.x += player.vx;
-    player.y += player.vy;
-
-// ======================
-// 맵 밖 이동 제한
-// ======================
-
-const mapWidth = 800;
-const mapHeight = 600;
-
-const characterWidth = 60;
-const characterHeight = 80;
-
-
-// 왼쪽
-if(player.x < 0){
-
-    player.x = 0;
-
-}
-
-
-// 오른쪽
-if(player.x > mapWidth - characterWidth){
-
-    player.x = mapWidth - characterWidth;
-
-}
-
-
-// 위쪽
-if(player.y < 0){
-
-    player.y = 0;
-
-}
-
-
-// 아래쪽
-if(player.y > mapHeight - characterHeight){
-
-    player.y = mapHeight - characterHeight;
-
-}
-
-    // 다른 캐릭터 충돌
-    for(let id in players){
-
-        if(id===socket.id)
-        continue;
-
-
-        let other = players[id];
-
-
-        let dx =
-        player.x - other.x;
-
-
-        let dy =
-        player.y - other.y;
 
 
 
-        let distance =
-        Math.sqrt(
-            dx*dx+
-            dy*dy
-        );
+
+    // ======================
+    // 맵 밖 제한
+    // ======================
+
+
+    const mapWidth=800;
+
+    const mapHeight=600;
+
+    const characterWidth=60;
+
+    const characterHeight=80;
 
 
 
-        if(distance < playerRadius){
+    if(player.x < 0)
+
+        player.x=0;
 
 
-            if(distance !==0){
+
+    if(player.x > mapWidth-characterWidth)
+
+        player.x =
+        mapWidth-characterWidth;
 
 
-                let push =
-                playerRadius-distance;
 
 
-                player.x +=
-                (dx/distance)*push;
+    if(player.y < 0)
+
+        player.y=0;
 
 
-                player.y +=
-                (dy/distance)*push;
+
+    if(player.y > mapHeight-characterHeight)
+
+        player.y =
+        mapHeight-characterHeight;
 
 
-            }
 
-        }
 
-    }
 
+    // 서버 이동 전송
 
 
     if(isMoving){
 
 
         socket.emit(
-
             "move",
-
             {
-
                 x:player.x,
-
                 y:player.y
-
             }
-
         );
 
 
     }
 
 
-
-    requestAnimationFrame(updatePlayer);
-
-
-}
-
-
-
-
-
-
-
-if(keys["w"]){
-
-    moveY=-1;
-    lastDirection="back";
-
-}
-
-
-if(keys["s"]){
-
-    moveY=1;
-    lastDirection="front";
-
-}
-
-
-if(keys["a"]){
-
-    moveX=-1;
-    lastDirection="left";
-
-}
-
-
-if(keys["d"]){
-
-    moveX=1;
-    lastDirection="right";
-
-}
-
-
-
-
-if(moveX !== 0 || moveY !== 0){
-
-
-    let length =
-    Math.sqrt(
-        moveX*moveX +
-        moveY*moveY
-    );
-
-
-    moveX /= length;
-    moveY /= length;
-
-
-
-    player.x = Math.round(player.x + moveX * player.speed);
-
-player.y = Math.round(player.y + moveY * player.speed);
-
-
-    isMoving=true;
-
-
-
-    if(lastDirection){
-
-        if(walkFrame >= 4){
-
-            walkFrame=0;
-
-        }
-
-    }
-
-
-}
-else{
-
-
-    isMoving=false;
-walkFrame=0;
-
-}
-
-// ======================
-// 캐릭터 충돌
-// ======================
-
-
-for(let id in players){
-if(id === socket.id)
-continue;
-
-let other = players[id];
-
-
-let dx =
-player.x - other.x;
-
-
-let dy =
-player.y - other.y;
-
-
-let distance =
-Math.sqrt(
-dx*dx + dy*dy
-);
-
-
-
-if(distance < playerRadius){
-
-
-    let overlap =
-    playerRadius - distance;
-
-
-    if(distance !== 0){
-
-        player.x +=
-        (dx / distance) * overlap * 0.5;
-
-
-        player.y +=
-        (dy / distance) * overlap * 0.5;
-
-    }
-
-
-}
-
-
-    if(isMoving){
-
-
-        socket.emit(
-
-            "move",
-
-            {
-
-                x:player.x,
-
-                y:player.y
-
-            }
-
-        );
-
-
-    }
 
 
 
@@ -1023,6 +981,95 @@ if(distance < playerRadius){
 
 
 updatePlayer();
+// ======================
+// 다른 플레이어 충돌
+// ======================
+
+function checkPlayerCollision(){
+
+
+    for(let id in players){
+
+
+        if(id===socket.id)
+            continue;
+
+
+
+        let other = players[id];
+
+
+
+        let dx =
+        player.x - other.x;
+
+
+
+        let dy =
+        player.y - other.y;
+
+
+
+        let distance =
+        Math.sqrt(
+            dx*dx +
+            dy*dy
+        );
+
+
+
+        if(
+            distance < playerRadius &&
+            distance > 0
+        ){
+
+
+            let overlap =
+            playerRadius-distance;
+
+
+
+            player.x +=
+            (dx/distance) *
+            overlap *
+            0.5;
+
+
+
+            player.y +=
+            (dy/distance) *
+            overlap *
+            0.5;
+
+
+        }
+
+
+    }
+
+
+}
+
+
+
+
+
+// ======================
+// 기존 이동 함수에 충돌 적용
+// ======================
+
+// 60fps마다 충돌 체크
+setInterval(()=>{
+
+    if(started){
+
+        checkPlayerCollision();
+
+    }
+
+},16);
+
+
 
 
 
@@ -1041,8 +1088,11 @@ function setupChat(){
     );
 
 
+
     if(!input)
-    return;
+        return;
+
+
 
 
 
@@ -1060,7 +1110,7 @@ function setupChat(){
 
 
             if(text==="")
-            return;
+                return;
 
 
 
@@ -1068,6 +1118,7 @@ function setupChat(){
                 "chat",
                 text
             );
+
 
 
             input.value="";
@@ -1084,11 +1135,12 @@ function setupChat(){
 
 
 
+
+
 socket.on(
-
 "chat",
-
 (data)=>{
+
 
 
     const box =
@@ -1101,10 +1153,12 @@ socket.on(
     if(box){
 
 
+
         let div =
         document.createElement(
             "div"
         );
+
 
 
         div.innerText =
@@ -1127,22 +1181,58 @@ socket.on(
 
 
 
+
     sideMessages.push({
 
-name:data.name,
+        name:data.name,
 
-text:data.text,
+        text:data.text,
 
-time:Date.now()
+        time:Date.now()
+
+    });
+
+
+
+
+
+    if(sideMessages.length > 8){
+
+
+        sideMessages.shift();
+
+
+    }
+
+
 
 });
 
 
-if(sideMessages.length > 8){
-
-sideMessages.shift();
-
-}
 
 
-});
+
+// ======================
+// GitHub 반영용
+// ======================
+
+/*
+
+터미널에서 실행
+
+
+git add .
+
+
+git commit -m "fix movement collision chat"
+
+
+git push
+
+
+*/
+
+
+console.log(
+"main.js 로드 완료"
+);
