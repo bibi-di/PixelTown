@@ -1,4 +1,4 @@
-console.log("main.js 실행");
+console.log("PixelTown main.js 실행");
 
 
 // ======================
@@ -10,6 +10,7 @@ const socket = io(
 );
 
 
+
 // ======================
 // 변수
 // ======================
@@ -17,13 +18,13 @@ const socket = io(
 let canvas;
 let ctx;
 
-let started = false;
+let started=false;
 
-let roomCode = "";
-let nickname = "";
+let roomCode="";
+let nickname="";
 
 
-let player = {
+let player={
 
     x:350,
     y:250,
@@ -33,21 +34,22 @@ let player = {
 };
 
 
-let players = {};
+let players={};
 
-let keys = {};
+let keys={};
 
-let sideMessages = [];
+let sideMessages=[];
 
-let playerRadius = 35;
+
+let playerRadius=35;
 
 
 
 // ======================
-// 아바타
+// 아바타 목록
 // ======================
 
-let avatarList = [
+let avatarList=[
 
 "./assets/tile000.png",
 "./assets/tile001.png",
@@ -74,17 +76,10 @@ let avatarIndex=0;
 
 
 // ======================
-// 애니메이션
+// 애니메이션 이미지
 // ======================
 
 let lastDirection="front";
-
-let walkFrame=0;
-
-let lastWalkTime=0;
-
-let isMoving=false;
-
 
 
 let animationImages={
@@ -155,6 +150,7 @@ for(let dir in animationFiles){
 
         img.src="./assets/"+file;
 
+
         animationImages[dir].push(img);
 
 
@@ -166,7 +162,7 @@ for(let dir in animationFiles){
 
 
 // ======================
-// 맵
+// 배경
 // ======================
 
 let mapImage=new Image();
@@ -177,7 +173,7 @@ mapImage.src="./assets/office.png";
 
 
 // ======================
-// 연결
+// 서버 연결 확인
 // ======================
 
 socket.on(
@@ -185,7 +181,7 @@ socket.on(
 ()=>{
 
     console.log(
-        "서버 연결",
+        "서버 연결:",
         socket.id
     );
 
@@ -231,7 +227,6 @@ socket.on(
 
 
 
-
 // ======================
 // 방 입장
 // ======================
@@ -239,7 +234,7 @@ socket.on(
 window.joinRoom=function(){
 
 
-    roomCode=
+    roomCode =
     document.getElementById(
         "inviteCode"
     )
@@ -250,7 +245,11 @@ window.joinRoom=function(){
 
     if(roomCode===""){
 
-        alert("코드를 입력하세요");
+
+        alert(
+            "코드를 입력하세요"
+        );
+
 
         return;
 
@@ -268,6 +267,81 @@ window.joinRoom=function(){
 
 
 
+// ======================
+// 플레이어 데이터 받기
+// ======================
+
+socket.on(
+"players",
+(data)=>{
+
+    players=data;
+
+});
+// ======================
+// 아바타 변경
+// ======================
+
+window.nextAvatar=function(){
+
+    avatarIndex++;
+
+    if(
+        avatarIndex>=avatarList.length
+    ){
+
+        avatarIndex=0;
+
+    }
+
+
+    updateAvatar();
+
+};
+
+
+
+window.prevAvatar=function(){
+
+    avatarIndex--;
+
+    if(
+        avatarIndex<0
+    ){
+
+        avatarIndex=
+        avatarList.length-1;
+
+    }
+
+
+    updateAvatar();
+
+};
+
+
+
+function updateAvatar(){
+
+
+    const img =
+    document.getElementById(
+        "selectedAvatar"
+    );
+
+
+    if(img){
+
+        img.src=
+        avatarList[avatarIndex];
+
+    }
+
+
+}
+
+
+
 
 // ======================
 // 게임 시작
@@ -276,7 +350,7 @@ window.joinRoom=function(){
 window.startGame=function(){
 
 
-    nickname=
+    nickname =
     document.getElementById(
         "nickname"
     )
@@ -290,13 +364,6 @@ window.startGame=function(){
         nickname="Player";
 
     }
-
-
-
-    player.x=350;
-    player.y=250;
-
-    lastDirection="front";
 
 
 
@@ -321,14 +388,21 @@ window.startGame=function(){
 
 
 
-    canvas=
+    canvas =
     document.getElementById(
         "gameCanvas"
     );
 
 
-    ctx=
-    canvas.getContext("2d");
+    ctx =
+    canvas.getContext(
+        "2d"
+    );
+
+
+
+    player.x=350;
+    player.y=250;
 
 
 
@@ -339,8 +413,11 @@ window.startGame=function(){
     socket.emit(
         "joinRoom",
         {
+
             code:roomCode,
+
             name:nickname
+
         }
     );
 
@@ -350,7 +427,694 @@ window.startGame=function(){
 
     setupChatDrag();
 
+
     draw();
 
 
 };
+
+
+
+
+
+
+// ======================
+// 화면 그리기
+// ======================
+
+function draw(){
+
+
+    if(!started)
+        return;
+
+
+
+    ctx.clearRect(
+        0,
+        0,
+        800,
+        600
+    );
+
+
+
+    // 배경
+
+    if(mapImage.complete){
+
+
+        ctx.drawImage(
+
+            mapImage,
+
+            0,
+
+            0,
+
+            800,
+
+            600
+
+        );
+
+
+    }
+
+
+
+    // 다른 플레이어 표시
+
+    for(let id in players){
+
+
+        let p =
+        players[id];
+
+
+        let img =
+        animationImages.front[0];
+
+
+
+        if(img.complete){
+
+
+            ctx.drawImage(
+
+                img,
+
+                p.x,
+
+                p.y,
+
+                60,
+
+                80
+
+            );
+
+
+        }
+
+
+
+        ctx.fillStyle="white";
+
+
+        ctx.beginPath();
+
+
+        ctx.roundRect(
+
+            p.x,
+
+            p.y-30,
+
+            90,
+
+            25,
+
+            10
+
+        );
+
+
+        ctx.fill();
+
+
+
+        ctx.fillStyle="black";
+
+        ctx.font="14px Arial";
+
+
+        ctx.fillText(
+
+            p.name,
+
+            p.x+10,
+
+            p.y-13
+
+        );
+
+
+    }
+
+
+
+
+    // 내 캐릭터
+
+    let myImg =
+    animationImages[lastDirection][0];
+
+
+
+    if(myImg.complete){
+
+
+        ctx.drawImage(
+
+            myImg,
+
+            player.x,
+
+            player.y,
+
+            60,
+
+            80
+
+        );
+
+
+    }
+
+
+
+
+    // 내 닉네임
+
+    ctx.fillStyle="white";
+
+
+    ctx.beginPath();
+
+
+    ctx.roundRect(
+
+        player.x,
+
+        player.y-30,
+
+        90,
+
+        25,
+
+        10
+
+    );
+
+
+    ctx.fill();
+
+
+
+    ctx.fillStyle="black";
+
+    ctx.font="14px Arial";
+
+
+    ctx.fillText(
+
+        nickname,
+
+        player.x+10,
+
+        player.y-13
+
+    );
+
+
+
+    requestAnimationFrame(
+        draw
+    );
+
+
+}
+// ======================
+// 키 입력
+// ======================
+
+document.addEventListener(
+"keydown",
+(e)=>{
+
+
+    let key =
+    e.key.toLowerCase();
+
+
+
+    if(
+        key==="w" ||
+        key==="a" ||
+        key==="s" ||
+        key==="d"
+    ){
+
+        e.preventDefault();
+
+    }
+
+
+
+    keys[key]=true;
+
+
+});
+
+
+
+
+document.addEventListener(
+"keyup",
+(e)=>{
+
+
+    keys[
+        e.key.toLowerCase()
+    ]=false;
+
+
+});
+
+
+
+window.addEventListener(
+"blur",
+()=>{
+
+    keys={};
+
+});
+
+
+
+
+// ======================
+// 플레이어 이동
+// ======================
+
+function updatePlayer(){
+
+
+    if(!started){
+
+        requestAnimationFrame(
+            updatePlayer
+        );
+
+        return;
+
+    }
+
+
+
+    let moveX=0;
+
+    let moveY=0;
+
+
+
+    if(keys["w"]){
+
+        moveY=-1;
+
+        lastDirection="back";
+
+    }
+
+
+
+    if(keys["s"]){
+
+        moveY=1;
+
+        lastDirection="front";
+
+    }
+
+
+
+    if(keys["a"]){
+
+        moveX=-1;
+
+        lastDirection="left";
+
+    }
+
+
+
+    if(keys["d"]){
+
+        moveX=1;
+
+        lastDirection="right";
+
+    }
+
+
+
+
+
+    if(
+        moveX!==0 ||
+        moveY!==0
+    ){
+
+
+
+        let length =
+        Math.sqrt(
+            moveX*moveX+
+            moveY*moveY
+        );
+
+
+
+        moveX/=length;
+
+        moveY/=length;
+
+
+
+        player.x +=
+        moveX*player.speed;
+
+
+
+        player.y +=
+        moveY*player.speed;
+
+
+
+        // 맵 제한
+
+        if(player.x<0)
+            player.x=0;
+
+
+        if(player.y<0)
+            player.y=0;
+
+
+        if(player.x>740)
+            player.x=740;
+
+
+        if(player.y>520)
+            player.y=520;
+
+
+
+        socket.emit(
+            "move",
+            {
+
+                x:player.x,
+
+                y:player.y
+
+            }
+        );
+
+
+    }
+
+
+
+    requestAnimationFrame(
+        updatePlayer
+    );
+
+
+}
+
+
+updatePlayer();
+
+
+
+
+
+
+// ======================
+// 채팅
+// ======================
+
+function setupChat(){
+
+
+    const input =
+    document.getElementById(
+        "chatInput"
+    );
+
+
+    if(!input)
+        return;
+
+
+
+
+    input.onkeydown=function(e){
+
+
+
+        if(e.key==="Enter"){
+
+
+
+            let text =
+            input.value.trim();
+
+
+
+            if(text==="")
+                return;
+
+
+
+            socket.emit(
+                "chat",
+                text
+            );
+
+
+            input.value="";
+
+
+        }
+
+
+    };
+
+
+}
+
+
+
+
+
+
+socket.on(
+"chat",
+(data)=>{
+
+
+    let box =
+    document.getElementById(
+        "messages"
+    );
+
+
+
+    if(box){
+
+
+
+        let div =
+        document.createElement(
+            "div"
+        );
+
+
+
+        div.innerText =
+        data.name+
+        " : "+
+        data.text;
+
+
+
+        box.appendChild(div);
+
+
+
+        box.scrollTop =
+        box.scrollHeight;
+
+
+    }
+
+
+
+
+    sideMessages.push({
+
+        name:data.name,
+
+        text:data.text
+
+    });
+
+
+
+    if(
+        sideMessages.length>8
+    ){
+
+        sideMessages.shift();
+
+    }
+
+
+
+});
+// ======================
+// 입장 오류
+// ======================
+
+socket.on(
+"joinError",
+(msg)=>{
+
+    alert(msg);
+
+});
+
+
+
+
+// ======================
+// 채팅창 드래그 이동
+// ======================
+
+function setupChatDrag(){
+
+
+    const chatBox =
+    document.getElementById(
+        "chatBox"
+    );
+
+
+    if(!chatBox)
+        return;
+
+
+
+    let dragging=false;
+
+    let offsetX=0;
+
+    let offsetY=0;
+
+
+
+
+    chatBox.addEventListener(
+        "mousedown",
+        (e)=>{
+
+
+            // 입력창 클릭은 제외
+
+            if(
+                e.target.id==="chatInput"
+            )
+            {
+                return;
+            }
+
+
+
+            dragging=true;
+
+
+
+            let rect =
+            chatBox.getBoundingClientRect();
+
+
+
+            offsetX =
+            e.clientX-rect.left;
+
+
+            offsetY =
+            e.clientY-rect.top;
+
+
+
+            chatBox.style.right="auto";
+
+            chatBox.style.bottom="auto";
+
+
+        }
+    );
+
+
+
+
+
+    document.addEventListener(
+        "mousemove",
+        (e)=>{
+
+
+            if(!dragging)
+                return;
+
+
+
+            chatBox.style.left =
+            (
+                e.clientX-offsetX
+            )+"px";
+
+
+
+            chatBox.style.top =
+            (
+                e.clientY-offsetY
+            )+"px";
+
+
+
+        }
+    );
+
+
+
+
+
+    document.addEventListener(
+        "mouseup",
+        ()=>{
+
+
+            dragging=false;
+
+
+        }
+    );
+
+
+
+}
+
+
+
+
+
+
+console.log(
+    "PixelTown main.js 완료"
+);
