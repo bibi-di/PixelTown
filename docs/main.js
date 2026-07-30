@@ -878,3 +878,90 @@ images.front.onload=function(){
 console.log(
     "main.js 로딩 완료"
 );
+// ======================
+// 아바타 선택
+// ======================
+
+
+let avatarList = [
+
+    "./assets/tile000.png"
+
+];
+
+
+let avatarIndex = 0;
+
+
+
+window.nextAvatar=function(){
+
+
+    avatarIndex++;
+
+
+    if(
+        avatarIndex >= avatarList.length
+    ){
+
+        avatarIndex = 0;
+
+    }
+
+
+    updateAvatar();
+
+
+};
+
+
+
+
+
+window.prevAvatar=function(){
+
+
+    avatarIndex--;
+
+
+    if(
+        avatarIndex < 0
+    ){
+
+        avatarIndex =
+        avatarList.length - 1;
+
+    }
+
+
+    updateAvatar();
+
+
+};
+
+
+
+
+
+
+function updateAvatar(){
+
+
+    document.getElementById(
+        "selectedAvatar"
+    )
+    .src =
+    avatarList[avatarIndex];
+
+
+
+    document.getElementById(
+        "avatarNumber"
+    )
+    .innerText =
+    (avatarIndex+1)
+    +" / "
+    +avatarList.length;
+
+
+}

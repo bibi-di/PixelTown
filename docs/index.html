@@ -16,7 +16,13 @@
 <body>
 
 
+<!-- ======================
+     로비
+====================== -->
+
+
 <div id="loginBox">
+
 
 <h1>PixelTown</h1>
 
@@ -48,27 +54,94 @@
 
 
 
+
+<!-- ======================
+     캐릭터 선택
+====================== -->
+
+
 <div id="characterSelect" style="display:none;">
 
 
-<h2>캐릭터 선택</h2>
+<div class="characterWindow">
 
 
-<input id="nickname" placeholder="닉네임">
+<h2>
+아바타 선택
+</h2>
 
 
-<br><br>
+
+<div class="avatarFrame">
+
+<img 
+id="selectedAvatar"
+src="./assets/tile000.png"
+alt="avatar">
+
+</div>
 
 
-<button onclick="startGame()">
-게임 시작
+
+<div class="avatarControl">
+
+
+<button onclick="prevAvatar()">
+◀
+</button>
+
+
+<span id="avatarNumber">
+1 / 1
+</span>
+
+
+<button onclick="nextAvatar()">
+▶
 </button>
 
 
 </div>
 
 
+<p class="avatarName">
+귀여운 소녀
+</p>
 
+
+
+
+
+<input 
+id="nickname"
+placeholder="닉네임">
+
+
+
+
+
+<button 
+onclick="startGame()"
+class="startButton">
+
+게임 시작
+
+</button>
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+<!-- ======================
+     게임 화면
+====================== -->
 
 
 <div id="gameScreen" style="display:none;">
@@ -83,20 +156,28 @@ height="600">
 
 <div id="chatBox">
 
+
 <div id="messages"></div>
 
-<input id="chatInput" placeholder="Enter로 채팅">
+
+<input 
+id="chatInput" 
+placeholder="Enter로 채팅">
+
 
 </div>
 
 
 </div>
+
 
 
 
 
 <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+
 <script src="./main.js"></script>
+
 
 </body>
 </html>
