@@ -515,11 +515,11 @@ canvas{
 
     position:absolute;
 
-    left:auto;
-    top:auto;
-
     right:20px;
     bottom:20px;
+
+    width:250px;
+    height:180px;
 
     cursor:move;
 
@@ -529,21 +529,10 @@ canvas{
 
     padding:10px;
 
+    resize:both;
 
-    display:flex;
-
-    flex-direction:column;
-
-
-    resize:both;       /* 크기 조절 가능 */
     overflow:hidden;
 
-
-    min-width:150px;
-    min-height:100px;
-
-    max-width:500px;
-    max-height:400px;
 
 }
 
