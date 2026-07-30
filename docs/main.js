@@ -38,7 +38,8 @@ let player = {
 let players = {};
 
 let chatBubbles = {};
-
+let walkOffset = 0;
+let isMoving = false;
 
 
 // ======================
@@ -85,7 +86,7 @@ avatarList[0];
 let mapImage = new Image();
 
 mapImage.src =
-"./assets/map.png";
+"./assets/office.png";
 
 
 
@@ -233,7 +234,12 @@ document.getElementById(
 )
 .value
 .trim();
+selectedAvatar =
+avatarList[avatarIndex];
 
+
+myImage.src =
+selectedAvatar;
 
 
 if(nickname===""){
@@ -402,3 +408,257 @@ function updateAvatar(){
 
 }
 console.log("아바타 함수 등록 완료", typeof nextAvatar);
+// ======================
+// 화면 그리기
+// ======================
+
+function draw(){
+
+    if(!started)
+        return;
+
+
+    ctx.clearRect(
+        0,
+        0,
+        800,
+        600
+    );
+
+
+    // 배경
+
+    if(mapImage.complete){
+
+        ctx.drawImage(
+            mapImage,
+            0,
+            0,
+            800,
+            600
+        );
+
+    }
+
+
+
+    // 걷기 효과
+
+    let offset = 0;
+
+
+    if(isMoving){
+
+        walkOffset += 0.3;
+
+        offset =
+        Math.sin(walkOffset) * 3;
+
+    }
+
+
+
+    // 내 캐릭터
+
+    ctx.drawImage(
+
+        myImage,
+
+        player.x,
+
+        player.y + offset,
+
+        60,
+
+        80
+
+    );
+
+
+
+    requestAnimationFrame(
+        draw
+    );
+
+}
+
+
+
+
+
+
+// ======================
+// 이동
+// ======================
+
+document.addEventListener(
+"keydown",
+(e)=>{
+
+
+    if(!started)
+        return;
+
+
+
+    isMoving=false;
+
+
+
+    if(e.key==="w" || e.key==="ArrowUp"){
+
+        player.y -= player.speed;
+
+        isMoving=true;
+
+    }
+
+
+
+    if(e.key==="s" || e.key==="ArrowDown"){
+
+        player.y += player.speed;
+
+        isMoving=true;
+
+    }
+
+
+
+    if(e.key==="a" || e.key==="ArrowLeft"){
+
+        player.x -= player.speed;
+
+        isMoving=true;
+
+    }
+
+
+
+    if(e.key==="d" || e.key==="ArrowRight"){
+
+        player.x += player.speed;
+
+        isMoving=true;
+
+    }
+
+
+
+    socket.emit(
+
+        "move",
+
+        {
+
+            x:player.x,
+
+            y:player.y
+
+        }
+
+    );
+
+
+});
+
+
+
+
+
+
+// ======================
+// 채팅
+// ======================
+
+function setupChat(){
+
+
+const input =
+document.getElementById(
+"chatInput"
+);
+
+
+
+if(!input)
+return;
+
+
+
+input.onkeydown=function(e){
+
+
+    if(e.key==="Enter"){
+
+
+        let text =
+        input.value.trim();
+
+
+
+        if(text==="")
+        return;
+
+
+
+        socket.emit(
+            "chat",
+            text
+        );
+
+
+
+        input.value="";
+
+
+    }
+
+
+};
+
+
+}
+
+
+
+
+
+
+socket.on(
+"chat",
+(data)=>{
+
+
+const box =
+document.getElementById(
+"messages"
+);
+
+
+
+if(box){
+
+
+let div =
+document.createElement(
+"div"
+);
+
+
+
+div.innerText =
+data.name+
+" : "+
+data.text;
+
+
+
+box.appendChild(div);
+
+
+
+}
+
+
+});
