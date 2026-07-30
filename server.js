@@ -35,7 +35,9 @@ app.get("/",(req,res)=>{
 // 방 데이터
 // ======================
 
-let rooms={};
+let rooms = {};
+
+
 
 
 // ======================
@@ -51,7 +53,8 @@ function createCode(){
     do{
 
 
-        code=Math.random()
+        code =
+        Math.random()
         .toString(36)
         .substring(2,7)
         .toUpperCase();
@@ -90,7 +93,6 @@ socket.id
 // 방 생성
 // ======================
 
-
 socket.on(
 "createRoom",
 (data)=>{
@@ -105,9 +107,7 @@ socket.on(
 
         owner:socket.id,
 
-
         used:false,
-
 
         players:{}
 
@@ -120,6 +120,7 @@ socket.on(
     socket.join(code);
 
     socket.room=code;
+
 
 
 
@@ -160,10 +161,10 @@ socket.on(
 
 
 
+
 // ======================
 // 방 참가
 // ======================
-
 
 socket.on(
 "joinRoom",
@@ -190,7 +191,6 @@ socket.on(
 
 
 
-    // 이미 사용된 코드 확인
 
     if(rooms[code].used){
 
@@ -203,15 +203,13 @@ socket.on(
 
         return;
 
+
     }
 
 
 
 
-    // 코드 1회 사용 처리
-
     rooms[code].used=true;
-
 
 
 
@@ -219,6 +217,7 @@ socket.on(
 
 
     socket.room=code;
+
 
 
 
@@ -251,18 +250,10 @@ socket.on(
     );
 
 
-
 });
-
-
-
-
-
-
 // ======================
 // 이동
 // ======================
-
 
 socket.on(
 "move",
@@ -285,9 +276,9 @@ socket.on(
     if(player){
 
 
-        player.x=pos.x;
+        player.x = pos.x;
 
-        player.y=pos.y;
+        player.y = pos.y;
 
 
     }
@@ -307,17 +298,17 @@ socket.on(
 
 
 
+
 // ======================
 // 채팅
 // ======================
 
-
 socket.on(
 "chat",
-(text)=>{
+(data)=>{
 
 
-    let room=socket.room;
+    let room = socket.room;
 
 
     if(!room)
@@ -325,30 +316,52 @@ socket.on(
 
 
 
-    let player=
+    let player =
     rooms[room]?.players[socket.id];
 
 
 
-    if(player){
+    if(!player)
+        return;
 
 
-        io.to(room).emit(
 
-            "chat",
 
-            {
+    let message = "";
 
-                name:player.name,
 
-                text:text
 
-            }
+    // 문자열 채팅
+    if(typeof data === "string"){
 
-        );
+
+        message = data;
 
 
     }
+
+
+    // 객체 채팅 방어
+    else if(typeof data === "object"){
+
+
+        message = data.text || "";
+
+
+    }
+
+
+
+    io.to(room).emit(
+        "chat",
+        {
+
+            name:player.name,
+
+            text:String(message)
+
+        }
+    );
 
 
 
@@ -359,17 +372,18 @@ socket.on(
 
 
 
+
+
 // ======================
 // 종료
 // ======================
-
 
 socket.on(
 "disconnect",
 ()=>{
 
 
-    let room=socket.room;
+    let room = socket.room;
 
 
 
@@ -390,10 +404,11 @@ socket.on(
 
 
 
-    // 방장 나가면 방 삭제
+
+    // 방장이 나가면 방 삭제
 
     if(
-        rooms[room].owner===socket.id
+        rooms[room].owner === socket.id
     ){
 
 
@@ -415,12 +430,13 @@ socket.on(
 
 
 
+
     // 사람이 없으면 삭제
 
     if(
         Object.keys(
             rooms[room].players
-        ).length===0
+        ).length === 0
     ){
 
 
@@ -429,7 +445,10 @@ socket.on(
 
         return;
 
+
     }
+
+
 
 
 
@@ -444,13 +463,16 @@ socket.on(
 });
 
 
+
 });
 
 
 
 
 
-const PORT=
+
+
+const PORT =
 process.env.PORT || 3000;
 
 
