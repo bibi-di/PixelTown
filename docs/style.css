@@ -635,3 +635,33 @@ canvas{
     display:none;
 
 }
+/* 캐릭터 선택 강제 정렬 */
+
+.characterWindow{
+    display:flex !important;
+    flex-direction:column !important;
+    align-items:center !important;
+}
+
+
+.avatarControl{
+    display:flex !important;
+    flex-direction:row !important;
+    justify-content:center !important;
+    align-items:center !important;
+    width:100% !important;
+}
+
+
+.avatarName{
+    display:block !important;
+    width:100% !important;
+    text-align:center !important;
+    white-space:nowrap !important;
+}
+
+
+.startButton{
+    display:block !important;
+    margin:15px auto !important;
+}
