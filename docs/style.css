@@ -515,13 +515,13 @@ canvas{
 
     position:absolute;
 
+    left:auto;
+    top:auto;
+
     right:20px;
     bottom:20px;
 
-
-    width:250px;
-    height:180px;
-
+    cursor:move;
 
     background:rgba(255,255,255,0.9);
 

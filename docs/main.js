@@ -1241,3 +1241,97 @@ socket.on(
 (msg)=>{
     alert(msg);
 });
+// ======================
+// 채팅창 드래그 이동
+// ======================
+
+const chatBox = document.getElementById("chatBox");
+
+
+let isDragging = false;
+
+let offsetX = 0;
+let offsetY = 0;
+
+
+
+if(chatBox){
+
+
+    chatBox.addEventListener(
+        "mousedown",
+        function(e){
+
+
+            // 입력창 클릭은 제외
+            if(e.target.id==="chatInput")
+                return;
+
+
+
+            isDragging=true;
+
+
+            let rect =
+            chatBox.getBoundingClientRect();
+
+
+
+            offsetX =
+            e.clientX - rect.left;
+
+
+            offsetY =
+            e.clientY - rect.top;
+
+
+
+            chatBox.style.right="auto";
+            chatBox.style.bottom="auto";
+
+
+        }
+    );
+
+
+
+
+    document.addEventListener(
+        "mousemove",
+        function(e){
+
+
+            if(!isDragging)
+                return;
+
+
+
+            chatBox.style.left =
+            (e.clientX-offsetX)+"px";
+
+
+
+            chatBox.style.top =
+            (e.clientY-offsetY)+"px";
+
+
+        }
+    );
+
+
+
+
+
+    document.addEventListener(
+        "mouseup",
+        function(){
+
+
+            isDragging=false;
+
+
+        }
+    );
+
+
+}
