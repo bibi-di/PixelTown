@@ -2,13 +2,12 @@ console.log("PixelTown main.js 실행");
 
 
 // ======================
-// 서버 연결
+// 서버
 // ======================
 
 const socket = io(
     "https://pixeltown-server.onrender.com"
 );
-
 
 
 // ======================
@@ -18,13 +17,13 @@ const socket = io(
 let canvas;
 let ctx;
 
-let started=false;
+let started = false;
 
-let roomCode="";
-let nickname="";
+let roomCode = "";
+let nickname = "";
 
 
-let player={
+let player = {
 
     x:350,
     y:250,
@@ -34,55 +33,17 @@ let player={
 };
 
 
-let players={};
+let players = {};
 
-let keys={};
-
-let sideMessages=[];
-
-
-let playerRadius=35;
-
+let keys = {};
 
 
 // ======================
-// 아바타 목록
+// 이미지
 // ======================
 
-let avatarList=[
 
-"./assets/tile000.png",
-"./assets/tile001.png",
-"./assets/tile002.png",
-"./assets/tile003.png",
-"./assets/tile004.png",
-"./assets/tile005.png",
-"./assets/tile006.png",
-"./assets/tile007.png",
-"./assets/tile008.png",
-"./assets/tile009.png",
-"./assets/tile010.png",
-"./assets/tile011.png",
-"./assets/tile012.png",
-"./assets/tile013.png",
-"./assets/tile014.png",
-"./assets/tile015.png"
-
-];
-
-
-let avatarIndex=0;
-
-
-
-// ======================
-// 애니메이션 이미지
-// ======================
-
-let lastDirection="front";
-
-
-let animationImages={
+let animationImages = {
 
     front:[],
     back:[],
@@ -92,47 +53,38 @@ let animationImages={
 };
 
 
-
-let animationFiles={
+let animationFiles = {
 
 
 front:[
-
 "tile000.png",
 "tile001.png",
 "tile002.png",
 "tile003.png"
-
 ],
 
 
 back:[
-
 "tile004.png",
 "tile005.png",
 "tile006.png",
 "tile007.png"
-
 ],
 
 
 left:[
-
 "tile008.png",
 "tile009.png",
 "tile010.png",
 "tile011.png"
-
 ],
 
 
 right:[
-
 "tile012.png",
 "tile013.png",
 "tile014.png",
 "tile015.png"
-
 ]
 
 
@@ -146,7 +98,7 @@ for(let dir in animationFiles){
     animationFiles[dir].forEach(file=>{
 
 
-        let img=new Image();
+        let img = new Image();
 
         img.src="./assets/"+file;
 
@@ -161,27 +113,32 @@ for(let dir in animationFiles){
 
 
 
+let lastDirection="front";
+
+
+
 // ======================
 // 배경
 // ======================
 
-let mapImage=new Image();
+
+let mapImage = new Image();
 
 mapImage.src="./assets/office.png";
 
 
 
+// ======================
+// 서버 연결
+// ======================
 
-// ======================
-// 서버 연결 확인
-// ======================
 
 socket.on(
 "connect",
 ()=>{
 
     console.log(
-        "서버 연결:",
+        "서버 연결",
         socket.id
     );
 
@@ -189,10 +146,10 @@ socket.on(
 
 
 
-
 // ======================
 // 방 만들기
 // ======================
+
 
 window.createRoom=function(){
 
@@ -219,7 +176,7 @@ socket.on(
 
     document.getElementById(
         "myRoomCode"
-    ).innerHTML=
+    ).innerHTML =
     "내 방 코드 : "+code;
 
 
@@ -230,6 +187,7 @@ socket.on(
 // ======================
 // 방 입장
 // ======================
+
 
 window.joinRoom=function(){
 
@@ -245,11 +203,9 @@ window.joinRoom=function(){
 
     if(roomCode===""){
 
-
         alert(
             "코드를 입력하세요"
         );
-
 
         return;
 
@@ -268,81 +224,41 @@ window.joinRoom=function(){
 
 
 // ======================
-// 플레이어 데이터 받기
+// 플레이어 받기
 // ======================
+
 
 socket.on(
 "players",
 (data)=>{
 
-    players=data;
+
+    players={};
+
+
+    for(let id in data){
+
+
+        // 내 캐릭터 제거
+        if(id===socket.id)
+            continue;
+
+
+        // 같은 이름 제거
+        if(
+            data[id].name===nickname
+        )
+            continue;
+
+
+
+        players[id]=data[id];
+
+
+    }
+
 
 });
-// ======================
-// 아바타 변경
-// ======================
-
-window.nextAvatar=function(){
-
-    avatarIndex++;
-
-    if(
-        avatarIndex>=avatarList.length
-    ){
-
-        avatarIndex=0;
-
-    }
-
-
-    updateAvatar();
-
-};
-
-
-
-window.prevAvatar=function(){
-
-    avatarIndex--;
-
-    if(
-        avatarIndex<0
-    ){
-
-        avatarIndex=
-        avatarList.length-1;
-
-    }
-
-
-    updateAvatar();
-
-};
-
-
-
-function updateAvatar(){
-
-
-    const img =
-    document.getElementById(
-        "selectedAvatar"
-    );
-
-
-    if(img){
-
-        img.src=
-        avatarList[avatarIndex];
-
-    }
-
-
-}
-
-
-
-
 // ======================
 // 게임 시작
 // ======================
@@ -436,10 +352,8 @@ window.startGame=function(){
 
 
 
-
-
 // ======================
-// 화면 그리기
+// 그리기
 // ======================
 
 function draw(){
@@ -453,43 +367,41 @@ function draw(){
     ctx.clearRect(
         0,
         0,
-        800,
-        600
+        canvas.width,
+        canvas.height
     );
 
 
 
     // 배경
 
-    if(mapImage.complete){
-
+    if(
+        mapImage.complete
+    ){
 
         ctx.drawImage(
-
             mapImage,
-
             0,
-
             0,
-
-            800,
-
-            600
-
+            canvas.width,
+            canvas.height
         );
-
 
     }
 
 
 
-    // 다른 플레이어 표시
+    // 다른 플레이어
 
     for(let id in players){
 
 
-        let p =
-        players[id];
+        let p = players[id];
+
+
+        if(!p)
+            continue;
+
 
 
         let img =
@@ -497,71 +409,31 @@ function draw(){
 
 
 
-        if(img.complete){
-
+        if(
+            img &&
+            img.complete
+        ){
 
             ctx.drawImage(
-
                 img,
-
                 p.x,
-
                 p.y,
-
                 60,
-
                 80
-
             );
-
 
         }
 
 
 
-        ctx.fillStyle="white";
-
-
-        ctx.beginPath();
-
-
-        ctx.roundRect(
-
+        drawName(
             p.x,
-
-            p.y-30,
-
-            90,
-
-            25,
-
-            10
-
-        );
-
-
-        ctx.fill();
-
-
-
-        ctx.fillStyle="black";
-
-        ctx.font="14px Arial";
-
-
-        ctx.fillText(
-
-            p.name,
-
-            p.x+10,
-
-            p.y-13
-
+            p.y,
+            p.name
         );
 
 
     }
-
 
 
 
@@ -572,30 +444,52 @@ function draw(){
 
 
 
-    if(myImg.complete){
-
+    if(
+        myImg &&
+        myImg.complete
+    ){
 
         ctx.drawImage(
-
             myImg,
-
             player.x,
-
             player.y,
-
             60,
-
             80
-
         );
-
 
     }
 
 
 
+    drawName(
+        player.x,
+        player.y,
+        nickname
+    );
 
-    // 내 닉네임
+
+
+    requestAnimationFrame(
+        draw
+    );
+
+
+}
+
+
+
+
+// ======================
+// 이름표
+// ======================
+
+
+function drawName(
+    x,
+    y,
+    name
+){
+
 
     ctx.fillStyle="white";
 
@@ -604,17 +498,11 @@ function draw(){
 
 
     ctx.roundRect(
-
-        player.x,
-
-        player.y-30,
-
+        x,
+        y-30,
         90,
-
         25,
-
         10
-
     );
 
 
@@ -628,19 +516,9 @@ function draw(){
 
 
     ctx.fillText(
-
-        nickname,
-
-        player.x+10,
-
-        player.y-13
-
-    );
-
-
-
-    requestAnimationFrame(
-        draw
+        name,
+        x+10,
+        y-13
     );
 
 
@@ -648,6 +526,7 @@ function draw(){
 // ======================
 // 키 입력
 // ======================
+
 
 document.addEventListener(
 "keydown",
@@ -669,7 +548,6 @@ document.addEventListener(
         e.preventDefault();
 
     }
-
 
 
     keys[key]=true;
@@ -694,6 +572,7 @@ document.addEventListener(
 
 
 
+
 window.addEventListener(
 "blur",
 ()=>{
@@ -706,8 +585,9 @@ window.addEventListener(
 
 
 // ======================
-// 플레이어 이동
+// 이동
 // ======================
+
 
 function updatePlayer(){
 
@@ -770,13 +650,10 @@ function updatePlayer(){
 
 
 
-
-
     if(
         moveX!==0 ||
         moveY!==0
     ){
-
 
 
         let length =
@@ -786,7 +663,6 @@ function updatePlayer(){
         );
 
 
-
         moveX/=length;
 
         moveY/=length;
@@ -794,12 +670,15 @@ function updatePlayer(){
 
 
         player.x +=
-        moveX*player.speed;
+        moveX *
+        player.speed;
 
 
 
         player.y +=
-        moveY*player.speed;
+        moveY *
+        player.speed;
+
 
 
 
@@ -822,13 +701,16 @@ function updatePlayer(){
 
 
 
+
         socket.emit(
             "move",
             {
 
                 x:player.x,
 
-                y:player.y
+                y:player.y,
+
+                name:nickname
 
             }
         );
@@ -852,10 +734,10 @@ updatePlayer();
 
 
 
-
 // ======================
 // 채팅
 // ======================
+
 
 function setupChat(){
 
@@ -864,6 +746,7 @@ function setupChat(){
     document.getElementById(
         "chatInput"
     );
+
 
 
     if(!input)
@@ -890,10 +773,12 @@ function setupChat(){
 
 
 
+
             socket.emit(
                 "chat",
                 text
             );
+
 
 
             input.value="";
@@ -906,7 +791,6 @@ function setupChat(){
 
 
 }
-
 
 
 
@@ -927,12 +811,10 @@ socket.on(
     if(box){
 
 
-
         let div =
         document.createElement(
             "div"
         );
-
 
 
         div.innerText =
@@ -954,31 +836,16 @@ socket.on(
 
 
 
-
-    sideMessages.push({
-
-        name:data.name,
-
-        text:data.text
-
-    });
-
-
-
-    if(
-        sideMessages.length>8
-    ){
-
-        sideMessages.shift();
-
-    }
-
-
-
 });
+
+
+
+
+
 // ======================
-// 입장 오류
+// 오류
 // ======================
+
 
 socket.on(
 "joinError",
@@ -987,13 +854,10 @@ socket.on(
     alert(msg);
 
 });
-
-
-
-
 // ======================
-// 채팅창 드래그 이동
+// 채팅창 드래그
 // ======================
+
 
 function setupChatDrag(){
 
@@ -1002,6 +866,7 @@ function setupChatDrag(){
     document.getElementById(
         "chatBox"
     );
+
 
 
     if(!chatBox)
@@ -1023,13 +888,14 @@ function setupChatDrag(){
         (e)=>{
 
 
-            // 입력창 클릭은 제외
+            // 입력창은 드래그 제외
 
             if(
                 e.target.id==="chatInput"
-            )
-            {
+            ){
+
                 return;
+
             }
 
 
@@ -1044,11 +910,14 @@ function setupChatDrag(){
 
 
             offsetX =
-            e.clientX-rect.left;
+            e.clientX -
+            rect.left;
+
 
 
             offsetY =
-            e.clientY-rect.top;
+            e.clientY -
+            rect.top;
 
 
 
@@ -1087,7 +956,6 @@ function setupChatDrag(){
             )+"px";
 
 
-
         }
     );
 
@@ -1107,10 +975,7 @@ function setupChatDrag(){
     );
 
 
-
 }
-
-
 
 
 
