@@ -48,24 +48,25 @@ let chatBubbles = {};
 
 let avatarList = [
 
-"./assets/tile000.png",
-"./assets/tile001.png",
-"./assets/tile002.png",
-"./assets/tile003.png",
-"./assets/tile004.png",
-"./assets/tile005.png",
-"./assets/tile006.png",
-"./assets/tile007.png",
-"./assets/tile008.png",
-"./assets/tile009.png",
-"./assets/tile010.png",
-"./assets/tile011.png",
-"./assets/tile012.png",
-"./assets/tile013.png",
-"./assets/tile014.png",
-"./assets/tile015.png"
+    "./assets/tile000.png",
+    "./assets/tile001.png",
+    "./assets/tile002.png",
+    "./assets/tile003.png",
+    "./assets/tile004.png",
+    "./assets/tile005.png",
+    "./assets/tile006.png",
+    "./assets/tile007.png",
+    "./assets/tile008.png",
+    "./assets/tile009.png",
+    "./assets/tile010.png",
+    "./assets/tile011.png",
+    "./assets/tile012.png",
+    "./assets/tile013.png",
+    "./assets/tile014.png",
+    "./assets/tile015.png"
 
 ];
+
 
 
 let avatarIndex = 0;
@@ -214,13 +215,7 @@ document.getElementById(
 .style.display =
 "block";
 
-
 };
-
-
-
-
-
 
 
 // ======================
@@ -342,3 +337,68 @@ players=data;
 }
 
 );
+
+// ======================
+// 아바타 선택
+// ======================
+
+window.nextAvatar=function(){
+
+    avatarIndex++;
+
+    if(avatarIndex >= avatarList.length){
+
+        avatarIndex = 0;
+
+    }
+
+
+    updateAvatar();
+
+};
+
+
+
+window.prevAvatar=function(){
+
+    avatarIndex--;
+
+    if(avatarIndex < 0){
+
+        avatarIndex = avatarList.length - 1;
+
+    }
+
+
+    updateAvatar();
+
+};
+
+
+
+
+
+function updateAvatar(){
+
+
+    let img =
+    document.getElementById(
+        "selectedAvatar"
+    );
+
+
+    img.src =
+    avatarList[avatarIndex];
+
+
+
+    document.getElementById(
+        "avatarNumber"
+    ).innerText =
+    (avatarIndex + 1)
+    + " / "
+    + avatarList.length;
+
+
+}
+console.log("아바타 함수 등록 완료", typeof nextAvatar);
