@@ -665,3 +665,78 @@ canvas{
     display:block !important;
     margin:15px auto !important;
 }
+/* =====================
+   캐릭터 선택 최종 정렬
+===================== */
+
+
+.avatarControl{
+
+    width:100% !important;
+
+    display:flex !important;
+
+    flex-direction:row !important;
+
+    justify-content:center !important;
+
+    align-items:center !important;
+
+    gap:30px !important;
+
+}
+
+
+
+.avatarControl button{
+
+    flex:none !important;
+
+    width:50px !important;
+
+    height:40px !important;
+
+}
+
+
+
+
+#avatarNumber{
+
+    display:none !important;
+
+}
+
+
+
+
+
+.avatarName{
+
+    display:block !important;
+
+    width:100% !important;
+
+    text-align:center !important;
+
+    white-space:nowrap !important;
+
+}
+
+
+
+
+
+.startButton{
+
+    width:180px !important;
+
+    height:55px !important;
+
+    display:block !important;
+
+    margin:15px auto !important;
+
+    white-space:nowrap !important;
+
+}
