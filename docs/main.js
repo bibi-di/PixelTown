@@ -1236,3 +1236,8 @@ git push
 console.log(
 "main.js 로드 완료"
 );
+socket.on(
+"joinError",
+(msg)=>{
+    alert(msg);
+});
