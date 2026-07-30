@@ -738,7 +738,47 @@ function updatePlayer(){
     player.x += player.vx;
     player.y += player.vy;
 
+// ======================
+// 맵 밖 이동 제한
+// ======================
 
+const mapWidth = 800;
+const mapHeight = 600;
+
+const characterWidth = 60;
+const characterHeight = 80;
+
+
+// 왼쪽
+if(player.x < 0){
+
+    player.x = 0;
+
+}
+
+
+// 오른쪽
+if(player.x > mapWidth - characterWidth){
+
+    player.x = mapWidth - characterWidth;
+
+}
+
+
+// 위쪽
+if(player.y < 0){
+
+    player.y = 0;
+
+}
+
+
+// 아래쪽
+if(player.y > mapHeight - characterHeight){
+
+    player.y = mapHeight - characterHeight;
+
+}
 
     // 다른 캐릭터 충돌
     for(let id in players){
@@ -822,17 +862,7 @@ function updatePlayer(){
 
 
 
-updatePlayer();
 
-
-    isMoving=false;
-
-
-
-
-
-let moveX=0;
-let moveY=0;
 
 
 
