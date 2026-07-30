@@ -116,18 +116,18 @@ back:[
 
 
 right:[
-"tile008.png",
-"tile009.png",
-"tile010.png",
-"tile011.png"
-],
-
-
-left:[
 "tile012.png",
 "tile013.png",
 "tile014.png",
 "tile015.png"
+],
+
+
+left:[
+"tile008.png",
+"tile009.png",
+"tile010.png",
+"tile011.png"
 ]
 
 };
@@ -591,43 +591,41 @@ function updatePlayer(){
 
     if(keys["a"]){
 
-        player.x -= player.speed;
+    player.x -= player.speed;
 
 
-        if(lastDirection !== "left"){
+    if(lastDirection !== "left"){
 
-            walkFrame=0;
-
-        }
-
-
-        lastDirection="left";
-
-        isMoving=true;
+        walkFrame=0;
 
     }
 
 
+    lastDirection="left";
+
+    isMoving=true;
+
+}
 
 
-    if(keys["d"]){
 
-        player.x += player.speed;
+if(keys["d"]){
 
-
-        if(lastDirection !== "right"){
-
-            walkFrame=0;
-
-        }
+    player.x += player.speed;
 
 
-        lastDirection="right";
+    if(lastDirection !== "right"){
 
-        isMoving=true;
+        walkFrame=0;
 
     }
 
+
+    lastDirection="right";
+
+    isMoving=true;
+
+}
 
 
 
