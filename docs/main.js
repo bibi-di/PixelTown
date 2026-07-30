@@ -140,7 +140,12 @@ window.startGame=function(){
     ctx=canvas.getContext("2d");
     player.x=350;
     player.y=250;
-    started=true;
+
+    if (!started) {
+        started=true;
+        updatePlayer();
+        draw();
+    }
 
     socket.emit("joinRoom",{
         code:roomCode,
@@ -149,7 +154,6 @@ window.startGame=function(){
 
     setupChat();
     setupChatDrag();
-    draw();
 };
 
 // ======================
@@ -167,9 +171,10 @@ function draw(){
 
     // 다른 플레이어
     for(let id in players){
-        if(id===socket.id) continue;
         let p=players[id];
         if(!p) continue;
+
+        if(id === socket.id) continue;
 
         let img=animationImages.front[0];
         if(img && img.complete){
@@ -194,25 +199,31 @@ function draw(){
 }
 
 // ======================
-// 이름표 (닉네임 글자수 배경 ■ 적용)
+// 이름표 (2번 수정: 닉네임 글자 수에 맞게 하얀 배경 박스 크기 및 ■ 기호 조절)
 // ======================
-function drawName(x,y,name){
+function drawName(x, y, name){
     if(!name) return;
 
     ctx.font="14px Arial";
     
-    // 2번 요구사항: 닉네임 글자 수에 맞춰 ■ 기호 배경 생성 (예: 홍길동 -> ■■■)
-    let bgText = "■".repeat(name.length);
-    let textMetrics = ctx.measureText(bgText);
-    let boxWidth = Math.max(textMetrics.width + 20, 70);
+    // 닉네임 글자 수에 맞춘 텍스트 너비 계산
+    let textMetrics = ctx.measureText(name);
+    // 텍스트 너비에 좌우 여백을 더해 동적 박스 너비 설정 (최소 45px)
+    let boxWidth = Math.max(textMetrics.width + 16, 45);
+    // 캐릭터 중앙 기준점 (캐릭터 너비 60 기준)
+    let boxX = x + (60 - boxWidth) / 2;
 
-    ctx.fillStyle="rgba(0, 0, 0, 0.4)"; // 가독성을 위한 반투명 배경
+    // 하얀색 배경 박스
+    ctx.fillStyle="white";
     ctx.beginPath();
-    ctx.roundRect(x - (boxWidth - 60) / 2, y-35, boxWidth, 25, 6);
+    ctx.roundRect(boxX, y-35, boxWidth, 22, 6);
     ctx.fill();
 
-    ctx.fillStyle="white";
-    ctx.fillText(name, x + 10, y-18);
+    // 닉네임 텍스트 (가운데 정렬)
+    ctx.fillStyle="black";
+    ctx.textAlign = "center";
+    ctx.fillText(name, x + 30, y-19);
+    ctx.textAlign = "left"; // 기본값 복구
 }
 
 // ======================
@@ -238,7 +249,7 @@ function drawBubble(x,y,name){
 }
 
 // ======================
-// 오른쪽 채팅 표시 (3번 요구사항: 6개 제한 및 안개 효과)
+// 오른쪽 채팅 표시 (3번: 6개 제한 및 안개 효과)
 // ======================
 function drawSideBubble(){
     let x = canvas.width-220;
@@ -249,11 +260,10 @@ function drawSideBubble(){
     sideBubbles.forEach((b,i)=>{
         let boxY = y + i * 60;
         
-        // 안개처럼 사라지는 효과 (유효 시간 만료 임박 시 투명도 조절)
         let elapsed = Date.now() - b.time;
         let alpha = 1.0;
         if(elapsed > 4000) {
-            alpha = (5000 - elapsed) / 1000; // 마지막 1초 동안 서서히 투명해짐
+            alpha = (5000 - elapsed) / 1000;
             if(alpha < 0) alpha = 0;
         }
 
@@ -296,10 +306,7 @@ window.addEventListener("blur",()=>{
 // 플레이어 이동
 // ======================
 function updatePlayer(){
-    if(!started){
-        requestAnimationFrame(updatePlayer);
-        return;
-    }
+    if(!started) return;
 
     let moveX=0;
     let moveY=0;
@@ -330,7 +337,6 @@ function updatePlayer(){
 
     requestAnimationFrame(updatePlayer);
 }
-updatePlayer();
 
 // ======================
 // 채팅 입력
@@ -338,6 +344,8 @@ updatePlayer();
 function setupChat(){
     const input = document.getElementById("chatInput");
     if(!input) return;
+
+    input.onkeydown = null;
 
     input.onkeydown=function(e){
         if(e.key==="Enter"){
@@ -349,11 +357,6 @@ function setupChat(){
                 text:text
             });
 
-            bubbles[nickname]={
-                text:text,
-                time:Date.now()
-            };
-
             input.value="";
         }
     };
@@ -362,6 +365,7 @@ function setupChat(){
 // ======================
 // 서버 채팅 받기
 // ======================
+socket.off("chat");
 socket.on("chat",(data)=>{
     let name="Player";
     let text="";
@@ -388,7 +392,6 @@ socket.on("chat",(data)=>{
         time:Date.now()
     });
 
-    // 3번 요구사항: 우측 말풍선 최대 개수를 6개로 제한하고 오래된 것부터 제거
     if(sideBubbles.length > 6){
         sideBubbles.shift();
     }
@@ -413,6 +416,8 @@ function setupChatDrag(){
     let offsetX=0;
     let offsetY=0;
 
+    chatBox.onmousedown = null;
+
     chatBox.addEventListener("mousedown",(e)=>{
         if(e.target.id==="chatInput") return;
         dragging=true;
@@ -435,11 +440,11 @@ function setupChatDrag(){
 }
 
 // ======================
-// 입장 오류 (방장 종료 시 처리 포함)
+// 입장 오류
 // ======================
+socket.off("joinError");
 socket.on("joinError",(msg)=>{
     alert(msg);
-    // 방장이 나가거나 에러 발생 시 로비 화면으로 원상복구
     window.location.reload();
 });
 
