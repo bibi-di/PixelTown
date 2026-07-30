@@ -27,7 +27,9 @@ let player = {
 
     x:350,
     y:250,
-    speed:5
+    speed:3,
+    vx:0,
+    vy:0
 
 };
 
@@ -654,87 +656,262 @@ function updatePlayer(){
 
 
 
-    isMoving=false;
+    let moveX = 0;
+    let moveY = 0;
 
 
 
     if(keys["w"]){
 
-        player.y -= player.speed;
-
-
-        if(lastDirection !== "back"){
-
-            walkFrame=0;
-
-        }
-
-
+        moveY = -1;
         lastDirection="back";
 
-        isMoving=true;
-
     }
-
-
 
 
     if(keys["s"]){
 
-        player.y += player.speed;
-
-
-        if(lastDirection !== "front"){
-
-            walkFrame=0;
-
-        }
-
-
+        moveY = 1;
         lastDirection="front";
 
-        isMoving=true;
-
     }
-
-
 
 
     if(keys["a"]){
 
-    player.x -= player.speed;
-
-
-    if(lastDirection !== "left"){
-
-        walkFrame=0;
+        moveX = -1;
+        lastDirection="left";
 
     }
 
 
-    lastDirection="left";
+    if(keys["d"]){
 
-    isMoving=true;
+        moveX = 1;
+        lastDirection="right";
+
+    }
+
+
+
+    // 이동 입력 있을 때만 이동
+    if(moveX !== 0 || moveY !==0){
+
+
+        let length =
+        Math.sqrt(
+            moveX*moveX +
+            moveY*moveY
+        );
+
+
+        moveX /= length;
+        moveY /= length;
+
+
+
+        player.vx = moveX * player.speed;
+        player.vy = moveY * player.speed;
+
+
+        isMoving=true;
+
+
+    }
+    else{
+
+
+        // 키 떼면 즉시 정지
+        player.vx = 0;
+        player.vy = 0;
+
+
+        isMoving=false;
+
+        walkFrame=0;
+
+
+    }
+
+
+
+    player.x += player.vx;
+    player.y += player.vy;
+
+
+
+    // 다른 캐릭터 충돌
+    for(let id in players){
+
+        if(id===socket.id)
+        continue;
+
+
+        let other = players[id];
+
+
+        let dx =
+        player.x - other.x;
+
+
+        let dy =
+        player.y - other.y;
+
+
+
+        let distance =
+        Math.sqrt(
+            dx*dx+
+            dy*dy
+        );
+
+
+
+        if(distance < playerRadius){
+
+
+            if(distance !==0){
+
+
+                let push =
+                playerRadius-distance;
+
+
+                player.x +=
+                (dx/distance)*push;
+
+
+                player.y +=
+                (dy/distance)*push;
+
+
+            }
+
+        }
+
+    }
+
+
+
+    if(isMoving){
+
+
+        socket.emit(
+
+            "move",
+
+            {
+
+                x:player.x,
+
+                y:player.y
+
+            }
+
+        );
+
+
+    }
+
+
+
+    requestAnimationFrame(updatePlayer);
+
 
 }
 
 
 
+updatePlayer();
+
+
+    isMoving=false;
+
+
+
+
+
+let moveX=0;
+let moveY=0;
+
+
+
+if(keys["w"]){
+
+    moveY=-1;
+    lastDirection="back";
+
+}
+
+
+if(keys["s"]){
+
+    moveY=1;
+    lastDirection="front";
+
+}
+
+
+if(keys["a"]){
+
+    moveX=-1;
+    lastDirection="left";
+
+}
+
+
 if(keys["d"]){
 
-    player.x += player.speed;
+    moveX=1;
+    lastDirection="right";
+
+}
 
 
-    if(lastDirection !== "right"){
 
-        walkFrame=0;
+
+if(moveX !== 0 || moveY !== 0){
+
+
+    let length =
+    Math.sqrt(
+        moveX*moveX +
+        moveY*moveY
+    );
+
+
+    moveX /= length;
+    moveY /= length;
+
+
+
+    player.x += moveX * player.speed;
+
+    player.y += moveY * player.speed;
+
+
+
+    isMoving=true;
+
+
+
+    if(lastDirection){
+
+        if(walkFrame >= 4){
+
+            walkFrame=0;
+
+        }
 
     }
 
 
-    lastDirection="right";
+}
+else{
 
-    isMoving=true;
+
+    isMoving=false;
+walkFrame=0;
 
 }
 
@@ -744,7 +921,8 @@ if(keys["d"]){
 
 
 for(let id in players){
-
+if(id === socket.id)
+continue;
 
 let other = players[id];
 
@@ -767,12 +945,20 @@ dx*dx + dy*dy
 if(distance < playerRadius){
 
 
-player.x += dx * 0.1;
+    let overlap =
+    playerRadius - distance;
 
-player.y += dy * 0.1;
+
+    if(distance !== 0){
+
+        player.x +=
+        (dx / distance) * overlap * 0.5;
 
 
-}
+        player.y +=
+        (dy / distance) * overlap * 0.5;
+
+    }
 
 
 }
