@@ -11,6 +11,7 @@ const socket = io(
 
 
 
+
 // ======================
 // 변수
 // ======================
@@ -38,33 +39,40 @@ let player = {
 let players = {};
 
 let chatBubbles = {};
-let walkOffset = 0;
-let isMoving = false;
+
 
 
 // ======================
-// 아바타
+// 키 입력
+// ======================
+
+let keys = {};
+
+
+
+// ======================
+// 아바타 선택
 // ======================
 
 
 let avatarList = [
 
-    "./assets/tile000.png",
-    "./assets/tile001.png",
-    "./assets/tile002.png",
-    "./assets/tile003.png",
-    "./assets/tile004.png",
-    "./assets/tile005.png",
-    "./assets/tile006.png",
-    "./assets/tile007.png",
-    "./assets/tile008.png",
-    "./assets/tile009.png",
-    "./assets/tile010.png",
-    "./assets/tile011.png",
-    "./assets/tile012.png",
-    "./assets/tile013.png",
-    "./assets/tile014.png",
-    "./assets/tile015.png"
+"./assets/tile000.png",
+"./assets/tile001.png",
+"./assets/tile002.png",
+"./assets/tile003.png",
+"./assets/tile004.png",
+"./assets/tile005.png",
+"./assets/tile006.png",
+"./assets/tile007.png",
+"./assets/tile008.png",
+"./assets/tile009.png",
+"./assets/tile010.png",
+"./assets/tile011.png",
+"./assets/tile012.png",
+"./assets/tile013.png",
+"./assets/tile014.png",
+"./assets/tile015.png"
 
 ];
 
@@ -75,6 +83,116 @@ let avatarIndex = 0;
 
 let selectedAvatar =
 avatarList[0];
+
+
+
+
+// ======================
+// 걷기 애니메이션
+// ======================
+
+
+let direction = "front";
+
+let lastDirection = "front";
+
+let walkFrame = 0;
+
+let lastWalkTime = 0;
+
+let isMoving = false;
+
+
+
+let animationImages = {
+
+front:[],
+back:[],
+right:[],
+left:[]
+
+};
+
+
+
+
+
+let animationFiles = {
+
+
+front:[
+
+"tile000.png",
+"tile001.png",
+"tile002.png",
+"tile003.png"
+
+],
+
+
+
+back:[
+
+"tile004.png",
+"tile005.png",
+"tile006.png",
+"tile007.png"
+
+],
+
+
+
+right:[
+
+"tile008.png",
+"tile009.png",
+"tile010.png",
+"tile011.png"
+
+],
+
+
+
+left:[
+
+"tile012.png",
+"tile013.png",
+"tile014.png",
+"tile015.png"
+
+]
+
+
+};
+
+
+
+
+
+for(let dir in animationFiles){
+
+
+    animationFiles[dir].forEach(file=>{
+
+
+        let img = new Image();
+
+
+        img.src =
+        "./assets/"+file;
+
+
+        animationImages[dir].push(img);
+
+
+    });
+
+
+}
+
+
+
+
 
 
 
@@ -90,29 +208,19 @@ mapImage.src =
 
 
 
-let myImage = new Image();
-
-myImage.src =
-selectedAvatar;
-
-
-
-let otherImage = new Image();
-
-otherImage.src =
-"./assets/tile000.png";
-
 
 
 
 
 // ======================
-// 서버 연결
+// 서버 연결 확인
 // ======================
 
 
 socket.on(
+
 "connect",
+
 ()=>{
 
 console.log(
@@ -120,7 +228,11 @@ console.log(
 socket.id
 );
 
-});
+}
+
+);
+
+
 
 
 
@@ -151,7 +263,10 @@ name:"Player"
 
 
 
+
+
 socket.on(
+
 "roomCreated",
 
 (code)=>{
@@ -205,7 +320,6 @@ alert(
 
 return;
 
-
 }
 
 
@@ -216,7 +330,14 @@ document.getElementById(
 .style.display =
 "block";
 
+
 };
+
+
+
+
+
+
 
 
 // ======================
@@ -234,12 +355,8 @@ document.getElementById(
 )
 .value
 .trim();
-selectedAvatar =
-avatarList[avatarIndex];
 
 
-myImage.src =
-selectedAvatar;
 
 
 if(nickname===""){
@@ -247,6 +364,12 @@ if(nickname===""){
 nickname="Player";
 
 }
+
+
+
+selectedAvatar =
+avatarList[avatarIndex];
+
 
 
 
@@ -292,7 +415,10 @@ canvas.getContext(
 
 
 
+
 started=true;
+
+
 
 
 
@@ -312,60 +438,12 @@ name:nickname
 
 
 
+
 setupChat();
 
 
 draw();
-// ======================
-// 채팅 설정
-// ======================
 
-function setupChat(){
-
-    const input =
-    document.getElementById(
-        "chatInput"
-    );
-
-
-    if(!input){
-        return;
-    }
-
-
-
-    input.onkeydown=function(e){
-
-
-        if(e.key==="Enter"){
-
-
-            let text =
-            input.value.trim();
-
-
-
-            if(text==="")
-                return;
-
-
-
-            socket.emit(
-                "chat",
-                text
-            );
-
-
-            input.value="";
-
-
-        }
-
-
-    };
-
-
-}
 
 };
 
@@ -393,41 +471,64 @@ players=data;
 
 );
 
+
+
+
+
+
+
 // ======================
-// 아바타 선택
+// 캐릭터 선택
 // ======================
+
 
 window.nextAvatar=function(){
 
-    avatarIndex++;
 
-    if(avatarIndex >= avatarList.length){
-
-        avatarIndex = 0;
-
-    }
+avatarIndex++;
 
 
-    updateAvatar();
+if(
+avatarIndex >= avatarList.length
+){
+
+avatarIndex=0;
+
+}
+
+
+
+updateAvatar();
+
 
 };
+
+
 
 
 
 window.prevAvatar=function(){
 
-    avatarIndex--;
 
-    if(avatarIndex < 0){
-
-        avatarIndex = avatarList.length - 1;
-
-    }
+avatarIndex--;
 
 
-    updateAvatar();
+if(
+avatarIndex < 0
+){
+
+avatarIndex =
+avatarList.length-1;
+
+}
+
+
+
+updateAvatar();
+
 
 };
+
 
 
 
@@ -436,98 +537,152 @@ window.prevAvatar=function(){
 function updateAvatar(){
 
 
-    let img =
-    document.getElementById(
-        "selectedAvatar"
-    );
-
-
-    img.src =
-    avatarList[avatarIndex];
-
-
-
-    document.getElementById(
-        "avatarNumber"
-    ).innerText =
-    (avatarIndex + 1)
-    + " / "
-    + avatarList.length;
+document.getElementById(
+"selectedAvatar"
+)
+.src =
+avatarList[avatarIndex];
 
 
 }
-console.log("아바타 함수 등록 완료", typeof nextAvatar);
+
+
+
+
 // ======================
 // 화면 그리기
 // ======================
 
+
 function draw(){
 
-    if(!started)
-        return;
 
-
-    ctx.clearRect(
-        0,
-        0,
-        800,
-        600
-    );
-
-
-    // 배경
-
-    if(mapImage.complete){
-
-        ctx.drawImage(
-            mapImage,
-            0,
-            0,
-            800,
-            600
-        );
-
-    }
+if(!started)
+return;
 
 
 
-    // 걷기 효과
 
-    let offset = 0;
+ctx.clearRect(
 
+0,
+0,
+800,
+600
 
-    if(isMoving){
-
-        walkOffset += 0.3;
-
-        offset =
-        Math.sin(walkOffset) * 3;
-
-    }
+);
 
 
 
-    // 내 캐릭터
 
-    ctx.drawImage(
+// 배경
 
-        myImage,
-
-        player.x,
-
-        player.y + offset,
-
-        60,
-
-        80
-
-    );
+if(mapImage.complete){
 
 
+ctx.drawImage(
 
-    requestAnimationFrame(
-        draw
-    );
+mapImage,
+
+0,
+0,
+
+800,
+600
+
+);
+
+
+}
+
+
+
+
+
+// 현재 캐릭터 이미지
+
+
+let img;
+
+
+
+if(isMoving){
+
+
+
+if(
+Date.now()-lastWalkTime > 120
+){
+
+
+walkFrame++;
+
+
+
+if(
+walkFrame >=4
+){
+
+walkFrame=0;
+
+}
+
+
+
+lastWalkTime =
+Date.now();
+
+
+
+}
+
+
+
+img =
+animationImages[lastDirection][walkFrame];
+
+
+
+}
+
+else{
+
+
+walkFrame=0;
+
+
+img =
+animationImages[lastDirection][0];
+
+
+}
+
+
+
+
+
+ctx.drawImage(
+
+img,
+
+player.x,
+
+player.y,
+
+60,
+
+80
+
+);
+
+
+
+
+
+requestAnimationFrame(
+draw
+);
+
 
 }
 
@@ -536,80 +691,200 @@ function draw(){
 
 
 
+
+
+
 // ======================
-// 이동
+// 키 입력
 // ======================
 
+
 document.addEventListener(
+
 "keydown",
+
 (e)=>{
 
 
-    if(!started)
-        return;
+keys[
+e.key.toLowerCase()
+]=true;
+
+
+}
+
+);
 
 
 
-    isMoving=false;
+
+
+document.addEventListener(
+
+"keyup",
+
+(e)=>{
+
+
+keys[
+e.key.toLowerCase()
+]=false;
+
+
+}
+
+);
 
 
 
-    if(e.key==="w" || e.key==="ArrowUp"){
-
-        player.y -= player.speed;
-
-        isMoving=true;
-
-    }
 
 
 
-    if(e.key==="s" || e.key==="ArrowDown"){
-
-        player.y += player.speed;
-
-        isMoving=true;
-
-    }
 
 
+// ======================
+// 플레이어 이동
+// ======================
 
-    if(e.key==="a" || e.key==="ArrowLeft"){
 
-        player.x -= player.speed;
-
-        isMoving=true;
-
-    }
+function updatePlayer(){
 
 
 
-    if(e.key==="d" || e.key==="ArrowRight"){
+if(!started){
 
-        player.x += player.speed;
+requestAnimationFrame(
+updatePlayer
+);
 
-        isMoving=true;
+return;
 
-    }
-
-
-
-    socket.emit(
-
-        "move",
-
-        {
-
-            x:player.x,
-
-            y:player.y
-
-        }
-
-    );
+}
 
 
-});
+
+
+isMoving=false;
+
+
+
+
+
+
+if(keys["w"]){
+
+
+player.y -= player.speed;
+
+
+lastDirection="back";
+
+
+isMoving=true;
+
+
+}
+
+
+
+
+
+
+if(keys["s"]){
+
+
+player.y += player.speed;
+
+
+lastDirection="front";
+
+
+isMoving=true;
+
+
+}
+
+
+
+
+
+
+if(keys["a"]){
+
+
+player.x -= player.speed;
+
+
+lastDirection="left";
+
+
+isMoving=true;
+
+
+}
+
+
+
+
+
+
+if(keys["d"]){
+
+
+player.x += player.speed;
+
+
+lastDirection="right";
+
+
+isMoving=true;
+
+
+}
+
+
+
+
+
+if(isMoving){
+
+
+
+socket.emit(
+
+"move",
+
+{
+
+x:player.x,
+
+y:player.y
+
+}
+
+);
+
+
+
+}
+
+
+
+
+
+requestAnimationFrame(
+updatePlayer
+);
+
+
+
+}
+
+
+
+updatePlayer();
+
+
 
 
 
@@ -620,7 +895,9 @@ document.addEventListener(
 // 채팅
 // ======================
 
+
 function setupChat(){
+
 
 
 const input =
@@ -630,41 +907,56 @@ document.getElementById(
 
 
 
+
 if(!input)
 return;
+
+
 
 
 
 input.onkeydown=function(e){
 
 
-    if(e.key==="Enter"){
 
-
-        let text =
-        input.value.trim();
+if(e.key==="Enter"){
 
 
 
-        if(text==="")
-        return;
+let text =
+input.value.trim();
 
 
 
-        socket.emit(
-            "chat",
-            text
-        );
+
+if(text==="")
+return;
 
 
 
-        input.value="";
 
 
-    }
+socket.emit(
+
+"chat",
+
+text
+
+);
+
+
+
+
+input.value="";
+
+
+
+}
+
 
 
 };
+
 
 
 }
@@ -674,9 +966,14 @@ input.onkeydown=function(e){
 
 
 
+
+
 socket.on(
+
 "chat",
+
 (data)=>{
+
 
 
 const box =
@@ -686,7 +983,9 @@ document.getElementById(
 
 
 
+
 if(box){
+
 
 
 let div =
@@ -697,6 +996,7 @@ document.createElement(
 
 
 div.innerText =
+
 data.name+
 " : "+
 data.text;
@@ -707,7 +1007,30 @@ box.appendChild(div);
 
 
 
+box.scrollTop =
+box.scrollHeight;
+
+
+
 }
+
+
+
+
+
+chatBubbles[data.name]={
+
+
+text:data.text,
+
+
+time:Date.now()
+
+
+};
+
+
+
 
 
 });
