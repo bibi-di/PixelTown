@@ -235,10 +235,10 @@ function drawBubble(x, y, name){
 
     ctx.font="13px Arial";
     
-    // 채팅 텍스트 길이에 맞춰 말풍선 너비 자동 조절 (최소 40px, 최대 220px)
+    // 채팅 텍스트 길이에 맞춰 말풍선 너비 자동 조절 (최소 40px, 최대 250px)
     let textMetrics = ctx.measureText(bubble.text);
-    let boxWidth = Math.max(textMetrics.width + 20, 40);
-    if(boxWidth > 220) boxWidth = 220; // 너무 길면 제한
+    let boxWidth = Math.max(textMetrics.width + 24, 40);
+    if(boxWidth > 250) boxWidth = 250;
 
     // 캐릭터(너비 60) 중앙에 맞추어 말풍선 X 좌표 계산
     let boxX = x + (60 - boxWidth) / 2;
@@ -249,9 +249,11 @@ function drawBubble(x, y, name){
     ctx.roundRect(boxX, y-75, boxWidth, 32, 8);
     ctx.fill();
 
-    // 말풍선 텍스트 (줄바꿈이 길면 삐져나가지 않도록 처리 또는 가운데/좌측 정렬)
+    // 말풍선 텍스트 (가운데 정렬)
     ctx.fillStyle="black";
-    ctx.fillText(bubble.text, boxX + 10, y-54);
+    ctx.textAlign = "center";
+    ctx.fillText(bubble.text, x + 30, y-54);
+    ctx.textAlign = "left";
 }
 
 // ======================
@@ -357,6 +359,12 @@ function setupChat(){
         if(e.key==="Enter"){
             let text = input.value.trim();
             if(text==="") return;
+
+            // 내 화면에 즉시 말풍선 띄우기 추가
+            bubbles[nickname] = {
+                text: text,
+                time: Date.now()
+            };
 
             socket.emit("chat",{
                 name:nickname,
