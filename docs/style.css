@@ -2,41 +2,28 @@
    기본
 ===================== */
 
-
 *{
-
-box-sizing:border-box;
-
+    box-sizing:border-box;
 }
-
 
 
 body{
 
+    margin:0;
 
-margin:0;
+    width:100vw;
 
+    height:100vh;
 
-width:100vw;
+    overflow:hidden;
 
+    background:#222;
 
-height:100vh;
+    font-family:Arial,sans-serif;
 
-
-overflow:hidden;
-
-
-background:#222;
-
-
-font-family:Arial,sans-serif;
-
-
-color:white;
-
+    color:white;
 
 }
-
 
 
 
@@ -47,60 +34,36 @@ color:white;
 
 #loginBox{
 
+    position:absolute;
 
-position:absolute;
+    top:50%;
 
+    left:50%;
 
-top:50%;
+    transform:translate(-50%,-50%);
 
+    width:350px;
 
-left:50%;
+    padding:40px;
 
+    background:rgba(30,30,30,0.95);
 
-transform:translate(-50%,-50%);
+    border-radius:20px;
 
+    text-align:center;
 
-
-width:350px;
-
-
-
-padding:40px;
-
-
-
-background:rgba(30,30,30,0.95);
-
-
-
-border-radius:20px;
-
-
-
-text-align:center;
-
-
-
-box-shadow:0 0 30px black;
-
+    box-shadow:0 0 30px black;
 
 }
-
-
 
 
 #loginBox h1{
 
+    font-size:40px;
 
-font-size:40px;
-
-
-margin-bottom:30px;
-
+    margin-bottom:30px;
 
 }
-
-
 
 
 
@@ -112,56 +75,38 @@ margin-bottom:30px;
 
 #characterSelect{
 
+    position:absolute;
 
-position:absolute;
+    top:50%;
 
+    left:50%;
 
-top:50%;
-
-
-left:50%;
-
-
-transform:translate(-50%,-50%);
+    transform:translate(-50%,-50%);
 
 
+    width:420px;
 
-width:420px;
-
-
-
-height:560px;
+    height:560px;
 
 
+    display:flex;
 
-display:flex;
+    justify-content:center;
 
-
-
-justify-content:center;
-
+    align-items:center;
 
 
-align-items:center;
+    background:#b8d98c;
 
 
-
-background:#b8d98c;
-
+    border:8px solid #5c3b1e;
 
 
-border:8px solid #5c3b1e;
+    box-shadow:
 
+    0 0 0 6px #d8b36a,
 
-
-box-shadow:
-
-
-0 0 0 6px #d8b36a,
-
-
-0 15px 0 #3d2615;
-
+    0 15px 0 #3d2615;
 
 }
 
@@ -170,26 +115,30 @@ box-shadow:
 
 .characterWindow{
 
+    width:350px;
 
-width:350px;
-
-
-height:480px;
+    height:480px;
 
 
-background:#f7e7c6;
+    background:#f7e7c6;
 
 
-border:5px solid #8b5a2b;
+    border:5px solid #8b5a2b;
 
 
-border-radius:10px;
+    border-radius:10px;
 
 
-text-align:center;
+    padding:25px;
 
 
-padding:25px;
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    justify-content:flex-start;
 
 
 }
@@ -199,15 +148,11 @@ padding:25px;
 
 .characterWindow h2{
 
+    margin:0 0 20px;
 
-margin:0 0 20px;
+    color:#4b2d15;
 
-
-color:#4b2d15;
-
-
-font-size:28px;
-
+    font-size:28px;
 
 }
 
@@ -215,137 +160,121 @@ font-size:28px;
 
 
 
-
-
 /* =====================
-   아바타 미리보기
+   아바타
 ===================== */
 
 
 .avatarFrame{
 
+    width:180px;
 
-width:180px;
-
-
-height:230px;
+    height:230px;
 
 
-margin:auto;
+    margin:0 auto;
 
 
-
-background:white;
-
+    background:white;
 
 
-border:5px solid #8b5a2b;
+    border:5px solid #8b5a2b;
 
 
-
-display:flex;
-
+    display:flex;
 
 
-justify-content:center;
+    justify-content:center;
 
 
-
-align-items:center;
-
+    align-items:center;
 
 
-image-rendering:pixelated;
-
-
-
-overflow:hidden;
+    overflow:hidden;
 
 
 }
-
 
 
 
 .avatarFrame img{
 
+    width:128px;
 
-width:128px;
-
-
-height:128px;
+    height:128px;
 
 
-
-object-fit:contain;
-
+    object-fit:contain;
 
 
-image-rendering:pixelated;
-
-
+    image-rendering:pixelated;
 
 }
 
 
 
 
+
 /* =====================
-   아바타 이동 버튼
+   화살표
 ===================== */
 
 
 .avatarControl{
 
 
-display:flex;
+    width:100%;
 
 
-justify-content:center;
+    display:flex;
 
 
-align-items:center;
+    flex-direction:row;
 
 
-gap:20px;
+    justify-content:center;
 
 
-margin-top:15px;
+    align-items:center;
+
+
+    gap:20px;
+
+
+    margin-top:15px;
 
 
 }
-
 
 
 
 .avatarControl button{
 
 
-width:50px;
+    width:50px;
+
+    height:40px;
 
 
-height:40px;
+    margin:0;
 
 
-margin:0;
+    background:#8b5a2b;
 
 
-background:#8b5a2b;
+    font-size:22px;
 
 
-font-size:22px;
+    flex-shrink:0;
 
 
 }
 
 
 
-
 .avatarControl button:hover{
 
-
-background:#b66b32;
-
+    background:#b66b32;
 
 }
 
@@ -355,16 +284,23 @@ background:#b66b32;
 #avatarNumber{
 
 
-color:#4b2d15;
+    width:70px;
 
 
-font-weight:bold;
+    text-align:center;
 
 
-font-size:18px;
+    color:#4b2d15;
+
+
+    font-weight:bold;
+
+
+    font-size:18px;
 
 
 }
+
 
 
 
@@ -372,21 +308,28 @@ font-size:18px;
 .avatarName{
 
 
-color:#4b2d15;
+    width:100%;
 
 
-font-size:20px;
+    text-align:center;
 
 
-font-weight:bold;
+    white-space:nowrap;
 
 
-margin:20px;
+    color:#4b2d15;
+
+
+    font-size:20px;
+
+
+    font-weight:bold;
+
+
+    margin:20px 0 10px;
 
 
 }
-
-
 
 
 
@@ -400,33 +343,28 @@ margin:20px;
 input{
 
 
-width:240px;
+    width:240px;
 
 
-height:40px;
+    height:40px;
 
 
-margin:10px;
+    margin:10px;
 
 
-
-padding-left:15px;
-
+    padding-left:15px;
 
 
-border-radius:10px;
+    border-radius:10px;
 
 
-
-border:3px solid #8b5a2b;
-
+    border:3px solid #8b5a2b;
 
 
-font-size:15px;
+    font-size:15px;
 
 
 }
-
 
 
 
@@ -440,47 +378,42 @@ font-size:15px;
 button{
 
 
-width:180px;
+    width:180px;
 
 
-height:45px;
+    height:45px;
 
 
-margin:8px;
+    margin:8px;
 
 
-border:none;
+    border:none;
 
 
-border-radius:12px;
+    border-radius:12px;
 
 
-background:#4caf50;
+    background:#4caf50;
 
 
-color:white;
+    color:white;
 
 
-font-size:16px;
+    font-size:16px;
 
 
-cursor:pointer;
+    cursor:pointer;
 
 
 }
-
 
 
 
 button:hover{
 
-
-background:#66bb6a;
-
+    background:#66bb6a;
 
 }
-
-
 
 
 
@@ -488,13 +421,19 @@ background:#66bb6a;
 .startButton{
 
 
-background:#9b5b2b;
+    display:block;
 
 
-height:55px;
+    margin:15px auto;
 
 
-font-size:20px;
+    background:#9b5b2b;
+
+
+    height:55px;
+
+
+    font-size:20px;
 
 
 }
@@ -504,11 +443,10 @@ font-size:20px;
 .startButton:hover{
 
 
-background:#b66b32;
+    background:#b66b32;
 
 
 }
-
 
 
 
@@ -523,23 +461,19 @@ background:#b66b32;
 #gameScreen{
 
 
-width:100vw;
+    width:100vw;
 
 
-height:100vh;
+    height:100vh;
 
 
-
-display:flex;
-
+    display:flex;
 
 
-justify-content:center;
+    justify-content:center;
 
 
-
-align-items:center;
-
+    align-items:center;
 
 
 }
@@ -550,27 +484,22 @@ align-items:center;
 canvas{
 
 
-width:800px;
+    width:800px;
 
 
-height:600px;
+    height:600px;
 
 
-
-background:black;
-
+    background:black;
 
 
-border:3px solid #555;
+    border:3px solid #555;
 
 
-
-image-rendering:pixelated;
+    image-rendering:pixelated;
 
 
 }
-
-
 
 
 
@@ -585,29 +514,25 @@ image-rendering:pixelated;
 #chatBox{
 
 
-position:fixed;
+    position:fixed;
 
 
-bottom:20px;
+    bottom:20px;
 
 
-left:50%;
+    left:50%;
 
 
-transform:translateX(-50%);
+    transform:translateX(-50%);
 
 
-
-background:white;
-
+    background:white;
 
 
-padding:10px;
+    padding:10px;
 
 
-
-border-radius:15px;
-
+    border-radius:15px;
 
 
 }
@@ -618,20 +543,16 @@ border-radius:15px;
 #messages{
 
 
-color:black;
+    color:black;
 
 
-
-width:300px;
-
+    width:300px;
 
 
-height:100px;
+    height:100px;
 
 
-
-overflow:auto;
-
+    overflow:auto;
 
 
 }
@@ -639,24 +560,19 @@ overflow:auto;
 
 
 
-
 #messages div{
 
 
-background:rgba(0,0,0,0.1);
+    background:rgba(0,0,0,0.1);
 
 
-
-border-radius:20px;
-
+    border-radius:20px;
 
 
-padding:6px 12px;
+    padding:6px 12px;
 
 
-
-margin-bottom:3px;
-
+    margin-bottom:3px;
 
 
 }
@@ -667,15 +583,13 @@ margin-bottom:3px;
 #chatInput{
 
 
-width:300px;
+    width:300px;
 
 
-margin:0;
+    margin:0;
 
 
 }
-
-
 
 
 
@@ -689,32 +603,25 @@ margin:0;
 #speechBubble{
 
 
-position:absolute;
+    position:absolute;
 
 
-
-display:none;
-
+    display:none;
 
 
-background:white;
+    background:white;
 
 
-
-color:black;
-
+    color:black;
 
 
-padding:8px 12px;
+    padding:8px 12px;
 
 
-
-border-radius:15px;
-
+    border-radius:15px;
 
 
-font-size:13px;
-
+    font-size:13px;
 
 
 }
@@ -723,12 +630,8 @@ font-size:13px;
 
 
 
-
-
 ::-webkit-scrollbar{
 
-
-display:none;
-
+    display:none;
 
 }
