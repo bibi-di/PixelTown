@@ -740,3 +740,142 @@ canvas{
     white-space:nowrap !important;
 
 }
+/* ===== 캐릭터 선택 최종 강제 정렬 ===== */
+
+
+.characterWindow{
+
+    width:350px !important;
+    height:480px !important;
+
+    display:flex !important;
+    flex-direction:column !important;
+
+    align-items:center !important;
+
+    text-align:center !important;
+
+}
+
+
+
+
+.avatarControl{
+
+    display:flex !important;
+
+    flex-direction:row !important;
+
+    justify-content:center !important;
+
+    align-items:center !important;
+
+    width:250px !important;
+
+    height:50px !important;
+
+}
+
+
+
+
+.avatarControl button{
+
+    width:50px !important;
+
+    min-width:50px !important;
+
+    height:40px !important;
+
+    flex:none !important;
+
+}
+
+
+
+
+#avatarNumber{
+
+    display:none !important;
+
+}
+
+
+
+
+.avatarName{
+
+    display:block !important;
+
+    width:250px !important;
+
+    height:30px !important;
+
+    text-align:center !important;
+
+    white-space:nowrap !important;
+
+}
+
+
+
+
+input#nickname{
+
+    display:block !important;
+
+    width:240px !important;
+
+    height:40px !important;
+
+}
+
+
+
+
+.startButton{
+
+    display:block !important;
+
+    width:180px !important;
+
+    min-width:180px !important;
+
+    height:55px !important;
+
+    white-space:nowrap !important;
+
+}
+.characterWindow{
+    display:flex !important;
+    flex-direction:column !important;
+    align-items:center !important;
+}
+
+
+.avatarControl{
+    display:flex !important;
+    flex-direction:row !important;
+    justify-content:center !important;
+    align-items:center !important;
+    gap:40px !important;
+    width:100% !important;
+}
+
+
+.avatarName{
+    width:100% !important;
+    text-align:center !important;
+    white-space:nowrap !important;
+}
+
+
+#nickname{
+    width:240px !important;
+}
+
+
+.startButton{
+    width:180px !important;
+    white-space:nowrap !important;
+}
