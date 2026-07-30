@@ -100,28 +100,21 @@ right:[
 
 for(let dir in animationFiles){
 
-
     animationFiles[dir].forEach(file=>{
-
 
         let img = new Image();
 
-
-        img.src =
-        "./assets/"+file;
-
+        img.src="./assets/"+file;
 
         animationImages[dir].push(img);
 
-
     });
-
 
 }
 
 
 
-let lastDirection = "front";
+let lastDirection="front";
 
 
 
@@ -131,10 +124,7 @@ let lastDirection = "front";
 
 let mapImage = new Image();
 
-
-mapImage.src =
-"./assets/office.png";
-
+mapImage.src="./assets/office.png";
 
 
 
@@ -146,20 +136,20 @@ socket.on(
 "connect",
 ()=>{
 
-
     console.log(
         "서버 연결",
         socket.id
     );
 
-
 });
+
+
+
 // ======================
 // 방 만들기
 // ======================
 
 window.createRoom=function(){
-
 
     socket.emit(
         "createRoom",
@@ -167,7 +157,6 @@ window.createRoom=function(){
             name:"Player"
         }
     );
-
 
 };
 
@@ -177,11 +166,10 @@ socket.on(
 "roomCreated",
 (code)=>{
 
+    roomCode=code;
 
-    roomCode = code;
 
-
-    const roomText =
+    const roomText=
     document.getElementById(
         "myRoomCode"
     );
@@ -189,16 +177,12 @@ socket.on(
 
     if(roomText){
 
-
-        roomText.innerHTML =
+        roomText.innerHTML=
         "내 방 코드 : "+code;
-
 
     }
 
-
 });
-
 
 
 
@@ -209,7 +193,7 @@ socket.on(
 window.joinRoom=function(){
 
 
-    roomCode =
+    roomCode=
     document.getElementById(
         "inviteCode"
     )
@@ -220,20 +204,17 @@ window.joinRoom=function(){
 
     if(roomCode===""){
 
-
         alert(
             "코드를 입력하세요"
         );
 
-
         return;
-
 
     }
 
 
 
-    const select =
+    const select=
     document.getElementById(
         "characterSelect"
     );
@@ -241,16 +222,12 @@ window.joinRoom=function(){
 
     if(select){
 
-
-        select.style.display =
-        "block";
-
+        select.style.display="block";
 
     }
 
 
 };
-
 
 
 
@@ -262,13 +239,9 @@ socket.on(
 "players",
 (data)=>{
 
-
-    players = data;
-
+    players=data;
 
 });
-
-
 
 
 
@@ -279,11 +252,10 @@ socket.on(
 window.startGame=function(){
 
 
-    const nick =
+    const nick=
     document.getElementById(
         "nickname"
     );
-
 
 
     nickname =
@@ -296,15 +268,13 @@ window.startGame=function(){
 
     if(nickname===""){
 
-
         nickname="Player";
-
 
     }
 
 
 
-    const login =
+    const login=
     document.getElementById(
         "loginBox"
     );
@@ -312,14 +282,13 @@ window.startGame=function(){
 
     if(login){
 
-        login.style.display =
-        "none";
+        login.style.display="none";
 
     }
 
 
 
-    const select =
+    const select=
     document.getElementById(
         "characterSelect"
     );
@@ -327,14 +296,13 @@ window.startGame=function(){
 
     if(select){
 
-        select.style.display =
-        "none";
+        select.style.display="none";
 
     }
 
 
 
-    const screen =
+    const screen=
     document.getElementById(
         "gameScreen"
     );
@@ -342,33 +310,42 @@ window.startGame=function(){
 
     if(screen){
 
-        screen.style.display =
-        "block";
+        screen.style.display="block";
 
     }
 
 
 
-    canvas =
+    canvas=
     document.getElementById(
         "gameCanvas"
     );
 
 
+    if(!canvas){
 
-    ctx =
+        console.error(
+            "canvas 없음"
+        );
+
+        return;
+
+    }
+
+
+
+    ctx=
     canvas.getContext(
         "2d"
     );
 
 
 
-    player.x = 350;
-    player.y = 250;
+    player.x=350;
+    player.y=250;
 
 
-
-    started = true;
+    started=true;
 
 
 
@@ -390,15 +367,10 @@ window.startGame=function(){
     setupChatDrag();
 
 
-
     draw();
 
 
 };
-
-
-
-
 // ======================
 // 화면 그리기
 // ======================
@@ -424,7 +396,6 @@ function draw(){
 
     if(mapImage.complete){
 
-
         ctx.drawImage(
 
             mapImage,
@@ -439,7 +410,6 @@ function draw(){
 
         );
 
-
     }
 
 
@@ -449,23 +419,23 @@ function draw(){
     // 다른 플레이어
     // ======================
 
-
     for(let id in players){
 
 
-        // 내 아이디 제외
-
-        if(id === socket.id)
+        if(id===socket.id)
             continue;
 
 
 
-        let p =
-        players[id];
+        let p=players[id];
+
+
+        if(!p)
+            continue;
 
 
 
-        let img =
+        let img=
         animationImages.front[0];
 
 
@@ -486,7 +456,6 @@ function draw(){
                 80
 
             );
-
 
         }
 
@@ -526,7 +495,7 @@ function draw(){
     // ======================
 
 
-    let myImg =
+    let myImg=
     animationImages[lastDirection][0];
 
 
@@ -547,7 +516,6 @@ function draw(){
             80
 
         );
-
 
     }
 
@@ -587,11 +555,19 @@ function draw(){
 
 
 }
+
+
+
 // ======================
 // 이름표
 // ======================
 
 function drawName(x,y,name){
+
+
+    if(!name)
+        return;
+
 
 
     ctx.fillStyle="white";
@@ -621,6 +597,7 @@ function drawName(x,y,name){
 
     ctx.fillStyle="black";
 
+
     ctx.font="14px Arial";
 
 
@@ -640,6 +617,7 @@ function drawName(x,y,name){
 
 
 
+
 // ======================
 // 캐릭터 위 말풍선
 // ======================
@@ -647,7 +625,7 @@ function drawName(x,y,name){
 function drawBubble(x,y,name){
 
 
-    let bubble =
+    let bubble=
     bubbles[name];
 
 
@@ -657,9 +635,8 @@ function drawBubble(x,y,name){
 
 
 
-    if(
-        Date.now() - bubble.time > 5000
-    ){
+    if(Date.now()-bubble.time > 5000){
+
 
         delete bubbles[name];
 
@@ -696,7 +673,9 @@ function drawBubble(x,y,name){
 
     ctx.fillStyle="black";
 
+
     ctx.font="13px Arial";
+
 
 
     ctx.fillText(
@@ -724,14 +703,14 @@ function drawSideBubble(){
 
 
     let x =
-    canvas.width - 220;
+    canvas.width-220;
 
 
-    let y = 30;
+    let y=30;
 
 
 
-    ctx.font =
+    ctx.font=
     "14px Arial";
 
 
@@ -740,12 +719,12 @@ function drawSideBubble(){
     (b,i)=>{
 
 
-        let boxY =
-        y + i*60;
+        let boxY=
+        y+i*60;
 
 
 
-        ctx.fillStyle =
+        ctx.fillStyle=
         "white";
 
 
@@ -772,7 +751,7 @@ function drawSideBubble(){
 
 
 
-        ctx.fillStyle =
+        ctx.fillStyle=
         "black";
 
 
@@ -800,14 +779,10 @@ function drawSideBubble(){
         );
 
 
-
     });
 
 
 }
-
-
-
 
 // ======================
 // 키 입력
@@ -843,7 +818,6 @@ document.addEventListener(
 
 
 
-
 document.addEventListener(
 "keyup",
 (e)=>{
@@ -858,16 +832,14 @@ document.addEventListener(
 
 
 
-
 window.addEventListener(
 "blur",
 ()=>{
 
-
     keys={};
 
-
 });
+
 
 
 
@@ -891,7 +863,6 @@ function updatePlayer(){
 
         return;
 
-
     }
 
 
@@ -905,11 +876,9 @@ function updatePlayer(){
 
     if(keys["w"]){
 
-
         moveY=-1;
 
         lastDirection="back";
-
 
     }
 
@@ -917,11 +886,9 @@ function updatePlayer(){
 
     if(keys["s"]){
 
-
         moveY=1;
 
         lastDirection="front";
-
 
     }
 
@@ -929,11 +896,9 @@ function updatePlayer(){
 
     if(keys["a"]){
 
-
         moveX=-1;
 
         lastDirection="left";
-
 
     }
 
@@ -941,13 +906,12 @@ function updatePlayer(){
 
     if(keys["d"]){
 
-
         moveX=1;
 
         lastDirection="right";
 
-
     }
+
 
 
 
@@ -966,40 +930,52 @@ function updatePlayer(){
 
 
 
-        moveX /= len;
+        moveX/=len;
 
-        moveY /= len;
+        moveY/=len;
 
 
 
         player.x +=
-        moveX * player.speed;
+        moveX*player.speed;
 
 
 
         player.y +=
-        moveY * player.speed;
+        moveY*player.speed;
 
 
 
 
-        if(player.x < 0)
+        if(player.x<0)
+
             player.x=0;
 
 
 
-        if(player.y < 0)
+        if(player.y<0)
+
             player.y=0;
 
 
 
-        if(player.x > canvas.width-60)
-            player.x=canvas.width-60;
+        if(
+            player.x >
+            canvas.width-60
+        )
+
+            player.x=
+            canvas.width-60;
 
 
 
-        if(player.y > canvas.height-80)
-            player.y=canvas.height-80;
+        if(
+            player.y >
+            canvas.height-80
+        )
+
+            player.y=
+            canvas.height-80;
 
 
 
@@ -1035,8 +1011,9 @@ updatePlayer();
 
 
 
+
 // ======================
-// 채팅
+// 채팅 입력
 // ======================
 
 function setupChat(){
@@ -1050,13 +1027,14 @@ function setupChat(){
 
 
     if(!input)
+
         return;
 
 
 
 
-    input.onkeydown=function(e){
 
+    input.onkeydown=function(e){
 
 
         if(e.key==="Enter"){
@@ -1069,10 +1047,15 @@ function setupChat(){
 
 
             if(text==="")
+
                 return;
 
 
 
+
+
+            // 수정 부분
+            // 서버에 항상 객체 형태로 전달
 
             socket.emit(
                 "chat",
@@ -1086,6 +1069,8 @@ function setupChat(){
             );
 
 
+
+            // 내 말풍선
 
             bubbles[nickname]={
 
@@ -1109,6 +1094,12 @@ function setupChat(){
 
 
 }
+
+
+
+
+
+
 // ======================
 // 서버 채팅 받기
 // ======================
@@ -1125,34 +1116,64 @@ socket.on(
 
 
 
-    // 혹시 서버가 object로 보내는 경우 처리
+    let name="Player";
 
-    let name =
-    data.name || "Player";
-
-
-    let text =
-    data.text;
+    let text="";
 
 
 
-    if(typeof text === "object"){
+
+    // 서버가 객체로 보내는 경우
+
+    if(
+        typeof data === "object" &&
+        data !== null
+    ){
+
+
+        name =
+        data.name ||
+        "Player";
+
 
 
         text =
-        text.text || "";
+        data.text ||
+        "";
 
+    }
+    else{
+
+
+        text=data;
 
     }
 
 
 
-    // 캐릭터 말풍선
+
+
+    // Object Object 방지
+
+    if(
+        typeof text === "object"
+    ){
+
+
+        text =
+        text.text ||
+        JSON.stringify(text);
+
+    }
+
+
+
+
 
     bubbles[name]={
 
 
-        text:text,
+        text:String(text),
 
         time:Date.now()
 
@@ -1161,30 +1182,28 @@ socket.on(
 
 
 
-    // 오른쪽 채팅 목록
-
     sideBubbles.push({
 
-        name:name,
+        name:String(name),
 
-        text:text
+        text:String(text)
 
     });
 
 
 
-    if(sideBubbles.length > 5){
 
+
+    if(sideBubbles.length>5){
 
         sideBubbles.shift();
-
 
     }
 
 
 
 
-    // 기존 채팅창
+
 
     const box =
     document.getElementById(
@@ -1204,8 +1223,8 @@ socket.on(
 
 
         div.innerText =
-        name +
-        " : " +
+        name+
+        " : "+
         text;
 
 
@@ -1223,12 +1242,6 @@ socket.on(
 
 
 });
-
-
-
-
-
-
 // ======================
 // 채팅창 드래그
 // ======================
@@ -1244,7 +1257,9 @@ function setupChatDrag(){
 
 
     if(!chatBox)
+
         return;
+
 
 
 
@@ -1257,6 +1272,7 @@ function setupChatDrag(){
 
 
 
+
     chatBox.addEventListener(
         "mousedown",
         (e)=>{
@@ -1265,6 +1281,7 @@ function setupChatDrag(){
             if(
                 e.target.id==="chatInput"
             )
+
                 return;
 
 
@@ -1279,26 +1296,27 @@ function setupChatDrag(){
 
 
             offsetX =
-            e.clientX - rect.left;
+            e.clientX -
+            rect.left;
 
 
 
             offsetY =
-            e.clientY - rect.top;
+            e.clientY -
+            rect.top;
 
 
 
-            chatBox.style.right =
-            "auto";
+            chatBox.style.right="auto";
 
-
-            chatBox.style.bottom =
-            "auto";
+            chatBox.style.bottom="auto";
 
 
 
         }
     );
+
+
 
 
 
@@ -1310,7 +1328,9 @@ function setupChatDrag(){
 
 
             if(!dragging)
+
                 return;
+
 
 
 
@@ -1335,6 +1355,8 @@ function setupChatDrag(){
 
 
 
+
+
     document.addEventListener(
         "mouseup",
         ()=>{
@@ -1349,6 +1371,8 @@ function setupChatDrag(){
 
 
 }
+
+
 
 
 
