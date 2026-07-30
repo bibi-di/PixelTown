@@ -8,7 +8,8 @@ const app = express();
 const server = http.createServer(app);
 
 
-const io = new Server(server,{
+
+const io = new Server(server, {
 
     cors:{
         origin:"*",
@@ -18,9 +19,12 @@ const io = new Server(server,{
 });
 
 
+
 app.get("/",(req,res)=>{
 
-    res.send("PixelTown Server Running");
+    res.send(
+        "PixelTown Server Running"
+    );
 
 });
 
@@ -28,12 +32,10 @@ app.get("/",(req,res)=>{
 
 
 // ======================
-// 방 저장
+// 방 데이터
 // ======================
 
-let rooms = {};
-
-
+let rooms={};
 
 
 // ======================
@@ -42,18 +44,22 @@ let rooms = {};
 
 function createCode(){
 
+
     let code;
 
 
     do{
 
-        code = Math.random()
+
+        code=Math.random()
         .toString(36)
         .substring(2,7)
         .toUpperCase();
 
 
-    }while(rooms[code]);
+    }
+    while(rooms[code]);
+
 
 
     return code;
@@ -63,8 +69,13 @@ function createCode(){
 
 
 
+// ======================
+// 접속
+// ======================
 
-io.on("connection",(socket)=>{
+io.on(
+"connection",
+(socket)=>{
 
 
 console.log(
@@ -75,9 +86,8 @@ socket.id
 
 
 
-
 // ======================
-// 방 만들기
+// 방 생성
 // ======================
 
 
@@ -93,14 +103,13 @@ socket.on(
     rooms[code]={
 
 
-        host:socket.id,
+        owner:socket.id,
 
 
-        usedInvite:false,
+        used:false,
 
 
         players:{}
-
 
 
     };
@@ -110,31 +119,25 @@ socket.on(
 
     socket.join(code);
 
-
     socket.room=code;
-
-
-    socket.isHost=true;
-
 
 
 
     rooms[code].players[socket.id]={
 
 
+        id:socket.id,
+
+        name:data?.name || "Player",
+
         x:350,
 
         y:250,
 
-        name:data.name || "방장",
-
-        id:socket.id,
-
-        host:true
+        owner:true
 
 
     };
-
 
 
 
@@ -146,20 +149,13 @@ socket.on(
 
 
 
-
     io.to(code).emit(
         "players",
         rooms[code].players
     );
 
 
-
 });
-
-
-
-
-
 
 
 
@@ -194,17 +190,9 @@ socket.on(
 
 
 
+    // 이미 사용된 코드 확인
 
-
-    let room=rooms[code];
-
-
-
-
-
-    // 이미 한번 사용된 초대코드 차단
-
-    if(room.usedInvite){
+    if(rooms[code].used){
 
 
         socket.emit(
@@ -215,18 +203,14 @@ socket.on(
 
         return;
 
-
     }
 
 
 
 
+    // 코드 1회 사용 처리
 
-
-    // 초대코드 사용 처리
-
-    room.usedInvite=true;
-
+    rooms[code].used=true;
 
 
 
@@ -237,24 +221,23 @@ socket.on(
     socket.room=code;
 
 
-    socket.isHost=false;
+
+    rooms[code].players[socket.id]={
 
 
+        id:socket.id,
 
 
-
-    room.players[socket.id]={
+        name:data.name || "Player",
 
 
         x:350,
 
+
         y:250,
 
-        name:data.name || "Player",
 
-        id:socket.id,
-
-        host:false
+        owner:false
 
 
     };
@@ -262,20 +245,14 @@ socket.on(
 
 
 
-
-
-
     io.to(code).emit(
         "players",
-        room.players
+        rooms[code].players
     );
 
 
 
 });
-
-
-
 
 
 
@@ -317,7 +294,6 @@ socket.on(
 
 
 
-
     io.to(room).emit(
         "players",
         rooms[room].players
@@ -325,9 +301,6 @@ socket.on(
 
 
 });
-
-
-
 
 
 
@@ -352,19 +325,18 @@ socket.on(
 
 
 
-
-    let player =
+    let player=
     rooms[room]?.players[socket.id];
-
 
 
 
     if(player){
 
 
-
         io.to(room).emit(
+
             "chat",
+
             {
 
                 name:player.name,
@@ -372,6 +344,7 @@ socket.on(
                 text:text
 
             }
+
         );
 
 
@@ -380,9 +353,6 @@ socket.on(
 
 
 });
-
-
-
 
 
 
@@ -399,16 +369,7 @@ socket.on(
 ()=>{
 
 
-    let roomCode=socket.room;
-
-
-
-    if(!roomCode)
-        return;
-
-
-
-    let room=rooms[roomCode];
+    let room=socket.room;
 
 
 
@@ -417,23 +378,32 @@ socket.on(
 
 
 
-
-
-
-    delete room.players[socket.id];
-
-
+    if(!rooms[room])
+        return;
 
 
 
 
-
-    // 방장이 나가면 방 삭제
-
-    if(socket.id===room.host){
+    delete rooms[room].players[socket.id];
 
 
-        delete rooms[roomCode];
+
+
+
+    // 방장 나가면 방 삭제
+
+    if(
+        rooms[room].owner===socket.id
+    ){
+
+
+        io.to(room).emit(
+            "joinError",
+            "방장이 나가 방이 종료되었습니다."
+        );
+
+
+        delete rooms[room];
 
 
         return;
@@ -445,29 +415,36 @@ socket.on(
 
 
 
+    // 사람이 없으면 삭제
 
-    // 친구가 나가면 초대코드 폐기
+    if(
+        Object.keys(
+            rooms[room].players
+        ).length===0
+    ){
 
-    room.usedInvite=true;
+
+        delete rooms[room];
+
+
+        return;
+
+    }
 
 
 
 
-
-    io.to(roomCode).emit(
+    io.to(room).emit(
         "players",
-        room.players
+        rooms[room].players
     );
 
 
 
-
 });
 
 
-
 });
-
 
 
 
@@ -478,7 +455,9 @@ process.env.PORT || 3000;
 
 
 
-server.listen(PORT,()=>{
+server.listen(
+PORT,
+()=>{
 
 
 console.log(

@@ -17,6 +17,7 @@
 <body>
 
 
+
 <!-- ======================
      로비
 ====================== -->
@@ -28,25 +29,31 @@
 <h1>PixelTown</h1>
 
 
+
 <button onclick="createRoom()">
 방 만들기
 </button>
 
 
+
 <p id="myRoomCode"></p>
+
 
 
 <hr>
 
 
-<input 
-id="inviteCode" 
-placeholder="초대 코드">
+
+<input
+id="inviteCode"
+placeholder="초대 코드 입력">
+
 
 
 <button onclick="joinRoom()">
 입장
 </button>
+
 
 
 <p id="message"></p>
@@ -63,7 +70,9 @@ placeholder="초대 코드">
 ====================== -->
 
 
-<div id="characterSelect" style="display:none;">
+<div id="characterSelect"
+style="display:none;">
+
 
 
 <div class="characterWindow">
@@ -79,18 +88,17 @@ placeholder="초대 코드">
 
 <div class="avatarFrame">
 
+
 <img
 id="selectedAvatar"
-src="./assets/tile000.png"
-alt="avatar">
+src="./assets/tile000.png">
+
 
 </div>
 
 
 
 
-
-<!-- 화살표 영역 -->
 
 <div class="avatarControl">
 
@@ -100,14 +108,11 @@ alt="avatar">
 </button>
 
 
-<span id="avatarNumber" style="display:none;">
-1 / 16
-</span>
-
 
 <button onclick="nextAvatar()">
 ▶
 </button>
+
 
 
 </div>
@@ -116,11 +121,9 @@ alt="avatar">
 
 
 
-
 <p class="avatarName">
 귀여운 소녀
 </p>
-
 
 
 
@@ -135,8 +138,8 @@ placeholder="닉네임">
 
 
 <button
-onclick="startGame()"
-class="startButton">
+class="startButton"
+onclick="startGame()">
 
 게임 시작
 
@@ -157,13 +160,15 @@ class="startButton">
 
 
 
-
 <!-- ======================
      게임 화면
 ====================== -->
 
 
-<div id="gameScreen" style="display:none;">
+<div id="gameScreen"
+style="display:none;">
+
+
 
 
 
@@ -171,24 +176,40 @@ class="startButton">
 id="gameCanvas"
 width="800"
 height="600">
+
 </canvas>
 
 
 
 
 
+
+<!-- ======================
+     채팅창
+====================== -->
+
+
 <div id="chatBox">
 
 
-<div id="messages"></div>
+
+<div id="messages">
+
+
+</div>
+
+
 
 
 <input
 id="chatInput"
-placeholder="Enter로 채팅">
+placeholder="Enter 입력으로 채팅">
 
 
 </div>
+
+
+
 
 
 </div>

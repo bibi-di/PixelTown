@@ -1,7 +1,3 @@
-/* =====================
-   기본
-===================== */
-
 *{
     box-sizing:border-box;
 }
@@ -27,9 +23,9 @@ body{
 
 
 
-/* =====================
+/* ======================
    로비
-===================== */
+====================== */
 
 
 #loginBox{
@@ -42,19 +38,26 @@ body{
 
     transform:translate(-50%,-50%);
 
+
     width:350px;
 
     padding:40px;
 
+
     background:rgba(30,30,30,0.95);
+
 
     border-radius:20px;
 
+
     text-align:center;
+
 
     box-shadow:0 0 30px black;
 
 }
+
+
 
 
 #loginBox h1{
@@ -68,276 +71,46 @@ body{
 
 
 
-/* =====================
-   캐릭터 선택창
-===================== */
 
+button{
 
-#characterSelect{
-
-    position:absolute;
-
-    top:50%;
-
-    left:50%;
-
-    transform:translate(-50%,-50%);
-
-
-    width:420px;
-
-    height:560px;
-
-
-    display:flex;
-
-    justify-content:center;
-
-    align-items:center;
-
-
-    background:#b8d98c;
-
-
-    border:8px solid #5c3b1e;
-
-
-    box-shadow:
-
-    0 0 0 6px #d8b36a,
-
-    0 15px 0 #3d2615;
-
-}
-
-
-
-
-.characterWindow{
-
-    width:350px;
-
-    height:480px;
-
-
-    background:#f7e7c6;
-
-
-    border:5px solid #8b5a2b;
-
-
-    border-radius:10px;
-
-
-    padding:25px;
-
-
-    display:flex;
-
-    flex-direction:column;
-
-    align-items:center;
-
-    justify-content:flex-start;
-
-
-}
-
-
-
-
-.characterWindow h2{
-
-    margin:0 0 20px;
-
-    color:#4b2d15;
-
-    font-size:28px;
-
-}
-
-
-
-
-
-/* =====================
-   아바타
-===================== */
-
-
-.avatarFrame{
 
     width:180px;
 
-    height:230px;
+    height:45px;
 
 
-    margin:0 auto;
+    margin:8px;
 
 
-    background:white;
+    border:none;
 
 
-    border:5px solid #8b5a2b;
+    border-radius:12px;
 
 
-    display:flex;
+    background:#4caf50;
 
 
-    justify-content:center;
+    color:white;
 
 
-    align-items:center;
+    font-size:16px;
 
 
-    overflow:hidden;
-
-
-}
-
-
-
-.avatarFrame img{
-
-    width:128px;
-
-    height:128px;
-
-
-    object-fit:contain;
-
-
-    image-rendering:pixelated;
+    cursor:pointer;
 
 }
 
 
 
+button:hover{
 
-
-/* =====================
-   화살표
-===================== */
-
-
-.avatarControl{
-
-
-    width:100%;
-
-
-    display:flex;
-
-
-    flex-direction:row;
-
-
-    justify-content:center;
-
-
-    align-items:center;
-
-
-    gap:20px;
-
-
-    margin-top:15px;
-
+    background:#66bb6a;
 
 }
 
 
-
-.avatarControl button{
-
-
-    width:50px;
-
-    height:40px;
-
-
-    margin:0;
-
-
-    background:#8b5a2b;
-
-
-    font-size:22px;
-
-
-    flex-shrink:0;
-
-
-}
-
-
-
-.avatarControl button:hover{
-
-    background:#b66b32;
-
-}
-
-
-
-
-#avatarNumber{
-
-
-    width:70px;
-
-
-    text-align:center;
-
-
-    color:#4b2d15;
-
-
-    font-weight:bold;
-
-
-    font-size:18px;
-
-
-}
-
-
-
-
-
-.avatarName{
-
-
-    width:100%;
-
-
-    text-align:center;
-
-
-    white-space:nowrap;
-
-
-    color:#4b2d15;
-
-
-    font-size:20px;
-
-
-    font-weight:bold;
-
-
-    margin:20px 0 10px;
-
-
-}
-
-
-
-
-
-/* =====================
-   입력
-===================== */
 
 
 input{
@@ -363,6 +136,100 @@ input{
 
     font-size:15px;
 
+}
+
+
+
+
+
+/* ======================
+ 캐릭터 선택
+====================== */
+
+
+#characterSelect{
+
+
+    position:absolute;
+
+
+    top:50%;
+
+
+    left:50%;
+
+
+    transform:translate(-50%,-50%);
+
+
+    width:420px;
+
+
+    height:560px;
+
+
+    display:flex;
+
+
+    justify-content:center;
+
+
+    align-items:center;
+
+
+    background:#b8d98c;
+
+
+    border:8px solid #5c3b1e;
+
+
+}
+
+
+
+
+.characterWindow{
+
+
+    width:350px;
+
+
+    height:480px;
+
+
+    background:#f7e7c6;
+
+
+    border:5px solid #8b5a2b;
+
+
+    border-radius:10px;
+
+
+    padding:25px;
+
+
+    display:flex;
+
+
+    flex-direction:column;
+
+
+    align-items:center;
+
+
+}
+
+
+
+
+.characterWindow h2{
+
+
+    color:#4b2d15;
+
+
+    margin:0 0 20px;
 
 }
 
@@ -370,48 +237,103 @@ input{
 
 
 
-/* =====================
-   버튼
-===================== */
-
-
-button{
+.avatarFrame{
 
 
     width:180px;
 
 
-    height:45px;
+    height:230px;
 
 
-    margin:8px;
+    background:white;
 
 
-    border:none;
+    border:5px solid #8b5a2b;
 
 
-    border-radius:12px;
+    display:flex;
 
 
-    background:#4caf50;
+    justify-content:center;
 
 
-    color:white;
-
-
-    font-size:16px;
-
-
-    cursor:pointer;
+    align-items:center;
 
 
 }
 
 
 
-button:hover{
 
-    background:#66bb6a;
+.avatarFrame img{
+
+
+    width:128px;
+
+
+    height:128px;
+
+
+    image-rendering:pixelated;
+
+}
+
+
+
+
+.avatarControl{
+
+
+    display:flex;
+
+
+    justify-content:center;
+
+
+    align-items:center;
+
+
+    gap:40px;
+
+
+    margin-top:20px;
+
+}
+
+
+
+
+.avatarControl button{
+
+
+    width:50px;
+
+
+    height:40px;
+
+
+    background:#8b5a2b;
+
+
+}
+
+
+
+
+.avatarName{
+
+
+    color:#4b2d15;
+
+
+    font-size:20px;
+
+
+    font-weight:bold;
+
+
+    margin:20px;
 
 }
 
@@ -421,29 +343,13 @@ button:hover{
 .startButton{
 
 
-    display:block;
-
-
-    margin:15px auto;
-
-
-    background:#9b5b2b;
+    width:180px;
 
 
     height:55px;
 
 
-    font-size:20px;
-
-
-}
-
-
-
-.startButton:hover{
-
-
-    background:#b66b32;
+    background:#9b5b2b;
 
 
 }
@@ -452,10 +358,9 @@ button:hover{
 
 
 
-
-/* =====================
-   게임 화면
-===================== */
+/* ======================
+ 게임 화면
+====================== */
 
 
 #gameScreen{
@@ -481,6 +386,7 @@ button:hover{
 
 
 
+
 canvas{
 
 
@@ -490,63 +396,101 @@ canvas{
     height:600px;
 
 
-    background:black;
-
-
     border:3px solid #555;
+
+
+    background:black;
 
 
     image-rendering:pixelated;
 
-
 }
 
 
 
 
 
-
-/* =====================
-   채팅
-===================== */
+/* ======================
+ 채팅창
+====================== */
 
 
 #chatBox{
 
+
     position:absolute;
 
-    right:20px;
-    bottom:20px;
+
+    left:20px;
+
+
+    top:20px;
+
 
     width:250px;
+
+
     height:180px;
 
-    cursor:move;
+
+    min-width:150px;
+
+
+    min-height:100px;
+
+
+    max-width:500px;
+
+
+    max-height:400px;
+
+
 
     background:rgba(255,255,255,0.9);
 
+
+    color:black;
+
+
     border-radius:15px;
+
 
     padding:10px;
 
+
+    display:flex;
+
+
+    flex-direction:column;
+
+
+
     resize:both;
+
 
     overflow:hidden;
 
 
+    cursor:move;
+
 }
+
+
 
 
 
 #messages{
 
+
     flex:1;
+
 
     overflow-y:auto;
 
-    margin-bottom:10px;
 
 }
+
+
 
 
 
@@ -556,62 +500,37 @@ canvas{
     background:rgba(0,0,0,0.1);
 
 
-    border-radius:20px;
+    border-radius:15px;
 
 
-    padding:6px 12px;
+    padding:5px 10px;
 
 
-    margin-bottom:3px;
+    margin-bottom:5px;
 
 
 }
+
 
 
 
 
 #chatInput{
 
+
+    width:100%;
+
+
     height:35px;
 
+
+    margin:0;
+
+
+    border:1px solid #aaa;
+
+
     border-radius:10px;
-
-    border:1px solid #ccc;
-
-    padding:5px;
-
-}
-
-
-
-
-/* =====================
-   말풍선
-===================== */
-
-
-#speechBubble{
-
-
-    position:absolute;
-
-
-    display:none;
-
-
-    background:white;
-
-
-    color:black;
-
-
-    padding:8px 12px;
-
-
-    border-radius:15px;
-
-
-    font-size:13px;
 
 
 }
@@ -624,248 +543,4 @@ canvas{
 
     display:none;
 
-}
-/* 캐릭터 선택 강제 정렬 */
-
-.characterWindow{
-    display:flex !important;
-    flex-direction:column !important;
-    align-items:center !important;
-}
-
-
-.avatarControl{
-    display:flex !important;
-    flex-direction:row !important;
-    justify-content:center !important;
-    align-items:center !important;
-    width:100% !important;
-}
-
-
-.avatarName{
-    display:block !important;
-    width:100% !important;
-    text-align:center !important;
-    white-space:nowrap !important;
-}
-
-
-.startButton{
-    display:block !important;
-    margin:15px auto !important;
-}
-/* =====================
-   캐릭터 선택 최종 정렬
-===================== */
-
-
-.avatarControl{
-
-    width:100% !important;
-
-    display:flex !important;
-
-    flex-direction:row !important;
-
-    justify-content:center !important;
-
-    align-items:center !important;
-
-    gap:30px !important;
-
-}
-
-
-
-.avatarControl button{
-
-    flex:none !important;
-
-    width:50px !important;
-
-    height:40px !important;
-
-}
-
-
-
-
-#avatarNumber{
-
-    display:none !important;
-
-}
-
-
-
-
-
-.avatarName{
-
-    display:block !important;
-
-    width:100% !important;
-
-    text-align:center !important;
-
-    white-space:nowrap !important;
-
-}
-
-
-
-
-
-.startButton{
-
-    width:180px !important;
-
-    height:55px !important;
-
-    display:block !important;
-
-    margin:15px auto !important;
-
-    white-space:nowrap !important;
-
-}
-/* ===== 캐릭터 선택 최종 강제 정렬 ===== */
-
-
-.characterWindow{
-
-    width:350px !important;
-    height:480px !important;
-
-    display:flex !important;
-    flex-direction:column !important;
-
-    align-items:center !important;
-
-    text-align:center !important;
-
-}
-
-
-
-
-.avatarControl{
-
-    display:flex !important;
-
-    flex-direction:row !important;
-
-    justify-content:center !important;
-
-    align-items:center !important;
-
-    width:250px !important;
-
-    height:50px !important;
-
-}
-
-
-
-
-.avatarControl button{
-
-    width:50px !important;
-
-    min-width:50px !important;
-
-    height:40px !important;
-
-    flex:none !important;
-
-}
-
-
-
-
-#avatarNumber{
-
-    display:none !important;
-
-}
-
-
-
-
-.avatarName{
-
-    display:block !important;
-
-    width:250px !important;
-
-    height:30px !important;
-
-    text-align:center !important;
-
-    white-space:nowrap !important;
-
-}
-
-
-
-
-input#nickname{
-
-    display:block !important;
-
-    width:240px !important;
-
-    height:40px !important;
-
-}
-
-
-
-
-.startButton{
-
-    display:block !important;
-
-    width:180px !important;
-
-    min-width:180px !important;
-
-    height:55px !important;
-
-    white-space:nowrap !important;
-
-}
-.characterWindow{
-    display:flex !important;
-    flex-direction:column !important;
-    align-items:center !important;
-}
-
-
-.avatarControl{
-    display:flex !important;
-    flex-direction:row !important;
-    justify-content:center !important;
-    align-items:center !important;
-    gap:40px !important;
-    width:100% !important;
-}
-
-
-.avatarName{
-    width:100% !important;
-    text-align:center !important;
-    white-space:nowrap !important;
-}
-
-
-#nickname{
-    width:240px !important;
-}
-
-
-.startButton{
-    width:180px !important;
-    white-space:nowrap !important;
 }
