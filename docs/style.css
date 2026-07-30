@@ -13,21 +13,30 @@ box-sizing:border-box;
 
 body{
 
+
 margin:0;
+
 
 width:100vw;
 
+
 height:100vh;
+
 
 overflow:hidden;
 
+
 background:#222;
+
 
 font-family:Arial,sans-serif;
 
+
 color:white;
 
+
 }
+
 
 
 
@@ -41,32 +50,42 @@ color:white;
 
 position:absolute;
 
+
 top:50%;
+
 
 left:50%;
 
+
 transform:translate(-50%,-50%);
+
 
 
 width:350px;
 
 
+
 padding:40px;
+
 
 
 background:rgba(30,30,30,0.95);
 
 
+
 border-radius:20px;
 
 
+
 text-align:center;
+
 
 
 box-shadow:0 0 30px black;
 
 
 }
+
 
 
 
@@ -99,22 +118,28 @@ position:absolute;
 
 top:50%;
 
+
 left:50%;
 
 
 transform:translate(-50%,-50%);
 
 
+
 width:420px;
+
 
 
 height:560px;
 
 
+
 display:flex;
 
 
+
 justify-content:center;
+
 
 
 align-items:center;
@@ -128,15 +153,18 @@ background:#b8d98c;
 border:8px solid #5c3b1e;
 
 
+
 box-shadow:
 
+
 0 0 0 6px #d8b36a,
+
 
 0 15px 0 #3d2615;
 
 
-
 }
+
 
 
 
@@ -164,8 +192,8 @@ text-align:center;
 padding:25px;
 
 
-
 }
+
 
 
 
@@ -186,7 +214,12 @@ font-size:28px;
 
 
 
-/* 캐릭터 미리보기 */
+
+
+
+/* =====================
+   아바타 미리보기
+===================== */
 
 
 .avatarFrame{
@@ -195,16 +228,74 @@ font-size:28px;
 width:180px;
 
 
-height:220px;
+height:230px;
 
 
 margin:auto;
 
 
-background:#ffffff;
+
+background:white;
+
 
 
 border:5px solid #8b5a2b;
+
+
+
+display:flex;
+
+
+
+justify-content:center;
+
+
+
+align-items:center;
+
+
+
+image-rendering:pixelated;
+
+
+
+overflow:hidden;
+
+
+}
+
+
+
+
+.avatarFrame img{
+
+
+width:128px;
+
+
+height:128px;
+
+
+
+object-fit:contain;
+
+
+
+image-rendering:pixelated;
+
+
+
+}
+
+
+
+
+/* =====================
+   아바타 이동 버튼
+===================== */
+
+
+.avatarControl{
 
 
 display:flex;
@@ -216,7 +307,10 @@ justify-content:center;
 align-items:center;
 
 
-image-rendering:pixelated;
+gap:20px;
+
+
+margin-top:15px;
 
 
 }
@@ -224,19 +318,54 @@ image-rendering:pixelated;
 
 
 
-.avatarFrame img{
+.avatarControl button{
 
 
-width:120px;
+width:50px;
 
 
-height:auto;
+height:40px;
 
 
-image-rendering:pixelated;
+margin:0;
+
+
+background:#8b5a2b;
+
+
+font-size:22px;
 
 
 }
+
+
+
+
+.avatarControl button:hover{
+
+
+background:#b66b32;
+
+
+}
+
+
+
+
+#avatarNumber{
+
+
+color:#4b2d15;
+
+
+font-weight:bold;
+
+
+font-size:18px;
+
+
+}
+
 
 
 
@@ -261,7 +390,11 @@ margin:20px;
 
 
 
-/* 입력 */
+
+
+/* =====================
+   입력
+===================== */
 
 
 input{
@@ -276,13 +409,17 @@ height:40px;
 margin:10px;
 
 
+
 padding-left:15px;
+
 
 
 border-radius:10px;
 
 
+
 border:3px solid #8b5a2b;
+
 
 
 font-size:15px;
@@ -294,7 +431,10 @@ font-size:15px;
 
 
 
-/* 버튼 */
+
+/* =====================
+   버튼
+===================== */
 
 
 button{
@@ -344,6 +484,7 @@ background:#66bb6a;
 
 
 
+
 .startButton{
 
 
@@ -388,13 +529,17 @@ width:100vw;
 height:100vh;
 
 
+
 display:flex;
+
 
 
 justify-content:center;
 
 
+
 align-items:center;
+
 
 
 }
@@ -411,16 +556,20 @@ width:800px;
 height:600px;
 
 
+
 background:black;
 
 
+
 border:3px solid #555;
+
 
 
 image-rendering:pixelated;
 
 
 }
+
 
 
 
@@ -448,13 +597,17 @@ left:50%;
 transform:translateX(-50%);
 
 
+
 background:white;
+
 
 
 padding:10px;
 
 
+
 border-radius:15px;
+
 
 
 }
@@ -468,16 +621,21 @@ border-radius:15px;
 color:black;
 
 
+
 width:300px;
+
 
 
 height:100px;
 
 
+
 overflow:auto;
 
 
+
 }
+
 
 
 
@@ -488,13 +646,17 @@ overflow:auto;
 background:rgba(0,0,0,0.1);
 
 
+
 border-radius:20px;
+
 
 
 padding:6px 12px;
 
 
+
 margin-bottom:3px;
+
 
 
 }
@@ -530,25 +692,33 @@ margin:0;
 position:absolute;
 
 
+
 display:none;
+
 
 
 background:white;
 
 
+
 color:black;
+
 
 
 padding:8px 12px;
 
 
+
 border-radius:15px;
+
 
 
 font-size:13px;
 
 
+
 }
+
 
 
 
@@ -557,58 +727,8 @@ font-size:13px;
 
 ::-webkit-scrollbar{
 
+
 display:none;
 
-}
-/* =====================
-   아바타 선택 버튼
-===================== */
-
-
-.avatarControl{
-
-display:flex;
-
-justify-content:center;
-
-align-items:center;
-
-gap:20px;
-
-margin-top:15px;
-
-}
-
-
-
-.avatarControl button{
-
-width:50px;
-
-height:40px;
-
-background:#8b5a2b;
-
-font-size:22px;
-
-}
-
-
-
-.avatarControl button:hover{
-
-background:#b66b32;
-
-}
-
-
-
-#avatarNumber{
-
-color:#4b2d15;
-
-font-weight:bold;
-
-font-size:18px;
 
 }

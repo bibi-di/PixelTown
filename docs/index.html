@@ -4,6 +4,7 @@
 <head>
 
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>PixelTown</title>
@@ -38,7 +39,9 @@
 <hr>
 
 
-<input id="inviteCode" placeholder="초대 코드">
+<input 
+id="inviteCode" 
+placeholder="초대 코드">
 
 
 <button onclick="joinRoom()">
@@ -74,11 +77,15 @@
 
 <div class="avatarFrame">
 
-<img 
+
+<img
 id="selectedAvatar"
-src="./assets/girl1.png"
+src="./assets/tile000.png"
 alt="avatar">
+
+
 </div>
+
 
 
 
@@ -90,9 +97,11 @@ alt="avatar">
 </button>
 
 
+
 <span id="avatarNumber">
-1 / 1
+1 / 16
 </span>
+
 
 
 <button onclick="nextAvatar()">
@@ -103,6 +112,8 @@ alt="avatar">
 </div>
 
 
+
+
 <p class="avatarName">
 귀여운 소녀
 </p>
@@ -111,7 +122,7 @@ alt="avatar">
 
 
 
-<input 
+<input
 id="nickname"
 placeholder="닉네임">
 
@@ -119,7 +130,7 @@ placeholder="닉네임">
 
 
 
-<button 
+<button
 onclick="startGame()"
 class="startButton">
 
@@ -138,12 +149,15 @@ class="startButton">
 
 
 
+
+
 <!-- ======================
      게임 화면
 ====================== -->
 
 
 <div id="gameScreen" style="display:none;">
+
 
 
 <canvas
@@ -153,14 +167,17 @@ height="600">
 </canvas>
 
 
+
+
+
 <div id="chatBox">
 
 
 <div id="messages"></div>
 
 
-<input 
-id="chatInput" 
+<input
+id="chatInput"
 placeholder="Enter로 채팅">
 
 
@@ -173,10 +190,14 @@ placeholder="Enter로 채팅">
 
 
 
+
 <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+
 
 <script src="./main.js"></script>
 
 
+
 </body>
+
 </html>
