@@ -199,57 +199,63 @@ function draw(){
 }
 
 // ======================
-// 이름표 (2번 수정: 닉네임 글자 수에 맞게 하얀 배경 박스 크기 및 ■ 기호 조절)
+// 이름표 (닉네임 글자 수에 맞춘 동적 박스)
 // ======================
 function drawName(x, y, name){
     if(!name) return;
 
     ctx.font="14px Arial";
     
-    // 닉네임 글자 수에 맞춘 텍스트 너비 계산
     let textMetrics = ctx.measureText(name);
-    // 텍스트 너비에 좌우 여백을 더해 동적 박스 너비 설정 (최소 45px)
     let boxWidth = Math.max(textMetrics.width + 16, 45);
-    // 캐릭터 중앙 기준점 (캐릭터 너비 60 기준)
     let boxX = x + (60 - boxWidth) / 2;
 
-    // 하얀색 배경 박스
     ctx.fillStyle="white";
     ctx.beginPath();
     ctx.roundRect(boxX, y-35, boxWidth, 22, 6);
     ctx.fill();
 
-    // 닉네임 텍스트 (가운데 정렬)
     ctx.fillStyle="black";
     ctx.textAlign = "center";
     ctx.fillText(name, x + 30, y-19);
-    ctx.textAlign = "left"; // 기본값 복구
+    ctx.textAlign = "left"; 
 }
 
 // ======================
-// 캐릭터 위 말풍선
+// 캐릭터 위 말풍선 (채팅 글자 수에 맞게 동적 조절)
 // ======================
-function drawBubble(x,y,name){
-    let bubble=bubbles[name];
+function drawBubble(x, y, name){
+    let bubble = bubbles[name];
     if(!bubble) return;
 
-    if(Date.now()-bubble.time > 5000){
+    if(Date.now() - bubble.time > 5000){
         delete bubbles[name];
         return;
     }
 
+    ctx.font="13px Arial";
+    
+    // 채팅 텍스트 길이에 맞춰 말풍선 너비 자동 조절 (최소 40px, 최대 220px)
+    let textMetrics = ctx.measureText(bubble.text);
+    let boxWidth = Math.max(textMetrics.width + 20, 40);
+    if(boxWidth > 220) boxWidth = 220; // 너무 길면 제한
+
+    // 캐릭터(너비 60) 중앙에 맞추어 말풍선 X 좌표 계산
+    let boxX = x + (60 - boxWidth) / 2;
+
+    // 하얀색 말풍선 배경
     ctx.fillStyle="white";
     ctx.beginPath();
-    ctx.roundRect(x-20, y-80, 150, 35, 10);
+    ctx.roundRect(boxX, y-75, boxWidth, 32, 8);
     ctx.fill();
 
+    // 말풍선 텍스트 (줄바꿈이 길면 삐져나가지 않도록 처리 또는 가운데/좌측 정렬)
     ctx.fillStyle="black";
-    ctx.font="13px Arial";
-    ctx.fillText(bubble.text, x-10, y-58);
+    ctx.fillText(bubble.text, boxX + 10, y-54);
 }
 
 // ======================
-// 오른쪽 채팅 표시 (3번: 6개 제한 및 안개 효과)
+// 오른쪽 채팅 표시 (6개 제한 및 안개 효과)
 // ======================
 function drawSideBubble(){
     let x = canvas.width-220;
