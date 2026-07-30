@@ -137,7 +137,6 @@ socket.on(
 
 
 
-
 // ======================
 // 방 입장
 // ======================
@@ -156,11 +155,14 @@ window.joinRoom=function(){
 
     if(roomCode===""){
 
+
         alert(
             "코드를 입력하세요"
         );
 
+
         return;
+
 
     }
 
@@ -171,6 +173,8 @@ window.joinRoom=function(){
     )
     .style.display="block";
 
+
+};
 
 };
 
