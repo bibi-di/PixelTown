@@ -34,7 +34,8 @@ let player = {
 
 let players = {};
 let chatBubbles = {};
-
+let sideMessages = [];
+let playerRadius = 35;
 
 // ======================
 // 키
@@ -483,20 +484,130 @@ function draw(){
 
 
 
-    ctx.drawImage(
+   ctx.drawImage(
 
-        img,
+    img,
 
-        player.x,
+    player.x,
 
-        player.y,
+    player.y,
 
-        60,
+    60,
 
-        80
+    80
 
-    );
+);
 
+
+// ======================
+// 닉네임 표시
+// ======================
+
+let nameWidth =
+ctx.measureText(nickname).width + 30;
+
+
+ctx.fillStyle="white";
+
+ctx.beginPath();
+
+ctx.roundRect(
+    player.x + 30 - nameWidth/2,
+    player.y - 35,
+    nameWidth,
+    24,
+    12
+);
+
+ctx.fill();
+
+
+
+ctx.fillStyle="black";
+
+ctx.font="14px Arial";
+
+ctx.textAlign="center";
+
+
+ctx.fillText(
+
+    nickname,
+
+    player.x + 30,
+
+    player.y - 18
+
+);
+
+// ======================
+// 오른쪽 채팅 표시
+// ======================
+
+
+let chatX = 650;
+let chatY = 40;
+
+
+ctx.textAlign="left";
+
+
+sideMessages.forEach((msg,index)=>{
+
+
+ctx.fillStyle="rgba(255,255,255,0.9)";
+
+
+ctx.beginPath();
+
+ctx.roundRect(
+
+chatX,
+
+chatY + index*55,
+
+130,
+
+45,
+
+15
+
+);
+
+ctx.fill();
+
+
+
+ctx.fillStyle="black";
+
+ctx.font="13px Arial";
+
+
+ctx.fillText(
+
+msg.name,
+
+chatX+10,
+
+chatY+18+index*55
+
+);
+
+
+
+ctx.fillText(
+
+msg.text,
+
+chatX+10,
+
+chatY+35+index*55
+
+);
+
+
+
+});
 
 
     requestAnimationFrame(draw);
@@ -627,6 +738,44 @@ if(keys["d"]){
 
 }
 
+// ======================
+// 캐릭터 충돌
+// ======================
+
+
+for(let id in players){
+
+
+let other = players[id];
+
+
+let dx =
+player.x - other.x;
+
+
+let dy =
+player.y - other.y;
+
+
+let distance =
+Math.sqrt(
+dx*dx + dy*dy
+);
+
+
+
+if(distance < playerRadius){
+
+
+player.x += dx * 0.1;
+
+player.y += dy * 0.1;
+
+
+}
+
+
+}
 
 
     if(isMoving){
@@ -763,13 +912,22 @@ socket.on(
 
 
 
-    chatBubbles[data.name]={
+    sideMessages.push({
 
-        text:data.text,
+name:data.name,
 
-        time:Date.now()
+text:data.text,
 
-    };
+time:Date.now()
+
+});
+
+
+if(sideMessages.length > 8){
+
+sideMessages.shift();
+
+}
 
 
 });
