@@ -316,7 +316,56 @@ setupChat();
 
 
 draw();
+// ======================
+// 채팅 설정
+// ======================
 
+function setupChat(){
+
+    const input =
+    document.getElementById(
+        "chatInput"
+    );
+
+
+    if(!input){
+        return;
+    }
+
+
+
+    input.onkeydown=function(e){
+
+
+        if(e.key==="Enter"){
+
+
+            let text =
+            input.value.trim();
+
+
+
+            if(text==="")
+                return;
+
+
+
+            socket.emit(
+                "chat",
+                text
+            );
+
+
+            input.value="";
+
+
+        }
+
+
+    };
+
+
+}
 
 };
 
