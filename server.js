@@ -16,8 +16,8 @@ let rooms = {};
 io.on('connection', (socket) => {
     console.log("사용자 접속:", socket.id);
 
-    // 방 만들기 (초대코드 즉시 발급 및 방장 등록)
-    socket.on('createRoom', (data) => {
+    // 방 만들기: 고유 초대코드 발급
+    socket.on('createRoom', () => {
         let roomCode = Math.random().toString(36).substring(2, 8).toUpperCase();
         
         rooms[roomCode] = {
@@ -36,7 +36,7 @@ io.on('connection', (socket) => {
         let roomCode = code ? code.trim().toUpperCase() : "";
 
         if (!rooms[roomCode] || !rooms[roomCode].active) {
-            socket.emit('joinError', "존재하지 않거나 방장이 종료하여 닫힌 방 코드입니다.");
+            socket.emit('joinError', "존재하지 않거나 유효하지 않은 방 코드입니다.");
             return;
         }
 
@@ -77,7 +77,7 @@ io.on('connection', (socket) => {
         }
     });
 
-    // 연결 해제 (방장이 나가면 방 폭파)
+    // 연결 해제
     socket.on('disconnect', () => {
         console.log("사용자 퇴장:", socket.id);
         for (let roomCode in rooms) {
@@ -85,7 +85,6 @@ io.on('connection', (socket) => {
                 delete rooms[roomCode].players[socket.id];
                 
                 if (rooms[roomCode].hostSocketId === socket.id) {
-                    console.log(`방장(${socket.id})이 브라우저를 종료하여 방(${roomCode})이 닫힙니다.`);
                     rooms[roomCode].active = false;
                     io.to(roomCode).emit('joinError', "방장이 방을 나가서 게임이 종료되었습니다.");
                 } else {

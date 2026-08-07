@@ -8,7 +8,7 @@ let started = false;
 let roomCode = "";
 let nickname = "";
 
-// 요구사항 반영: 캐릭터 크기 64x90 픽셀 적용
+// 픽셀 깨짐 방지를 위한 64x90 최적화 규격
 const CHAR_WIDTH = 64;
 const CHAR_HEIGHT = 90;
 
@@ -49,6 +49,7 @@ function loadAvatarImages(prefix) {
         right: new Image()
     };
     
+    // 명확하게 왼쪽은 lside, 오른쪽은 rside 이미지 매핑
     animationImages.front.src = `./assets/${prefix}.front.png`;
     animationImages.back.src = `./assets/${prefix}.back.png`;
     animationImages.left.src = `./assets/${prefix}.lside.png`;
@@ -89,49 +90,50 @@ socket.on("connect",()=>{
     console.log("서버 연결", socket.id);
 });
 
-// 방 만들기 버튼 클릭 시 서버 요청
+// 방 만들기 요청
 window.createRoom = function(){
-    socket.emit("createRoom", {});
+    socket.emit("createRoom");
 };
 
-// 서버로부터 방 생성 완료 및 초대코드 수신
+// 방 생성 완료 시 초대코드 UI 반영
 socket.off("roomCreated");
 socket.on("roomCreated",(code)=>{
     roomCode = code;
     
     const roomText = document.getElementById("myRoomCode");
     if(roomText){
-        roomText.innerHTML = "내 방 코드 : " + code;
+        roomText.innerText = "초대코드: " + code;
     }
     const inviteInput = document.getElementById("inviteCode");
     if(inviteInput) {
         inviteInput.value = code;
     }
     
-    const select = document.getElementById("characterSelect");
-    if(select){
-        select.style.display = "block";
+    const loginBox = document.getElementById("loginBox");
+    if(loginBox){
+        loginBox.style.display = "none";
     }
-    const login = document.getElementById("loginBox");
-    if(login){
-        login.style.display = "none";
+    const charSelect = document.getElementById("characterSelect");
+    if(charSelect){
+        charSelect.style.display = "block";
     }
     updateAvatarSelectUI();
 });
 
+// 방 입장 버튼
 window.joinRoom = function(){
     roomCode = document.getElementById("inviteCode").value.trim();
     if(roomCode === ""){
-        alert("코드를 입력하세요");
+        alert("초대코드를 입력하세요!");
         return;
     }
-    const select = document.getElementById("characterSelect");
-    if(select){
-        select.style.display = "block";
+    const loginBox = document.getElementById("loginBox");
+    if(loginBox){
+        loginBox.style.display = "none";
     }
-    const login = document.getElementById("loginBox");
-    if(login){
-        login.style.display = "none";
+    const charSelect = document.getElementById("characterSelect");
+    if(charSelect){
+        charSelect.style.display = "block";
     }
     updateAvatarSelectUI();
 };
@@ -328,6 +330,14 @@ function drawSideBubble(){
 
 document.addEventListener("keydown",(e)=>{
     const chatInput = document.getElementById("chatInput");
+    
+    // Enter 키로 채팅창 곧바로 활성화
+    if(e.key === "Enter" && document.activeElement !== chatInput && started) {
+        e.preventDefault();
+        chatInput.focus();
+        return;
+    }
+
     if(document.activeElement === chatInput) {
         return;
     }
@@ -356,7 +366,7 @@ window.addEventListener("blur",()=>{
     keys = {};
 });
 
-// 요구사항 반영: A키 = 왼쪽 바라보고 왼쪽 이동(lside), D키 = 오른쪽 바라보고 오른쪽 이동(rside)
+// 방향키/A·D키 입력 매핑 완벽 수정 (A = 왼쪽 이동 및 왼쪽 바라보기, D = 오른쪽 이동 및 오른쪽 바라보기)
 function updatePlayer(){
     if(!started) return;
 
@@ -365,8 +375,8 @@ function updatePlayer(){
 
     if(keys["w"]){ moveY = -1; lastDirection = "back"; }
     if(keys["s"]){ moveY = 1; lastDirection = "front"; }
-    if(keys["a"]){ moveX = -1; lastDirection = "left"; }   // A키 = 왼쪽 이동, lside.png
-    if(keys["d"]){ moveX = 1; lastDirection = "right"; }   // D키 = 오른쪽 이동, rside.png
+    if(keys["a"]){ moveX = -1; lastDirection = "left"; }   // A키: 왼쪽으로 이동하면서 left(lside) 이미지 적용
+    if(keys["d"]){ moveX = 1; lastDirection = "right"; }  // D키: 오른쪽으로 이동하면서 right(rside) 이미지 적용
 
     if(moveX !== 0 || moveY !== 0){
         let len = Math.sqrt(moveX * moveX + moveY * moveY);
@@ -447,6 +457,7 @@ function setupChat(){
             });
 
             input.value = "";
+            input.blur(); 
         }
     };
 }
