@@ -6,13 +6,16 @@ console.log("PixelTown main.js 실행");
 const socket = io("https://pixeltown-server.onrender.com");
 
 // ======================
-// 기본 변수
+// 기본 변수 (캐릭터 표시 크기: 가로 45, 세로 60)
 // ======================
 let canvas;
 let ctx;
 let started = false;
 let roomCode = "";
 let nickname = "";
+
+const CHAR_WIDTH = 45;
+const CHAR_HEIGHT = 60;
 
 let player = {
     x: 380,
@@ -41,31 +44,26 @@ const avatarList = [
 ];
 
 let animationImages = {
-    front: [],
-    back: [],
-    left: [],
-    right: []
+    front: null,
+    back: null,
+    left: null,
+    right: null
 };
 
 // 캐릭터 이미지 로드 함수 (선택된 아바타 기준)
 function loadAvatarImages(prefix) {
-    animationImages = { front: [], back: [], left: [], right: [] };
-    
-    // 표준 매핑: W=back, S=front, A=lside, D=rside
-    let animationFiles = {
-        front: [`${prefix}.front.png`],
-        back: [`${prefix}.back.png`],
-        left: [`${prefix}.lside.png`],
-        right: [`${prefix}.rside.png`]
+    animationImages = {
+        front: new Image(),
+        back: new Image(),
+        left: new Image(),
+        right: new Image()
     };
-
-    for(let dir in animationFiles){
-        animationFiles[dir].forEach(file=>{
-            let img = new Image();
-            img.src = "./assets/" + file;
-            animationImages[dir].push(img);
-        });
-    }
+    
+    // W=back, S=front, A=lside(왼쪽), D=rside(오른쪽)
+    animationImages.front.src = `./assets/${prefix}.front.png`;
+    animationImages.back.src = `./assets/${prefix}.back.png`;
+    animationImages.left.src = `./assets/${prefix}.lside.png`;
+    animationImages.right.src = `./assets/${prefix}.rside.png`;
 }
 
 // 초기 기본 아바타 로드
@@ -212,7 +210,8 @@ window.startGame = function(){
     socket.emit("joinRoom",{
         code: roomCode,
         name: nickname,
-        avatar: avatarList[selectedAvatarIndex].prefix
+        avatar: avatarList[selectedAvatarIndex].prefix,
+        direction: lastDirection
     });
 
     setupChat();
@@ -239,12 +238,13 @@ function draw(){
         if(id === socket.id) continue;
 
         let pAvatar = p.avatar || "beachboy";
+        let pDir = p.direction || "front";
         let pImg = new Image();
-        pImg.src = `./assets/${pAvatar}.front.png`;
+        pImg.src = `./assets/${pAvatar}.${pDir}.png`;
 
         let pRenderY = p.y;
         if(pImg.complete){
-            ctx.drawImage(pImg, p.x, pRenderY, 60, 80);
+            ctx.drawImage(pImg, p.x, pRenderY, CHAR_WIDTH, CHAR_HEIGHT);
         }
 
         drawName(p.x, pRenderY, p.name);
@@ -252,10 +252,10 @@ function draw(){
     }
 
     // 내 캐릭터
-    let myImg = animationImages[lastDirection][0];
+    let myImg = animationImages[lastDirection];
     let renderY = player.y;
     if(myImg && myImg.complete){
-        ctx.drawImage(myImg, player.x, renderY, 60, 80);
+        ctx.drawImage(myImg, player.x, renderY, CHAR_WIDTH, CHAR_HEIGHT);
     }
 
     drawName(player.x, renderY, nickname);
@@ -275,21 +275,21 @@ function drawName(x, y, name){
     ctx.font = "14px Arial, sans-serif";
     let textMetrics = ctx.measureText(name);
     let boxWidth = Math.max(textMetrics.width + 16, 45);
-    let boxX = x + (60 - boxWidth) / 2;
+    let boxX = x + (CHAR_WIDTH - boxWidth) / 2;
 
     ctx.fillStyle = "white";
     ctx.beginPath();
     if(typeof ctx.roundRect === "function") {
-        ctx.roundRect(boxX, y - 35, boxWidth, 22, 6);
+        ctx.roundRect(boxX, y - 30, boxWidth, 20, 5);
     } else {
-        ctx.rect(boxX, y - 35, boxWidth, 22);
+        ctx.rect(boxX, y - 30, boxWidth, 20);
     }
     ctx.fill();
 
     ctx.fillStyle = "black";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText(name, x + 30, y - 24);
+    ctx.fillText(name, x + CHAR_WIDTH / 2, y - 20);
     ctx.restore();
 }
 
@@ -311,21 +311,21 @@ function drawBubble(x, y, name){
     let boxWidth = Math.max(textMetrics.width + 24, 40);
     if(boxWidth > 250) boxWidth = 250;
 
-    let boxX = x + (60 - boxWidth) / 2;
+    let boxX = x + (CHAR_WIDTH - boxWidth) / 2;
 
     ctx.fillStyle = "white";
     ctx.beginPath();
     if(typeof ctx.roundRect === "function") {
-        ctx.roundRect(boxX, y - 75, boxWidth, 32, 8);
+        ctx.roundRect(boxX, y - 65, boxWidth, 28, 6);
     } else {
-        ctx.rect(boxX, y - 75, boxWidth, 32);
+        ctx.rect(boxX, y - 65, boxWidth, 28);
     }
     ctx.fill();
 
     ctx.fillStyle = "black";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText(bubble.text, x + 30, y - 59);
+    ctx.fillText(bubble.text, x + CHAR_WIDTH / 2, y - 51);
     ctx.restore();
 }
 
@@ -371,7 +371,7 @@ function drawSideBubble(){
 }
 
 // ======================
-// 키 입력 (채팅 포커스 시 WASD 무시 처리)
+// 키 입력
 // ======================
 document.addEventListener("keydown",(e)=>{
     const chatInput = document.getElementById("chatInput");
@@ -404,7 +404,7 @@ window.addEventListener("blur",()=>{
 });
 
 // ======================
-// 플레이어 이동 및 점프/충돌 처리
+// 플레이어 이동 및 충돌/점프 처리
 // ======================
 function updatePlayer(){
     if(!started) return;
@@ -412,7 +412,7 @@ function updatePlayer(){
     let moveX = 0;
     let moveY = 0;
 
-    // 정확한 매핑: W=back, S=front, A=lside(왼쪽), D=rside(오른쪽)
+    // 수정된 조작법: W=back(위), S=front(아래), A=lside(왼쪽), D=rside(오른쪽)
     if(keys["w"]){ moveY = -1; lastDirection = "back"; }
     if(keys["s"]){ moveY = 1; lastDirection = "front"; }
     if(keys["a"]){ moveX = -1; lastDirection = "left"; }
@@ -429,8 +429,8 @@ function updatePlayer(){
 
         if(nextX < 0) nextX = 0;
         if(nextY < 0) nextY = 0;
-        if(nextX > canvas.width - 60) nextX = canvas.width - 60;
-        if(nextY > canvas.height - 80) nextY = canvas.height - 80;
+        if(nextX > canvas.width - CHAR_WIDTH) nextX = canvas.width - CHAR_WIDTH;
+        if(nextY > canvas.height - CHAR_HEIGHT) nextY = canvas.height - CHAR_HEIGHT;
 
         let collision = false;
         for(let id in players){
@@ -438,7 +438,7 @@ function updatePlayer(){
             let p = players[id];
             if(!p) continue;
 
-            if(Math.abs(nextX - p.x) < 40 && Math.abs(nextY - p.y) < 50) {
+            if(Math.abs(nextX - p.x) < CHAR_WIDTH * 0.7 && Math.abs(nextY - p.y) < CHAR_HEIGHT * 0.7) {
                 collision = true;
                 break;
             }
@@ -468,7 +468,8 @@ function updatePlayer(){
     socket.emit("move",{
         x: player.x,
         y: player.baseY,
-        avatar: avatarList[selectedAvatarIndex].prefix
+        avatar: avatarList[selectedAvatarIndex].prefix,
+        direction: lastDirection
     });
 
     requestAnimationFrame(updatePlayer);
