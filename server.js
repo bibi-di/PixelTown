@@ -11,7 +11,7 @@ const io = new Server(server, {
     }
 });
 
-// 방 데이터 구조: { roomCode: { hostSocketId, players: {}, invitedCount: 0 } }
+// 방 데이터: { roomCode: { hostSocketId, players: {}, active: true } }
 let rooms = {};
 
 io.on('connection', (socket) => {
@@ -24,7 +24,7 @@ io.on('connection', (socket) => {
         rooms[roomCode] = {
             hostSocketId: socket.id,
             players: {},
-            invitedCount: 0 // 초대코드로 입장한 인원 카운트
+            active: true // 방 활성화 상태
         };
 
         socket.emit('roomCreated', roomCode);
@@ -36,48 +36,24 @@ io.on('connection', (socket) => {
         const { code, name, avatar, direction } = data;
         let roomCode = code ? code.trim().toUpperCase() : "";
 
-        if (!rooms[roomCode]) {
-            socket.emit('joinError', "존재하지 않는 방 코드입니다.");
+        if (!rooms[roomCode] || !rooms[roomCode].active) {
+            socket.emit('joinError', "존재하지 않거나 방장이 종료하여 닫힌 방 코드입니다.");
             return;
         }
 
         let room = rooms[roomCode];
 
-        // 방장이 재접속하는 경우
-        let isHost = (room.hostSocketId === socket.id || !room.hostSocketId);
-        
-        // 이미 방에 들어가 있는 플레이어가 다시 접속하는 경우 (새로고침 등)
-        let isExistingPlayer = room.players[socket.id] !== undefined;
-
-        // 신규 유저가 들어오는 경우 (방장도 아니고, 기존 멤버도 아님)
-        if (!isHost && !isExistingPlayer) {
-            // 초대코드는 딱 1번만 허용 (invitedCount가 1 이상이면 차단)
-            if (room.invitedCount >= 1) {
-                socket.emit('joinError', "이미 사용된 일회용 초대코드입니다. 더 이상 입장할 수 없습니다.");
-                return;
-            }
-            // 신규 유저 입장 성공 시 카운트 증가
-            room.invitedCount++;
-        }
-
-        // 방장이 나갔다가 재접속한 경우 방장 권한 복구
-        if (!room.hostSocketId) {
-            room.hostSocketId = socket.id;
-        }
-
         socket.join(roomCode);
         socket.roomCode = roomCode;
 
-        // 플레이어 정보 등록 (또는 유지)
         room.players[socket.id] = {
-            x: room.players[socket.id]?.x || 380,
-            y: room.players[socket.id]?.y || 250,
+            x: 380,
+            y: 250,
             name: name || "Player",
             avatar: avatar || "beachboy",
             direction: direction || "front"
         };
 
-        // 해당 방의 모든 사용자에게 플레이어 목록 전송
         io.to(roomCode).emit('players', room.players);
     });
 
@@ -107,16 +83,17 @@ io.on('connection', (socket) => {
         console.log("사용자 퇴장:", socket.id);
         for (let roomCode in rooms) {
             if (rooms[roomCode].players[socket.id]) {
-                // 실시간 게임 화면에서는 목록에서 제외하지만, 재접속을 위해 데이터는 보존
-                // (만약 완전히 방을 폭파하고 싶다면 여기서 처리를 달리할 수 있음)
                 delete rooms[roomCode].players[socket.id];
                 
+                // 만약 퇴장한 사람이 방장이라면 방을 완전히 폭파(비활성화)시킴
                 if (rooms[roomCode].hostSocketId === socket.id) {
-                    console.log(`방장(${socket.id})이 나갔으나 방(${roomCode}) 데이터는 유지됩니다.`);
-                    rooms[roomCode].hostSocketId = null;
+                    console.log(`방장(${socket.id})이 브라우저를 종료하여 방(${roomCode})이 닫힙니다.`);
+                    rooms[roomCode].active = false;
+                    // 방에 있던 다른 유저들에게도 알림 전송 가능
+                    io.to(roomCode).emit('joinError', "방장이 방을 나가서 게임이 종료되었습니다.");
+                } else {
+                    io.to(roomCode).emit('players', rooms[roomCode].players);
                 }
-
-                io.to(roomCode).emit('players', rooms[roomCode].players);
             }
         }
     });

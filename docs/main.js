@@ -6,7 +6,7 @@ console.log("PixelTown main.js 실행");
 const socket = io("https://pixeltown-server.onrender.com");
 
 // ======================
-// 기본 변수 (캐릭터 표시 크기: 가로 45, 세로 60)
+// 기본 변수 (캐릭터 비율 215:194 유지, 선명한 도트 크기 설정)
 // ======================
 let canvas;
 let ctx;
@@ -14,8 +14,8 @@ let started = false;
 let roomCode = "";
 let nickname = "";
 
-const CHAR_WIDTH = 45;
-const CHAR_HEIGHT = 60;
+const CHAR_WIDTH = 54;
+const CHAR_HEIGHT = 48;
 
 let player = {
     x: 380,
@@ -405,7 +405,7 @@ window.addEventListener("blur",()=>{
 });
 
 // ======================
-// 플레이어 이동 및 충돌/점프 처리
+// 플레이어 이동 및 충돌/점프 처리 (D=lside, A=rside 반영)
 // ======================
 function updatePlayer(){
     if(!started) return;
@@ -415,8 +415,8 @@ function updatePlayer(){
 
     if(keys["w"]){ moveY = -1; lastDirection = "back"; }
     if(keys["s"]){ moveY = 1; lastDirection = "front"; }
-    if(keys["d"]){ moveX = -1; lastDirection = "left"; }
-    if(keys["a"]){ moveX = 1; lastDirection = "right"; }
+    if(keys["d"]){ moveX = -1; lastDirection = "left"; } // D키 = lside.png
+    if(keys["a"]){ moveX = 1; lastDirection = "right"; }  // A키 = rside.png
 
     if(moveX !== 0 || moveY !== 0){
         let len = Math.sqrt(moveX * moveX + moveY * moveY);

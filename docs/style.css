@@ -60,7 +60,7 @@ body {
 
 #selectedAvatar {
     width: 60px;
-    height: 80px;
+    height: 54px;
     object-fit: contain;
     image-rendering: pixelated;
     image-rendering: crisp-edges;
