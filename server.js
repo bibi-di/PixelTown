@@ -16,7 +16,7 @@ let rooms = {};
 io.on('connection', (socket) => {
     console.log("사용자 접속:", socket.id);
 
-    // 방 만들기: 고유 초대코드 발급 (바로 입장시키지 않고 코드만 발급)
+    // 방 만들기: 고유 초대코드 발급
     socket.on('createRoom', () => {
         let roomCode;
         do {
@@ -33,7 +33,7 @@ io.on('connection', (socket) => {
         console.log(`[방 생성] 코드: ${roomCode} / 방장 소켓 ID: ${socket.id}`);
     });
 
-    // 방 입장하기 (방장이든 일반 유저든 초대 코드를 입력해 입장할 때 호출)
+    // 방 입장하기
     socket.on('joinRoom', (data) => {
         const { code, name, avatar, direction } = data;
         let roomCode = code ? code.trim().toUpperCase() : "";
@@ -51,6 +51,8 @@ io.on('connection', (socket) => {
         room.players[socket.id] = {
             x: 380,
             y: 250,
+            baseY: 250,
+            isJumping: false,
             name: name || "Player",
             avatar: avatar || "beachboy",
             direction: direction || "front"
@@ -60,12 +62,14 @@ io.on('connection', (socket) => {
         io.to(roomCode).emit('players', room.players);
     });
 
-    // 플레이어 이동
+    // 플레이어 이동 및 점프 정보 동기화
     socket.on('move', (data) => {
         let roomCode = socket.roomCode;
         if (roomCode && rooms[roomCode] && rooms[roomCode].players[socket.id]) {
             rooms[roomCode].players[socket.id].x = data.x;
             rooms[roomCode].players[socket.id].y = data.y;
+            rooms[roomCode].players[socket.id].baseY = data.baseY;
+            rooms[roomCode].players[socket.id].isJumping = data.isJumping;
             rooms[roomCode].players[socket.id].avatar = data.avatar;
             rooms[roomCode].players[socket.id].direction = data.direction;
 
@@ -81,7 +85,7 @@ io.on('connection', (socket) => {
         }
     });
 
-    // 연결 해제: 방장이 나가면 방을 서버 메모리에서 완전히 폭파
+    // 연결 해제: 방장이 나가면 방 폭파
     socket.on('disconnect', () => {
         console.log("사용자 퇴장:", socket.id);
         for (let roomCode in rooms) {
@@ -91,7 +95,7 @@ io.on('connection', (socket) => {
                     room.active = false;
                     console.log(`[방 폭파] 방장(${socket.id})이 퇴장하여 방(${roomCode})이 종료됨.`);
                     io.to(roomCode).emit('joinError', "방장이 브라우저를 종료하여 방이 폭파되었습니다.");
-                    delete rooms[roomCode]; // 메모리에서 삭제하여 해당 코드로 재접속 원천 차단
+                    delete rooms[roomCode];
                 } else {
                     delete room.players[socket.id];
                     io.to(roomCode).emit('players', room.players);

@@ -92,7 +92,7 @@ socket.on("connect",()=>{
     console.log("서버 연결", socket.id);
 });
 
-// 방 만들기 요청 (코드만 생성해서 화면에 띄워줌 - 바로 캐릭터창으로 안 감)
+// 방 만들기 요청
 window.createRoom = function(){
     socket.emit("createRoom");
 };
@@ -107,11 +107,11 @@ socket.on("roomCreated",(code)=>{
     }
     const inviteInput = document.getElementById("inviteCode");
     if(inviteInput) {
-        inviteInput.value = code; // 편의를 위해 입력창에 자동 채워주기
+        inviteInput.value = code;
     }
 });
 
-// 방 입장 버튼 (방장이든 일반 유저든 코드를 입력하고 눌러야 캐릭터창으로 진입)
+// 방 입장 버튼
 window.joinRoom = function(){
     let inputCode = document.getElementById("inviteCode").value.trim();
     if(inputCode === ""){
@@ -206,7 +206,7 @@ function draw(){
         pImg.src = `./assets/${pAvatar}.${pDir}.png`;
 
         let pSize = (AVATAR_SIZES[pAvatar] && AVATAR_SIZES[pAvatar][pDir]) ? AVATAR_SIZES[pAvatar][pDir] : [64, 64];
-        let pRenderY = p.y;
+        let pRenderY = p.y !== undefined ? p.y : p.baseY; // 상대방 점프 높이(y) 반영
 
         if(pImg.complete){
             ctx.drawImage(pImg, p.x, pRenderY, pSize[0], pSize[1]);
@@ -426,9 +426,12 @@ function updatePlayer(){
         }
     }
 
+    // 내 점프 상태(y, baseY, isJumping)를 서버로 전송
     socket.emit("move",{
         x: player.x,
-        y: player.baseY,
+        y: player.y,
+        baseY: player.baseY,
+        isJumping: player.isJumping,
         avatar: currentAvatarName,
         direction: lastDirection
     });
