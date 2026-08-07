@@ -388,43 +388,22 @@ function updatePlayer(){
         let nextX = player.x + moveX * player.speed;
         let nextY = targetBaseY + moveY * player.speed;
 
-        // 맵 경계 제한 (Y축 상단으로 벗어나지 않게 수정)
+        // 맵 경계 제한
         if(nextX < 0) nextX = 0;
         if(nextY < 0) nextY = 0;
         if(nextX > canvas.width - currentSize[0]) nextX = canvas.width - currentSize[0];
         if(nextY > canvas.height - currentSize[1]) nextY = canvas.height - currentSize[1];
 
-        // 캐릭터 겹침으로 인한 이동 불가 이슈 해결 (충돌 범위를 발판 중심부 기준으로 좁게 조정)
-        let collision = false;
-        for(let id in players){
-            if(id === socket.id) continue;
-            let p = players[id];
-            if(!p) continue;
-
-            let pSize = (AVATAR_SIZES[p.avatar] && AVATAR_SIZES[p.avatar][p.direction]) ? AVATAR_SIZES[p.avatar][p.direction] : [64, 64];
-            
-            // X축은 캐릭터 너비의 50%, Y축은 캐릭터 높이의 40 정도로 좁혀서 겹쳐도 자연스럽게 빠져나가도록 수정
-            let overlapX = Math.abs((nextX + currentSize[0]/2) - (p.x + pSize[0]/2)) < (currentSize[0] + pSize[0]) * 0.25;
-            let overlapY = Math.abs((nextY + currentSize[1]/2) - ((p.baseY !== undefined ? p.baseY : p.y) + pSize[1]/2)) < (currentSize[1] + pSize[1]) * 0.2;
-
-            if(overlapX && overlapY) {
-                collision = true;
-                break;
-            }
-        }
-
-        if(!collision) {
-            player.x = nextX;
-            if(!player.isJumping) {
-                player.baseY = nextY;
-                player.y = nextY;
-            } else {
-                player.baseY = nextY;
-            }
+        // 충돌 체크 로직을 제거하여 겹쳐도 항상 자유롭게 이동 가능
+        player.x = nextX;
+        if(!player.isJumping) {
+            player.baseY = nextY;
+            player.y = nextY;
+        } else {
+            player.baseY = nextY;
         }
     }
 
-    // 점프 물리 연산 (Y 좌표가 음수(-)나 캔버스 밖으로 튀지 않게 안전 장치 추가)
     if(player.isJumping){
         player.y += player.vy;
         player.vy += 0.5;
