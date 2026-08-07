@@ -373,7 +373,6 @@ window.addEventListener("blur",()=>{
     keys = {};
 });
 
-// A키 -> rside(오른쪽 바라봄), D키 -> lside(왼쪽 바라봄) 매핑 적용
 function updatePlayer(){
     if(!started) return;
 
