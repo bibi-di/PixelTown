@@ -1,546 +1,114 @@
-*{
-    box-sizing:border-box;
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #222;
+    color: white;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
 }
 
-
-body{
-
-    margin:0;
-
-    width:100vw;
-
-    height:100vh;
-
-    overflow:hidden;
-
-    background:#222;
-
-    font-family:Arial,sans-serif;
-
-    color:white;
-
+#loginBox, #characterSelect {
+    background: #333;
+    padding: 30px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
 }
 
-
-
-/* ======================
-   로비
-====================== */
-
-
-#loginBox{
-
-    position:absolute;
-
-    top:50%;
-
-    left:50%;
-
-    transform:translate(-50%,-50%);
-
-
-    width:350px;
-
-    padding:40px;
-
-
-    background:rgba(30,30,30,0.95);
-
-
-    border-radius:20px;
-
-
-    text-align:center;
-
-
-    box-shadow:0 0 30px black;
-
+#loginBox input, #characterSelect button, #loginBox button {
+    display: block;
+    width: 200px;
+    margin: 10px auto;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: none;
 }
 
-
-
-
-#loginBox h1{
-
-    font-size:40px;
-
-    margin-bottom:30px;
-
+#loginBox button, #characterSelect button {
+    background-color: #4CAF50;
+    color: white;
+    cursor: pointer;
 }
 
-
-
-
-
-button{
-
-
-    width:180px;
-
-    height:45px;
-
-
-    margin:8px;
-
-
-    border:none;
-
-
-    border-radius:12px;
-
-
-    background:#4caf50;
-
-
-    color:white;
-
-
-    font-size:16px;
-
-
-    cursor:pointer;
-
+#loginBox button:hover, #characterSelect button:hover {
+    background-color: #45a049;
 }
 
-
-
-button:hover{
-
-    background:#66bb6a;
-
+.join-area {
+    margin-top: 20px;
+    border-top: 1px solid #555;
+    padding-top: 15px;
 }
 
-
-
-
-input{
-
-
-    width:240px;
-
-
-    height:40px;
-
-
-    margin:10px;
-
-
-    padding-left:15px;
-
-
-    border-radius:10px;
-
-
-    border:3px solid #8b5a2b;
-
-
-    font-size:15px;
-
+.avatar-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin: 20px 0;
 }
 
-
-
-
-
-/* ======================
- 캐릭터 선택
-====================== */
-
-
-#characterSelect{
-
-
-    position:absolute;
-
-
-    top:50%;
-
-
-    left:50%;
-
-
-    transform:translate(-50%,-50%);
-
-
-    width:420px;
-
-
-    height:560px;
-
-
-    display:flex;
-
-
-    justify-content:center;
-
-
-    align-items:center;
-
-
-    background:#b8d98c;
-
-
-    border:8px solid #5c3b1e;
-
-
+.avatar-view {
+    text-align: center;
 }
 
-
-
-
-.characterWindow{
-
-
-    width:350px;
-
-
-    height:480px;
-
-
-    background:#f7e7c6;
-
-
-    border:5px solid #8b5a2b;
-
-
-    border-radius:10px;
-
-
-    padding:25px;
-
-
-    display:flex;
-
-
-    flex-direction:column;
-
-
-    align-items:center;
-
-
+#selectedAvatar {
+    width: 80px;
+    height: 100px;
+    object-fit: contain;
 }
 
-
-
-
-.characterWindow h2{
-
-
-    color:#4b2d15;
-
-
-    margin:0 0 20px;
-
+.avatarName {
+    margin-top: 5px;
+    font-weight: bold;
 }
 
-
-
-
-
-.avatarFrame{
-
-
-    width:180px;
-
-
-    height:230px;
-
-
-    background:white;
-
-
-    border:5px solid #8b5a2b;
-
-
-    display:flex;
-
-
-    justify-content:center;
-
-
-    align-items:center;
-
-
+#gameScreen {
+    position: relative;
+    width: 800px;
+    height: 600px;
 }
 
-
-
-
-.avatarFrame img{
-
-
-    width:128px;
-
-
-    height:128px;
-
-
-    image-rendering:pixelated;
-
+#gameCanvas {
+    background: #000;
+    border: 2px solid #fff;
+    display: block;
 }
 
-
-
-
-.avatarControl{
-
-
-    display:flex;
-
-
-    justify-content:center;
-
-
-    align-items:center;
-
-
-    gap:40px;
-
-
-    margin-top:20px;
-
+#chatBox {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    width: 250px;
+    height: 180px;
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    padding: 8px;
+    box-sizing: border-box;
+    cursor: move;
+    z-index: 10;
 }
 
-
-
-
-.avatarControl button{
-
-
-    width:50px;
-
-
-    height:40px;
-
-
-    background:#8b5a2b;
-
-
+#messages {
+    flex: 1;
+    overflow-y: auto;
+    font-size: 12px;
+    margin-bottom: 5px;
+    word-break: break-all;
 }
 
-
-
-
-.avatarName{
-
-
-    color:#4b2d15;
-
-
-    font-size:20px;
-
-
-    font-weight:bold;
-
-
-    margin:20px;
-
-}
-
-
-
-
-.startButton{
-
-
-    width:180px;
-
-
-    height:55px;
-
-
-    background:#9b5b2b;
-
-
-}
-
-
-
-
-
-/* ======================
- 게임 화면
-====================== */
-
-
-#gameScreen{
-
-
-    width:100vw;
-
-
-    height:100vh;
-
-
-    display:flex;
-
-
-    justify-content:center;
-
-
-    align-items:center;
-
-
-}
-
-
-
-
-
-canvas{
-
-
-    width:800px;
-
-
-    height:600px;
-
-
-    border:3px solid #555;
-
-
-    background:black;
-
-
-    image-rendering:pixelated;
-
-}
-
-
-
-
-
-/* ======================
- 채팅창
-====================== */
-
-
-#chatBox{
-
-
-    position:absolute;
-
-
-    left:20px;
-
-
-    top:20px;
-
-
-    width:250px;
-
-
-    height:180px;
-
-
-    min-width:150px;
-
-
-    min-height:100px;
-
-
-    max-width:500px;
-
-
-    max-height:400px;
-
-
-
-    background:rgba(255,255,255,0.9);
-
-
-    color:black;
-
-
-    border-radius:15px;
-
-
-    padding:10px;
-
-
-    display:flex;
-
-
-    flex-direction:column;
-
-
-
-    resize:both;
-
-
-    overflow:hidden;
-
-
-    cursor:move;
-
-}
-
-
-
-
-
-#messages{
-
-
-    flex:1;
-
-
-    overflow-y:auto;
-
-
-}
-
-
-
-
-
-#messages div{
-
-
-    background:rgba(0,0,0,0.1);
-
-
-    border-radius:15px;
-
-
-    padding:5px 10px;
-
-
-    margin-bottom:5px;
-
-
-}
-
-
-
-
-
-#chatInput{
-
-
-    width:100%;
-
-
-    height:35px;
-
-
-    margin:0;
-
-
-    border:1px solid #aaa;
-
-
-    border-radius:10px;
-
-
-}
-
-
-
-
-
-::-webkit-scrollbar{
-
-    display:none;
-
+#chatInput {
+    width: 100%;
+    padding: 5px;
+    font-size: 12px;
+    box-sizing: border-box;
+    border-radius: 4px;
+    border: none;
 }

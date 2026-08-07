@@ -50,7 +50,7 @@ let animationImages = {
 function loadAvatarImages(prefix) {
     animationImages = { front: [], back: [], left: [], right: [] };
     
-    // 명시된 매핑: W=front, S=back, D=lside(왼쪽), A=rside(오른쪽)
+    // 매핑 요구사항: W=front, S=back, D=lside(왼쪽), A=rside(오른쪽)
     let animationFiles = {
         front: [`${prefix}.front.png`],
         back: [`${prefix}.back.png`],
@@ -99,7 +99,7 @@ function updateAvatarSelectUI() {
 }
 
 // ======================
-// 배경
+// 배경 (office.png 삭제, beach.png 추가)
 // ======================
 let mapImage = new Image();
 mapImage.src = "./assets/beach.png";
@@ -112,7 +112,7 @@ socket.on("connect",()=>{
 });
 
 // ======================
-// 방 만들기
+// 방 만들기 및 초대코드 출력
 // ======================
 window.createRoom = function(){
     socket.emit("createRoom",{
@@ -254,29 +254,35 @@ function draw(){
 }
 
 // ======================
-// 이름표 (닉네임 글자 수에 맞춘 동적 박스)
+// 이름표 (글자 깨짐 방지 폰트 설정 및 안전 렌더링)
 // ======================
 function drawName(x, y, name){
     if(!name) return;
 
-    ctx.font = "14px Arial";
+    ctx.save();
+    ctx.font = "14px Arial, sans-serif";
     let textMetrics = ctx.measureText(name);
     let boxWidth = Math.max(textMetrics.width + 16, 45);
     let boxX = x + (60 - boxWidth) / 2;
 
     ctx.fillStyle = "white";
     ctx.beginPath();
-    ctx.roundRect(boxX, y - 35, boxWidth, 22, 6);
+    if(typeof ctx.roundRect === "function") {
+        ctx.roundRect(boxX, y - 35, boxWidth, 22, 6);
+    } else {
+        ctx.rect(boxX, y - 35, boxWidth, 22);
+    }
     ctx.fill();
 
     ctx.fillStyle = "black";
     ctx.textAlign = "center";
-    ctx.fillText(name, x + 30, y - 19);
-    ctx.textAlign = "left"; 
+    ctx.textBaseline = "middle";
+    ctx.fillText(name, x + 30, y - 24);
+    ctx.restore();
 }
 
 // ======================
-// 캐릭터 위 말풍선 (채팅 글자 수에 맞게 동적 조절)
+// 캐릭터 위 말풍선 (글자 깨짐 방지 폰트 및 안전 렌더링)
 // ======================
 function drawBubble(x, y, name){
     let bubble = bubbles[name];
@@ -287,7 +293,8 @@ function drawBubble(x, y, name){
         return;
     }
 
-    ctx.font = "13px Arial";
+    ctx.save();
+    ctx.font = "13px Arial, sans-serif";
     let textMetrics = ctx.measureText(bubble.text);
     let boxWidth = Math.max(textMetrics.width + 24, 40);
     if(boxWidth > 250) boxWidth = 250;
@@ -296,23 +303,29 @@ function drawBubble(x, y, name){
 
     ctx.fillStyle = "white";
     ctx.beginPath();
-    ctx.roundRect(boxX, y - 75, boxWidth, 32, 8);
+    if(typeof ctx.roundRect === "function") {
+        ctx.roundRect(boxX, y - 75, boxWidth, 32, 8);
+    } else {
+        ctx.rect(boxX, y - 75, boxWidth, 32);
+    }
     ctx.fill();
 
     ctx.fillStyle = "black";
     ctx.textAlign = "center";
-    ctx.fillText(bubble.text, x + 30, y - 54);
-    ctx.textAlign = "left";
+    ctx.textBaseline = "middle";
+    ctx.fillText(bubble.text, x + 30, y - 59);
+    ctx.restore();
 }
 
 // ======================
-// 오른쪽 채팅 표시 (6개 제한 및 안개 효과)
+// 오른쪽 채팅 표시 (글자 깨짐 방지 폰트 설정)
 // ======================
 function drawSideBubble(){
     let x = canvas.width - 220;
     let y = 30;
 
-    ctx.font = "14px Arial";
+    ctx.save();
+    ctx.font = "14px Arial, sans-serif";
 
     sideBubbles.forEach((b, i)=>{
         let boxY = y + i * 60;
@@ -328,19 +341,25 @@ function drawSideBubble(){
 
         ctx.fillStyle = "white";
         ctx.beginPath();
-        ctx.roundRect(x, boxY, 190, 45, 10);
+        if(typeof ctx.roundRect === "function") {
+            ctx.roundRect(x, boxY, 190, 45, 10);
+        } else {
+            ctx.rect(x, boxY, 190, 45);
+        }
         ctx.fill();
 
         ctx.fillStyle = "black";
+        ctx.textBaseline = "alphabetic";
         ctx.fillText(b.name, x + 10, boxY + 18);
         ctx.fillText(b.text, x + 10, boxY + 35);
         
         ctx.restore();
     });
+    ctx.restore();
 }
 
 // ======================
-// 키 입력 (채팅 중일 때 WASD 오작동 방지 처리 포함)
+// 키 입력 (채팅 입력 중일 때 WASD 영어 입력 가능하도록 분기 처리)
 // ======================
 document.addEventListener("keydown",(e)=>{
     const chatInput = document.getElementById("chatInput");
@@ -354,6 +373,7 @@ document.addEventListener("keydown",(e)=>{
     }
     keys[key] = true;
 
+    // 스페이스바 점프
     if(key === " " && !player.isJumping) {
         player.isJumping = true;
         player.vy = -8;
@@ -373,7 +393,7 @@ window.addEventListener("blur",()=>{
 });
 
 // ======================
-// 플레이어 이동 및 충돌/점프 처리
+// 플레이어 이동 및 충돌/점프 처리 (요청된 WASD 매핑 적용)
 // ======================
 function updatePlayer(){
     if(!started) return;
@@ -381,6 +401,7 @@ function updatePlayer(){
     let moveX = 0;
     let moveY = 0;
 
+    // 요청된 매핑: W=front, S=back, D=lside(왼쪽), A=rside(오른쪽)
     if(keys["w"]){ moveY = 1; lastDirection = "front"; }
     if(keys["s"]){ moveY = -1; lastDirection = "back"; }
     if(keys["d"]){ moveX = -1; lastDirection = "left"; }
@@ -399,6 +420,7 @@ function updatePlayer(){
         if(nextX > canvas.width - 60) nextX = canvas.width - 60;
         if(nextY > canvas.height - 80) nextY = canvas.height - 80;
 
+        // 캐릭터 충돌 방지
         let collision = false;
         for(let id in players){
             if(id === socket.id) continue;
