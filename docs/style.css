@@ -59,8 +59,8 @@ body {
 }
 
 #selectedAvatar {
-    width: 60px;
-    height: 54px;
+    width: 64px;
+    height: 96px;
     object-fit: contain;
     image-rendering: pixelated;
     image-rendering: crisp-edges;

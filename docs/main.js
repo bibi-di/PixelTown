@@ -6,7 +6,7 @@ console.log("PixelTown main.js 실행");
 const socket = io("https://pixeltown-server.onrender.com");
 
 // ======================
-// 기본 변수 (캐릭터 비율 215:194 유지, 선명한 도트 크기 설정)
+// 기본 변수 (캐릭터 크기 64x96 픽셀 유지)
 // ======================
 let canvas;
 let ctx;
@@ -14,8 +14,8 @@ let started = false;
 let roomCode = "";
 let nickname = "";
 
-const CHAR_WIDTH = 54;
-const CHAR_HEIGHT = 48;
+const CHAR_WIDTH = 64;
+const CHAR_HEIGHT = 96;
 
 let player = {
     x: 380,
@@ -121,6 +121,7 @@ window.createRoom = function(){
 socket.off("roomCreated");
 socket.on("roomCreated",(code)=>{
     roomCode = code;
+    
     const roomText = document.getElementById("myRoomCode");
     if(roomText){
         roomText.innerHTML = "내 방 코드 : " + code;
@@ -129,6 +130,8 @@ socket.on("roomCreated",(code)=>{
     if(inviteInput) {
         inviteInput.value = code;
     }
+    
+    // 방 만들기 직후 캐릭터 선택창으로 전환
     const select = document.getElementById("characterSelect");
     if(select){
         select.style.display = "block";
@@ -405,7 +408,7 @@ window.addEventListener("blur",()=>{
 });
 
 // ======================
-// 플레이어 이동 및 충돌/점프 처리 (D=lside, A=rside 반영)
+// 플레이어 이동 및 충돌/점프 처리 (D=rside, A=lside 정상 방향 반영)
 // ======================
 function updatePlayer(){
     if(!started) return;
@@ -415,8 +418,8 @@ function updatePlayer(){
 
     if(keys["w"]){ moveY = -1; lastDirection = "back"; }
     if(keys["s"]){ moveY = 1; lastDirection = "front"; }
-    if(keys["d"]){ moveX = -1; lastDirection = "left"; } // D키 = lside.png
-    if(keys["a"]){ moveX = 1; lastDirection = "right"; }  // A키 = rside.png
+    if(keys["d"]){ moveX = 1; lastDirection = "right"; }  // D키 = 오른쪽 이동, rside.png
+    if(keys["a"]){ moveX = -1; lastDirection = "left"; }  // A키 = 왼쪽 이동, lside.png
 
     if(moveX !== 0 || moveY !== 0){
         let len = Math.sqrt(moveX * moveX + moveY * moveY);

@@ -24,7 +24,7 @@ io.on('connection', (socket) => {
         rooms[roomCode] = {
             hostSocketId: socket.id,
             players: {},
-            active: true // 방 활성화 상태
+            active: true
         };
 
         socket.emit('roomCreated', roomCode);
@@ -85,11 +85,9 @@ io.on('connection', (socket) => {
             if (rooms[roomCode].players[socket.id]) {
                 delete rooms[roomCode].players[socket.id];
                 
-                // 만약 퇴장한 사람이 방장이라면 방을 완전히 폭파(비활성화)시킴
                 if (rooms[roomCode].hostSocketId === socket.id) {
                     console.log(`방장(${socket.id})이 브라우저를 종료하여 방(${roomCode})이 닫힙니다.`);
                     rooms[roomCode].active = false;
-                    // 방에 있던 다른 유저들에게도 알림 전송 가능
                     io.to(roomCode).emit('joinError', "방장이 방을 나가서 게임이 종료되었습니다.");
                 } else {
                     io.to(roomCode).emit('players', rooms[roomCode].players);
