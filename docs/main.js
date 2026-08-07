@@ -1,21 +1,16 @@
 console.log("PixelTown main.js 실행");
 
-// ======================
-// 서버 연결
-// ======================
 const socket = io("https://pixeltown-server.onrender.com");
 
-// ======================
-// 기본 변수 (캐릭터 크기 64x96 픽셀 유지)
-// ======================
 let canvas;
 let ctx;
 let started = false;
 let roomCode = "";
 let nickname = "";
 
+// 요구사항 반영: 캐릭터 크기 64x90 픽셀 적용
 const CHAR_WIDTH = 64;
-const CHAR_HEIGHT = 96;
+const CHAR_HEIGHT = 90;
 
 let player = {
     x: 380,
@@ -29,13 +24,9 @@ let player = {
 let players = {};
 let keys = {};
 
-// 채팅 데이터
 let bubbles = {};
 let sideBubbles = [];
 
-// ======================
-// 아바타 캐릭터 정의 및 선택 관리
-// ======================
 let selectedAvatarIndex = 0;
 const avatarList = [
     { name: "비치 보이", prefix: "beachboy" },
@@ -50,7 +41,6 @@ let animationImages = {
     right: null
 };
 
-// 캐릭터 이미지 로드 함수 (선택된 아바타 기준)
 function loadAvatarImages(prefix) {
     animationImages = {
         front: new Image(),
@@ -65,14 +55,10 @@ function loadAvatarImages(prefix) {
     animationImages.right.src = `./assets/${prefix}.rside.png`;
 }
 
-// 초기 기본 아바타 로드
 loadAvatarImages(avatarList[0].prefix);
 
 let lastDirection = "front";
 
-// ======================
-// 아바타 선택 UI 컨트롤
-// ======================
 window.prevAvatar = function() {
     selectedAvatarIndex = (selectedAvatarIndex - 1 + avatarList.length) % avatarList.length;
     updateAvatarSelectUI();
@@ -96,28 +82,19 @@ function updateAvatarSelectUI() {
     loadAvatarImages(avatar.prefix);
 }
 
-// ======================
-// 배경
-// ======================
 let mapImage = new Image();
 mapImage.src = "./assets/beach.png";
 
-// ======================
-// 서버 연결 확인
-// ======================
 socket.on("connect",()=>{
     console.log("서버 연결", socket.id);
 });
 
-// ======================
-// 방 만들기
-// ======================
+// 방 만들기 버튼 클릭 시 서버 요청
 window.createRoom = function(){
-    socket.emit("createRoom",{
-        name: "Player"
-    });
+    socket.emit("createRoom", {});
 };
 
+// 서버로부터 방 생성 완료 및 초대코드 수신
 socket.off("roomCreated");
 socket.on("roomCreated",(code)=>{
     roomCode = code;
@@ -131,7 +108,6 @@ socket.on("roomCreated",(code)=>{
         inviteInput.value = code;
     }
     
-    // 방 만들기 직후 캐릭터 선택창으로 전환
     const select = document.getElementById("characterSelect");
     if(select){
         select.style.display = "block";
@@ -143,9 +119,6 @@ socket.on("roomCreated",(code)=>{
     updateAvatarSelectUI();
 });
 
-// ======================
-// 방 입장
-// ======================
 window.joinRoom = function(){
     roomCode = document.getElementById("inviteCode").value.trim();
     if(roomCode === ""){
@@ -163,16 +136,10 @@ window.joinRoom = function(){
     updateAvatarSelectUI();
 };
 
-// ======================
-// 플레이어 받기
-// ======================
 socket.on("players",(data)=>{
     players = data;
 });
 
-// ======================
-// 게임 시작
-// ======================
 window.startGame = function(){
     const nick = document.getElementById("nickname");
     nickname = nick ? nick.value.trim() : "Player";
@@ -222,20 +189,15 @@ window.startGame = function(){
     setupChatDrag();
 };
 
-// ======================
-// 화면 그리기
-// ======================
 function draw(){
     if(!started) return;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // 배경
     if(mapImage.complete){
         ctx.drawImage(mapImage, 0, 0, canvas.width, canvas.height);
     }
 
-    // 다른 플레이어
     for(let id in players){
         let p = players[id];
         if(!p) continue;
@@ -255,7 +217,6 @@ function draw(){
         drawBubble(p.x, pRenderY, p.name);
     }
 
-    // 내 캐릭터
     let myImg = animationImages[lastDirection];
     let renderY = player.y;
     if(myImg && myImg.complete){
@@ -269,9 +230,6 @@ function draw(){
     requestAnimationFrame(draw);
 }
 
-// ======================
-// 이름표
-// ======================
 function drawName(x, y, name){
     if(!name) return;
 
@@ -297,9 +255,6 @@ function drawName(x, y, name){
     ctx.restore();
 }
 
-// ======================
-// 말풍선
-// ======================
 function drawBubble(x, y, name){
     let bubble = bubbles[name];
     if(!bubble) return;
@@ -333,9 +288,6 @@ function drawBubble(x, y, name){
     ctx.restore();
 }
 
-// ======================
-// 오른쪽 채팅 표시
-// ======================
 function drawSideBubble(){
     let x = canvas.width - 220;
     let y = 30;
@@ -374,9 +326,6 @@ function drawSideBubble(){
     ctx.restore();
 }
 
-// ======================
-// 키 입력
-// ======================
 document.addEventListener("keydown",(e)=>{
     const chatInput = document.getElementById("chatInput");
     if(document.activeElement === chatInput) {
@@ -407,9 +356,7 @@ window.addEventListener("blur",()=>{
     keys = {};
 });
 
-// ======================
-// 플레이어 이동 및 충돌/점프 처리 (D=rside, A=lside 정상 방향 반영)
-// ======================
+// 요구사항 반영: A키 = 왼쪽 바라보고 왼쪽 이동(lside), D키 = 오른쪽 바라보고 오른쪽 이동(rside)
 function updatePlayer(){
     if(!started) return;
 
@@ -418,8 +365,8 @@ function updatePlayer(){
 
     if(keys["w"]){ moveY = -1; lastDirection = "back"; }
     if(keys["s"]){ moveY = 1; lastDirection = "front"; }
-    if(keys["d"]){ moveX = 1; lastDirection = "right"; }  // D키 = 오른쪽 이동, rside.png
-    if(keys["a"]){ moveX = -1; lastDirection = "left"; }  // A키 = 왼쪽 이동, lside.png
+    if(keys["a"]){ moveX = -1; lastDirection = "left"; }   // A키 = 왼쪽 이동, lside.png
+    if(keys["d"]){ moveX = 1; lastDirection = "right"; }   // D키 = 오른쪽 이동, rside.png
 
     if(moveX !== 0 || moveY !== 0){
         let len = Math.sqrt(moveX * moveX + moveY * moveY);
@@ -478,9 +425,6 @@ function updatePlayer(){
     requestAnimationFrame(updatePlayer);
 }
 
-// ======================
-// 채팅 입력
-// ======================
 function setupChat(){
     const input = document.getElementById("chatInput");
     if(!input) return;
@@ -507,9 +451,6 @@ function setupChat(){
     };
 }
 
-// ======================
-// 서버 채팅 받기
-// ======================
 socket.off("chat");
 socket.on("chat",(data)=>{
     let name = "Player";
@@ -550,9 +491,6 @@ socket.on("chat",(data)=>{
     }
 });
 
-// ======================
-// 채팅창 드래그
-// ======================
 function setupChatDrag(){
     const chatBox = document.getElementById("chatBox");
     if(!chatBox) return;
@@ -584,9 +522,6 @@ function setupChatDrag(){
     });
 }
 
-// ======================
-// 입장 오류
-// ======================
 socket.off("joinError");
 socket.on("joinError",(msg)=>{
     alert(msg);

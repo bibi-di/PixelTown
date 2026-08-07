@@ -11,13 +11,12 @@ const io = new Server(server, {
     }
 });
 
-// 방 데이터: { roomCode: { hostSocketId, players: {}, active: true } }
 let rooms = {};
 
 io.on('connection', (socket) => {
     console.log("사용자 접속:", socket.id);
 
-    // 방 만들기
+    // 방 만들기 (초대코드 즉시 발급 및 방장 등록)
     socket.on('createRoom', (data) => {
         let roomCode = Math.random().toString(36).substring(2, 8).toUpperCase();
         
@@ -78,7 +77,7 @@ io.on('connection', (socket) => {
         }
     });
 
-    // 연결 해제
+    // 연결 해제 (방장이 나가면 방 폭파)
     socket.on('disconnect', () => {
         console.log("사용자 퇴장:", socket.id);
         for (let roomCode in rooms) {
