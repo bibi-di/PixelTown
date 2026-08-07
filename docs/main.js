@@ -97,7 +97,7 @@ window.createRoom = function(){
     socket.emit("createRoom");
 };
 
-// 방 생성 완료 시 초대코드 UI 반영
+// 방 생성 완료 시 초대코드 UI 및 전역 변수 반영
 socket.off("roomCreated");
 socket.on("roomCreated",(code)=>{
     roomCode = code;
@@ -339,7 +339,6 @@ function drawSideBubble(){
 document.addEventListener("keydown",(e)=>{
     const chatInput = document.getElementById("chatInput");
     
-    // Enter 키로 채팅창 곧바로 활성화
     if(e.key === "Enter" && document.activeElement !== chatInput && started) {
         e.preventDefault();
         chatInput.focus();
@@ -374,7 +373,7 @@ window.addEventListener("blur",()=>{
     keys = {};
 });
 
-// A키 누르면 rside(오른쪽 이미지) 바라보고, D키 누르면 lside(왼쪽 이미지) 바라보도록 매핑 반전 적용
+// A키 -> rside(오른쪽 바라봄), D키 -> lside(왼쪽 바라봄) 매핑 적용
 function updatePlayer(){
     if(!started) return;
 
