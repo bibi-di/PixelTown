@@ -15,8 +15,9 @@ let roomCode = "";
 let nickname = "";
 
 let player = {
-    x: 350,
+    x: 380,
     y: 250,
+    baseY: 250,
     speed: 3,
     vy: 0,
     isJumping: false
@@ -50,6 +51,7 @@ let animationImages = {
 function loadAvatarImages(prefix) {
     animationImages = { front: [], back: [], left: [], right: [] };
     
+    // 표준 매핑: W=back, S=front, A=lside, D=rside
     let animationFiles = {
         front: [`${prefix}.front.png`],
         back: [`${prefix}.back.png`],
@@ -138,6 +140,7 @@ socket.on("roomCreated",(code)=>{
     if(login){
         login.style.display = "none";
     }
+    updateAvatarSelectUI();
 });
 
 // ======================
@@ -157,6 +160,7 @@ window.joinRoom = function(){
     if(login){
         login.style.display = "none";
     }
+    updateAvatarSelectUI();
 };
 
 // ======================
@@ -193,8 +197,9 @@ window.startGame = function(){
     }
 
     ctx = canvas.getContext("2d");
-    player.x = 350;
+    player.x = 380;
     player.y = 250;
+    player.baseY = 250;
     player.vy = 0;
     player.isJumping = false;
 
@@ -237,12 +242,13 @@ function draw(){
         let pImg = new Image();
         pImg.src = `./assets/${pAvatar}.front.png`;
 
+        let pRenderY = p.y;
         if(pImg.complete){
-            ctx.drawImage(pImg, p.x, p.y - (p.jumpOffset || 0), 60, 80);
+            ctx.drawImage(pImg, p.x, pRenderY, 60, 80);
         }
 
-        drawName(p.x, p.y - (p.jumpOffset || 0), p.name);
-        drawBubble(p.x, p.y - (p.jumpOffset || 0), p.name);
+        drawName(p.x, pRenderY, p.name);
+        drawBubble(p.x, pRenderY, p.name);
     }
 
     // 내 캐릭터
@@ -365,7 +371,7 @@ function drawSideBubble(){
 }
 
 // ======================
-// 키 입력
+// 키 입력 (채팅 포커스 시 WASD 무시 처리)
 // ======================
 document.addEventListener("keydown",(e)=>{
     const chatInput = document.getElementById("chatInput");
@@ -398,7 +404,7 @@ window.addEventListener("blur",()=>{
 });
 
 // ======================
-// 플레이어 이동
+// 플레이어 이동 및 점프/충돌 처리
 // ======================
 function updatePlayer(){
     if(!started) return;
@@ -406,18 +412,20 @@ function updatePlayer(){
     let moveX = 0;
     let moveY = 0;
 
-    if(keys["w"]){ moveY = 1; lastDirection = "front"; }
-    if(keys["s"]){ moveY = -1; lastDirection = "back"; }
-    if(keys["d"]){ moveX = -1; lastDirection = "left"; }
-    if(keys["a"]){ moveX = 1; lastDirection = "right"; }
+    // 정확한 매핑: W=back, S=front, A=lside(왼쪽), D=rside(오른쪽)
+    if(keys["w"]){ moveY = -1; lastDirection = "back"; }
+    if(keys["s"]){ moveY = 1; lastDirection = "front"; }
+    if(keys["a"]){ moveX = -1; lastDirection = "left"; }
+    if(keys["d"]){ moveX = 1; lastDirection = "right"; }
 
     if(moveX !== 0 || moveY !== 0){
         let len = Math.sqrt(moveX * moveX + moveY * moveY);
         moveX /= len;
         moveY /= len;
 
+        let targetBaseY = player.isJumping ? player.baseY : player.y;
         let nextX = player.x + moveX * player.speed;
-        let nextY = player.y + moveY * player.speed;
+        let nextY = targetBaseY + moveY * player.speed;
 
         if(nextX < 0) nextX = 0;
         if(nextY < 0) nextY = 0;
@@ -438,15 +446,20 @@ function updatePlayer(){
 
         if(!collision) {
             player.x = nextX;
-            player.y = nextY;
+            if(!player.isJumping) {
+                player.baseY = nextY;
+                player.y = nextY;
+            } else {
+                player.baseY = nextY;
+            }
         }
     }
 
     if(player.isJumping){
         player.y += player.vy;
         player.vy += 0.5;
-        if(player.y >= 250) {
-            player.y = 250;
+        if(player.y >= player.baseY) {
+            player.y = player.baseY;
             player.isJumping = false;
             player.vy = 0;
         }
@@ -454,7 +467,7 @@ function updatePlayer(){
 
     socket.emit("move",{
         x: player.x,
-        y: player.y,
+        y: player.baseY,
         avatar: avatarList[selectedAvatarIndex].prefix
     });
 
