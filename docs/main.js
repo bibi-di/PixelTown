@@ -59,7 +59,6 @@ function loadAvatarImages(prefix) {
         right: new Image()
     };
     
-    // W=back, S=front, A=lside(왼쪽), D=rside(오른쪽)
     animationImages.front.src = `./assets/${prefix}.front.png`;
     animationImages.back.src = `./assets/${prefix}.back.png`;
     animationImages.left.src = `./assets/${prefix}.lside.png`;
@@ -195,6 +194,8 @@ window.startGame = function(){
     }
 
     ctx = canvas.getContext("2d");
+    ctx.imageSmoothingEnabled = false;
+
     player.x = 380;
     player.y = 250;
     player.baseY = 250;
@@ -412,11 +413,10 @@ function updatePlayer(){
     let moveX = 0;
     let moveY = 0;
 
-    // 수정된 조작법: W=back(위), S=front(아래), A=lside(왼쪽), D=rside(오른쪽)
     if(keys["w"]){ moveY = -1; lastDirection = "back"; }
     if(keys["s"]){ moveY = 1; lastDirection = "front"; }
-    if(keys["a"]){ moveX = -1; lastDirection = "left"; }
-    if(keys["d"]){ moveX = 1; lastDirection = "right"; }
+    if(keys["d"]){ moveX = -1; lastDirection = "left"; }
+    if(keys["a"]){ moveX = 1; lastDirection = "right"; }
 
     if(moveX !== 0 || moveY !== 0){
         let len = Math.sqrt(moveX * moveX + moveY * moveY);
