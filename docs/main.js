@@ -50,7 +50,6 @@ let animationImages = {
 function loadAvatarImages(prefix) {
     animationImages = { front: [], back: [], left: [], right: [] };
     
-    // 매핑 요구사항: W=front, S=back, D=lside(왼쪽), A=rside(오른쪽)
     let animationFiles = {
         front: [`${prefix}.front.png`],
         back: [`${prefix}.back.png`],
@@ -99,7 +98,7 @@ function updateAvatarSelectUI() {
 }
 
 // ======================
-// 배경 (office.png 삭제, beach.png 추가)
+// 배경
 // ======================
 let mapImage = new Image();
 mapImage.src = "./assets/beach.png";
@@ -112,7 +111,7 @@ socket.on("connect",()=>{
 });
 
 // ======================
-// 방 만들기 및 초대코드 출력
+// 방 만들기
 // ======================
 window.createRoom = function(){
     socket.emit("createRoom",{
@@ -131,6 +130,14 @@ socket.on("roomCreated",(code)=>{
     if(inviteInput) {
         inviteInput.value = code;
     }
+    const select = document.getElementById("characterSelect");
+    if(select){
+        select.style.display = "block";
+    }
+    const login = document.getElementById("loginBox");
+    if(login){
+        login.style.display = "none";
+    }
 });
 
 // ======================
@@ -145,6 +152,10 @@ window.joinRoom = function(){
     const select = document.getElementById("characterSelect");
     if(select){
         select.style.display = "block";
+    }
+    const login = document.getElementById("loginBox");
+    if(login){
+        login.style.display = "none";
     }
 };
 
@@ -163,11 +174,6 @@ window.startGame = function(){
     nickname = nick ? nick.value.trim() : "Player";
     if(nickname === ""){
         nickname = "Player";
-    }
-
-    const login = document.getElementById("loginBox");
-    if(login){
-        login.style.display = "none";
     }
 
     const select = document.getElementById("characterSelect");
@@ -254,7 +260,7 @@ function draw(){
 }
 
 // ======================
-// 이름표 (글자 깨짐 방지 폰트 설정 및 안전 렌더링)
+// 이름표
 // ======================
 function drawName(x, y, name){
     if(!name) return;
@@ -282,7 +288,7 @@ function drawName(x, y, name){
 }
 
 // ======================
-// 캐릭터 위 말풍선 (글자 깨짐 방지 폰트 및 안전 렌더링)
+// 말풍선
 // ======================
 function drawBubble(x, y, name){
     let bubble = bubbles[name];
@@ -318,7 +324,7 @@ function drawBubble(x, y, name){
 }
 
 // ======================
-// 오른쪽 채팅 표시 (글자 깨짐 방지 폰트 설정)
+// 오른쪽 채팅 표시
 // ======================
 function drawSideBubble(){
     let x = canvas.width - 220;
@@ -359,7 +365,7 @@ function drawSideBubble(){
 }
 
 // ======================
-// 키 입력 (채팅 입력 중일 때 WASD 영어 입력 가능하도록 분기 처리)
+// 키 입력
 // ======================
 document.addEventListener("keydown",(e)=>{
     const chatInput = document.getElementById("chatInput");
@@ -373,7 +379,6 @@ document.addEventListener("keydown",(e)=>{
     }
     keys[key] = true;
 
-    // 스페이스바 점프
     if(key === " " && !player.isJumping) {
         player.isJumping = true;
         player.vy = -8;
@@ -393,7 +398,7 @@ window.addEventListener("blur",()=>{
 });
 
 // ======================
-// 플레이어 이동 및 충돌/점프 처리 (요청된 WASD 매핑 적용)
+// 플레이어 이동
 // ======================
 function updatePlayer(){
     if(!started) return;
@@ -401,7 +406,6 @@ function updatePlayer(){
     let moveX = 0;
     let moveY = 0;
 
-    // 요청된 매핑: W=front, S=back, D=lside(왼쪽), A=rside(오른쪽)
     if(keys["w"]){ moveY = 1; lastDirection = "front"; }
     if(keys["s"]){ moveY = -1; lastDirection = "back"; }
     if(keys["d"]){ moveX = -1; lastDirection = "left"; }
@@ -420,7 +424,6 @@ function updatePlayer(){
         if(nextX > canvas.width - 60) nextX = canvas.width - 60;
         if(nextY > canvas.height - 80) nextY = canvas.height - 80;
 
-        // 캐릭터 충돌 방지
         let collision = false;
         for(let id in players){
             if(id === socket.id) continue;

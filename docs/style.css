@@ -19,7 +19,7 @@ body {
     box-shadow: 0 4px 10px rgba(0,0,0,0.5);
 }
 
-#loginBox input, #characterSelect button, #loginBox button {
+#loginBox input, #characterSelect input, #characterSelect button, #loginBox button {
     display: block;
     width: 200px;
     margin: 10px auto;
@@ -55,17 +55,19 @@ body {
 
 .avatar-view {
     text-align: center;
+    width: 100px;
 }
 
 #selectedAvatar {
-    width: 80px;
-    height: 100px;
+    width: 60px;
+    height: 80px;
     object-fit: contain;
 }
 
 .avatarName {
     margin-top: 5px;
     font-weight: bold;
+    font-size: 14px;
 }
 
 #gameScreen {
