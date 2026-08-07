@@ -44,6 +44,9 @@ let animationImages = {
     right: null
 };
 
+// 다른 플레이어 이미지 캐싱을 위한 객체
+let otherAvatarImages = {};
+
 function loadAvatarImages(prefix) {
     animationImages = {
         front: new Image(),
@@ -56,6 +59,19 @@ function loadAvatarImages(prefix) {
     animationImages.back.src = `./assets/${prefix}.back.png`;
     animationImages.left.src = `./assets/${prefix}.lside.png`;
     animationImages.right.src = `./assets/${prefix}.rside.png`;
+}
+
+// 다른 플레이어 이미지 미리 로드 함수
+function getOtherAvatarImage(prefix, direction) {
+    if (!otherAvatarImages[prefix]) {
+        otherAvatarImages[prefix] = {};
+    }
+    if (!otherAvatarImages[prefix][direction]) {
+        let img = new Image();
+        img.src = `./assets/${prefix}.${direction}.png`;
+        otherAvatarImages[prefix][direction] = img;
+    }
+    return otherAvatarImages[prefix][direction];
 }
 
 loadAvatarImages(avatarList[0].prefix);
@@ -202,13 +218,12 @@ function draw(){
 
         let pAvatar = p.avatar || "beachboy";
         let pDir = p.direction || "front";
-        let pImg = new Image();
-        pImg.src = `./assets/${pAvatar}.${pDir}.png`;
+        let pImg = getOtherAvatarImage(pAvatar, pDir);
 
         let pSize = (AVATAR_SIZES[pAvatar] && AVATAR_SIZES[pAvatar][pDir]) ? AVATAR_SIZES[pAvatar][pDir] : [64, 64];
         let pRenderY = p.y !== undefined ? p.y : p.baseY;
 
-        if(pImg.complete){
+        if(pImg && pImg.complete){
             ctx.drawImage(pImg, p.x, pRenderY, pSize[0], pSize[1]);
         }
 
@@ -388,13 +403,11 @@ function updatePlayer(){
         let nextX = player.x + moveX * player.speed;
         let nextY = targetBaseY + moveY * player.speed;
 
-        // 맵 경계 제한
         if(nextX < 0) nextX = 0;
         if(nextY < 0) nextY = 0;
         if(nextX > canvas.width - currentSize[0]) nextX = canvas.width - currentSize[0];
         if(nextY > canvas.height - currentSize[1]) nextY = canvas.height - currentSize[1];
 
-        // 충돌 체크 로직을 제거하여 겹쳐도 항상 자유롭게 이동 가능
         player.x = nextX;
         if(!player.isJumping) {
             player.baseY = nextY;
