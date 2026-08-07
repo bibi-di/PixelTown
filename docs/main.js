@@ -8,11 +8,13 @@ let started = false;
 let roomCode = "";
 let nickname = "";
 
-// 캐릭터별 고유 픽셀 규격 정의 [너비, 높이]
+// 캐릭터별 고유 픽셀 규격 정의 [너비, 높이] (영어 파일명 접두사로 반영)
 const AVATAR_SIZES = {
     beachboy: { front: [64, 58], back: [64, 55], left: [64, 56], right: [64, 57] },
     beachgirl: { front: [64, 57], back: [64, 55], left: [64, 55], right: [64, 56] },
-    dog: { front: [64, 65], back: [64, 60], left: [64, 61], right: [64, 64] }
+    dog: { front: [64, 65], back: [64, 60], left: [64, 61], right: [64, 64] },
+    nam: { front: [64, 66], back: [64, 60], left: [64, 56], right: [64, 80] },
+    yeo: { front: [64, 83], back: [64, 92], left: [64, 72], right: [64, 80] }
 };
 
 let player = {
@@ -31,10 +33,13 @@ let bubbles = {};
 let sideBubbles = [];
 
 let selectedAvatarIndex = 0;
+// prefix를 영어 파일명에 맞게 수정
 const avatarList = [
     { name: "비치 보이", prefix: "beachboy" },
     { name: "비치 걸", prefix: "beachgirl" },
-    { name: "강아지", prefix: "dog" }
+    { name: "강아지", prefix: "dog" },
+    { name: "남미새", prefix: "nam" },
+    { name: "여미새", prefix: "yeo" }
 ];
 
 let animationImages = {
@@ -61,7 +66,6 @@ function loadAvatarImages(prefix) {
     animationImages.right.src = `./assets/${prefix}.rside.png`;
 }
 
-// 다른 플레이어 이미지 미리 로드 함수
 function getOtherAvatarImage(prefix, direction) {
     if (!otherAvatarImages[prefix]) {
         otherAvatarImages[prefix] = {};
@@ -108,12 +112,10 @@ socket.on("connect",()=>{
     console.log("서버 연결", socket.id);
 });
 
-// 방 만들기 요청
 window.createRoom = function(){
     socket.emit("createRoom");
 };
 
-// 방 생성 완료 시 초대코드 UI에 노출
 socket.off("roomCreated");
 socket.on("roomCreated",(code)=>{
     const roomText = document.getElementById("myRoomCode");
@@ -127,7 +129,6 @@ socket.on("roomCreated",(code)=>{
     }
 });
 
-// 방 입장 버튼
 window.joinRoom = function(){
     let inputCode = document.getElementById("inviteCode").value.trim();
     if(inputCode === ""){
