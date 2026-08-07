@@ -92,43 +92,34 @@ socket.on("connect",()=>{
     console.log("서버 연결", socket.id);
 });
 
-// 방 만들기 요청
+// 방 만들기 요청 (코드만 생성해서 화면에 띄워줌 - 바로 캐릭터창으로 안 감)
 window.createRoom = function(){
     socket.emit("createRoom");
 };
 
-// 방 생성 완료 시 초대코드 UI 및 전역 변수 반영
+// 방 생성 완료 시 초대코드 UI에 노출
 socket.off("roomCreated");
 socket.on("roomCreated",(code)=>{
-    roomCode = code;
-    
     const roomText = document.getElementById("myRoomCode");
     if(roomText){
-        roomText.innerText = "초대코드: " + code;
+        roomText.innerText = "생성된 초대코드: " + code;
+        roomText.style.display = "block";
     }
     const inviteInput = document.getElementById("inviteCode");
     if(inviteInput) {
-        inviteInput.value = code;
+        inviteInput.value = code; // 편의를 위해 입력창에 자동 채워주기
     }
-    
-    const loginBox = document.getElementById("loginBox");
-    if(loginBox){
-        loginBox.style.display = "none";
-    }
-    const charSelect = document.getElementById("characterSelect");
-    if(charSelect){
-        charSelect.style.display = "block";
-    }
-    updateAvatarSelectUI();
 });
 
-// 방 입장 버튼
+// 방 입장 버튼 (방장이든 일반 유저든 코드를 입력하고 눌러야 캐릭터창으로 진입)
 window.joinRoom = function(){
-    roomCode = document.getElementById("inviteCode").value.trim();
-    if(roomCode === ""){
+    let inputCode = document.getElementById("inviteCode").value.trim();
+    if(inputCode === ""){
         alert("초대코드를 입력하세요!");
         return;
     }
+    roomCode = inputCode;
+
     const loginBox = document.getElementById("loginBox");
     if(loginBox){
         loginBox.style.display = "none";

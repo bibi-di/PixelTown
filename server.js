@@ -16,7 +16,7 @@ let rooms = {};
 io.on('connection', (socket) => {
     console.log("사용자 접속:", socket.id);
 
-    // 방 만들기: 고유 초대코드 발급
+    // 방 만들기: 고유 초대코드 발급 (바로 입장시키지 않고 코드만 발급)
     socket.on('createRoom', () => {
         let roomCode;
         do {
@@ -29,12 +29,11 @@ io.on('connection', (socket) => {
             active: true
         };
 
-        socket.roomCode = roomCode;
         socket.emit('roomCreated', roomCode);
         console.log(`[방 생성] 코드: ${roomCode} / 방장 소켓 ID: ${socket.id}`);
     });
 
-    // 방 입장하기 (방이 활성화 상태일 때만 입장 가능)
+    // 방 입장하기 (방장이든 일반 유저든 초대 코드를 입력해 입장할 때 호출)
     socket.on('joinRoom', (data) => {
         const { code, name, avatar, direction } = data;
         let roomCode = code ? code.trim().toUpperCase() : "";
