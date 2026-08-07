@@ -16,7 +16,7 @@ let rooms = {};
 io.on('connection', (socket) => {
     console.log("사용자 접속:", socket.id);
 
-    // 방 만들기: 고유 초대코드 발급
+    // 방 만들기: 고유 초대코드 발급 및 방장 자동 입장 처리
     socket.on('createRoom', () => {
         let roomCode = Math.random().toString(36).substring(2, 8).toUpperCase();
         
@@ -25,6 +25,9 @@ io.on('connection', (socket) => {
             players: {},
             active: true
         };
+
+        socket.join(roomCode);
+        socket.roomCode = roomCode;
 
         socket.emit('roomCreated', roomCode);
         console.log(`방 생성됨: ${roomCode} (방장: ${socket.id})`);

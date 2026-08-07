@@ -8,9 +8,12 @@ let started = false;
 let roomCode = "";
 let nickname = "";
 
-// 픽셀 깨짐 방지를 위한 64x90 최적화 규격
-const CHAR_WIDTH = 64;
-const CHAR_HEIGHT = 90;
+// 캐릭터별 고유 픽셀 규격 정의 [너비, 높이]
+const AVATAR_SIZES = {
+    beachboy: { front: [64, 58], back: [64, 55], left: [64, 56], right: [64, 57] },
+    beachgirl: { front: [64, 57], back: [64, 55], left: [64, 55], right: [64, 56] },
+    dog: { front: [64, 65], back: [64, 60], left: [64, 61], right: [64, 64] }
+};
 
 let player = {
     x: 380,
@@ -49,7 +52,6 @@ function loadAvatarImages(prefix) {
         right: new Image()
     };
     
-    // 명확하게 왼쪽은 lside, 오른쪽은 rside 이미지 매핑
     animationImages.front.src = `./assets/${prefix}.front.png`;
     animationImages.back.src = `./assets/${prefix}.back.png`;
     animationImages.left.src = `./assets/${prefix}.lside.png`;
@@ -200,6 +202,8 @@ function draw(){
         ctx.drawImage(mapImage, 0, 0, canvas.width, canvas.height);
     }
 
+    let currentAvatarName = avatarList[selectedAvatarIndex].prefix;
+
     for(let id in players){
         let p = players[id];
         if(!p) continue;
@@ -210,36 +214,40 @@ function draw(){
         let pImg = new Image();
         pImg.src = `./assets/${pAvatar}.${pDir}.png`;
 
+        let pSize = (AVATAR_SIZES[pAvatar] && AVATAR_SIZES[pAvatar][pDir]) ? AVATAR_SIZES[pAvatar][pDir] : [64, 64];
         let pRenderY = p.y;
+
         if(pImg.complete){
-            ctx.drawImage(pImg, p.x, pRenderY, CHAR_WIDTH, CHAR_HEIGHT);
+            ctx.drawImage(pImg, p.x, pRenderY, pSize[0], pSize[1]);
         }
 
-        drawName(p.x, pRenderY, p.name);
-        drawBubble(p.x, pRenderY, p.name);
+        drawName(p.x, pRenderY, p.name, pSize[0]);
+        drawBubble(p.x, pRenderY, p.name, pSize[0]);
     }
 
     let myImg = animationImages[lastDirection];
+    let mySize = (AVATAR_SIZES[currentAvatarName] && AVATAR_SIZES[currentAvatarName][lastDirection]) ? AVATAR_SIZES[currentAvatarName][lastDirection] : [64, 64];
     let renderY = player.y;
+
     if(myImg && myImg.complete){
-        ctx.drawImage(myImg, player.x, renderY, CHAR_WIDTH, CHAR_HEIGHT);
+        ctx.drawImage(myImg, player.x, renderY, mySize[0], mySize[1]);
     }
 
-    drawName(player.x, renderY, nickname);
-    drawBubble(player.x, renderY, nickname);
+    drawName(player.x, renderY, nickname, mySize[0]);
+    drawBubble(player.x, renderY, nickname, mySize[0]);
     drawSideBubble();
 
     requestAnimationFrame(draw);
 }
 
-function drawName(x, y, name){
+function drawName(x, y, name, charWidth){
     if(!name) return;
 
     ctx.save();
     ctx.font = "14px Arial, sans-serif";
     let textMetrics = ctx.measureText(name);
     let boxWidth = Math.max(textMetrics.width + 16, 45);
-    let boxX = x + (CHAR_WIDTH - boxWidth) / 2;
+    let boxX = x + (charWidth - boxWidth) / 2;
 
     ctx.fillStyle = "white";
     ctx.beginPath();
@@ -253,11 +261,11 @@ function drawName(x, y, name){
     ctx.fillStyle = "black";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText(name, x + CHAR_WIDTH / 2, y - 20);
+    ctx.fillText(name, x + charWidth / 2, y - 20);
     ctx.restore();
 }
 
-function drawBubble(x, y, name){
+function drawBubble(x, y, name, charWidth){
     let bubble = bubbles[name];
     if(!bubble) return;
 
@@ -272,7 +280,7 @@ function drawBubble(x, y, name){
     let boxWidth = Math.max(textMetrics.width + 24, 40);
     if(boxWidth > 250) boxWidth = 250;
 
-    let boxX = x + (CHAR_WIDTH - boxWidth) / 2;
+    let boxX = x + (charWidth - boxWidth) / 2;
 
     ctx.fillStyle = "white";
     ctx.beginPath();
@@ -286,7 +294,7 @@ function drawBubble(x, y, name){
     ctx.fillStyle = "black";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText(bubble.text, x + CHAR_WIDTH / 2, y - 51);
+    ctx.fillText(bubble.text, x + charWidth / 2, y - 51);
     ctx.restore();
 }
 
@@ -366,91 +374,21 @@ window.addEventListener("blur",()=>{
     keys = {};
 });
 
-// ... (위쪽 생략) ...
-
-// 방향키/A·D키 입력 매핑 완벽 수정
+// A키 누르면 rside(오른쪽 이미지) 바라보고, D키 누르면 lside(왼쪽 이미지) 바라보도록 매핑 반전 적용
 function updatePlayer(){
     if(!started) return;
 
     let moveX = 0;
     let moveY = 0;
 
-    // 방향키 입력 우선순위 조정: 이동하는 방향에 맞춰 lastDirection 즉시 변경
-    if(keys["a"]) { moveX = -1; lastDirection = "left"; }
-    else if(keys["d"]) { moveX = 1; lastDirection = "right"; }
+    if(keys["a"]) { moveX = -1; lastDirection = "right"; } 
+    else if(keys["d"]) { moveX = 1; lastDirection = "left"; } 
     
     if(keys["w"]) { moveY = -1; if(!keys["a"] && !keys["d"]) lastDirection = "back"; }
     else if(keys["s"]) { moveY = 1; if(!keys["a"] && !keys["d"]) lastDirection = "front"; }
 
-    if(moveX !== 0 || moveY !== 0){
-        let len = Math.sqrt(moveX * moveX + moveY * moveY);
-        moveX /= len;
-        moveY /= len;
-
-        let targetBaseY = player.isJumping ? player.baseY : player.y;
-        let nextX = player.x + moveX * player.speed;
-        let nextY = targetBaseY + moveY * player.speed;
-
-        // 경계 제한
-        if(nextX < 0) nextX = 0;
-        if(nextY < 0) nextY = 0;
-        if(nextX > canvas.width - CHAR_WIDTH) nextX = canvas.width - CHAR_WIDTH;
-        if(nextY > canvas.height - CHAR_HEIGHT) nextY = canvas.height - CHAR_HEIGHT;
-
-        // 충돌 로직
-        let collision = false;
-        for(let id in players){
-            if(id === socket.id) continue;
-            let p = players[id];
-            if(!p) continue;
-            if(Math.abs(nextX - p.x) < CHAR_WIDTH * 0.7 && Math.abs(nextY - p.y) < CHAR_HEIGHT * 0.7) {
-                collision = true;
-                break;
-            }
-        }
-
-        if(!collision) {
-            player.x = nextX;
-            if(!player.isJumping) {
-                player.baseY = nextY;
-                player.y = nextY;
-            } else {
-                player.baseY = nextY;
-            }
-        }
-    }
-
-    // ... (이하 점프 로직 및 소켓 emit은 동일) ...
-    if(player.isJumping){
-        player.y += player.vy;
-        player.vy += 0.5;
-        if(player.y >= player.baseY) {
-            player.y = player.baseY;
-            player.isJumping = false;
-            player.vy = 0;
-        }
-    }
-
-    socket.emit("move",{
-        x: player.x,
-        y: player.baseY,
-        avatar: avatarList[selectedAvatarIndex].prefix,
-        direction: lastDirection
-    });
-
-    requestAnimationFrame(updatePlayer);
-}
-// ... (나머지 하단 코드 동일) .../ 방향키/A·D키 입력 매핑 완벽 수정 (A = 왼쪽 이동 및 왼쪽 바라보기, D = 오른쪽 이동 및 오른쪽 바라보기)
-function updatePlayer(){
-    if(!started) return;
-
-    let moveX = 0;
-    let moveY = 0;
-
-    if(keys["w"]){ moveY = -1; lastDirection = "back"; }
-    if(keys["s"]){ moveY = 1; lastDirection = "front"; }
-    if(keys["a"]){ moveX = -1; lastDirection = "left"; }   // A키: 왼쪽으로 이동하면서 left(lside) 이미지 적용
-    if(keys["d"]){ moveX = 1; lastDirection = "right"; }  // D키: 오른쪽으로 이동하면서 right(rside) 이미지 적용
+    let currentAvatarName = avatarList[selectedAvatarIndex].prefix;
+    let currentSize = (AVATAR_SIZES[currentAvatarName] && AVATAR_SIZES[currentAvatarName][lastDirection]) ? AVATAR_SIZES[currentAvatarName][lastDirection] : [64, 64];
 
     if(moveX !== 0 || moveY !== 0){
         let len = Math.sqrt(moveX * moveX + moveY * moveY);
@@ -463,8 +401,8 @@ function updatePlayer(){
 
         if(nextX < 0) nextX = 0;
         if(nextY < 0) nextY = 0;
-        if(nextX > canvas.width - CHAR_WIDTH) nextX = canvas.width - CHAR_WIDTH;
-        if(nextY > canvas.height - CHAR_HEIGHT) nextY = canvas.height - CHAR_HEIGHT;
+        if(nextX > canvas.width - currentSize[0]) nextX = canvas.width - currentSize[0];
+        if(nextY > canvas.height - currentSize[1]) nextY = canvas.height - currentSize[1];
 
         let collision = false;
         for(let id in players){
@@ -472,7 +410,7 @@ function updatePlayer(){
             let p = players[id];
             if(!p) continue;
 
-            if(Math.abs(nextX - p.x) < CHAR_WIDTH * 0.7 && Math.abs(nextY - p.y) < CHAR_HEIGHT * 0.7) {
+            if(Math.abs(nextX - p.x) < currentSize[0] * 0.7 && Math.abs(nextY - p.y) < currentSize[1] * 0.7) {
                 collision = true;
                 break;
             }
@@ -502,7 +440,7 @@ function updatePlayer(){
     socket.emit("move",{
         x: player.x,
         y: player.baseY,
-        avatar: avatarList[selectedAvatarIndex].prefix,
+        avatar: currentAvatarName,
         direction: lastDirection
     });
 
