@@ -206,7 +206,7 @@ function draw(){
         pImg.src = `./assets/${pAvatar}.${pDir}.png`;
 
         let pSize = (AVATAR_SIZES[pAvatar] && AVATAR_SIZES[pAvatar][pDir]) ? AVATAR_SIZES[pAvatar][pDir] : [64, 64];
-        let pRenderY = p.y !== undefined ? p.y : p.baseY; // 상대방 점프 높이(y) 반영
+        let pRenderY = p.y !== undefined ? p.y : p.baseY;
 
         if(pImg.complete){
             ctx.drawImage(pImg, p.x, pRenderY, pSize[0], pSize[1]);
@@ -388,18 +388,26 @@ function updatePlayer(){
         let nextX = player.x + moveX * player.speed;
         let nextY = targetBaseY + moveY * player.speed;
 
+        // 맵 경계 제한 (Y축 상단으로 벗어나지 않게 수정)
         if(nextX < 0) nextX = 0;
         if(nextY < 0) nextY = 0;
         if(nextX > canvas.width - currentSize[0]) nextX = canvas.width - currentSize[0];
         if(nextY > canvas.height - currentSize[1]) nextY = canvas.height - currentSize[1];
 
+        // 캐릭터 겹침으로 인한 이동 불가 이슈 해결 (충돌 범위를 발판 중심부 기준으로 좁게 조정)
         let collision = false;
         for(let id in players){
             if(id === socket.id) continue;
             let p = players[id];
             if(!p) continue;
 
-            if(Math.abs(nextX - p.x) < currentSize[0] * 0.7 && Math.abs(nextY - p.y) < currentSize[1] * 0.7) {
+            let pSize = (AVATAR_SIZES[p.avatar] && AVATAR_SIZES[p.avatar][p.direction]) ? AVATAR_SIZES[p.avatar][p.direction] : [64, 64];
+            
+            // X축은 캐릭터 너비의 50%, Y축은 캐릭터 높이의 40 정도로 좁혀서 겹쳐도 자연스럽게 빠져나가도록 수정
+            let overlapX = Math.abs((nextX + currentSize[0]/2) - (p.x + pSize[0]/2)) < (currentSize[0] + pSize[0]) * 0.25;
+            let overlapY = Math.abs((nextY + currentSize[1]/2) - ((p.baseY !== undefined ? p.baseY : p.y) + pSize[1]/2)) < (currentSize[1] + pSize[1]) * 0.2;
+
+            if(overlapX && overlapY) {
                 collision = true;
                 break;
             }
@@ -416,6 +424,7 @@ function updatePlayer(){
         }
     }
 
+    // 점프 물리 연산 (Y 좌표가 음수(-)나 캔버스 밖으로 튀지 않게 안전 장치 추가)
     if(player.isJumping){
         player.y += player.vy;
         player.vy += 0.5;
@@ -426,7 +435,6 @@ function updatePlayer(){
         }
     }
 
-    // 내 점프 상태(y, baseY, isJumping)를 서버로 전송
     socket.emit("move",{
         x: player.x,
         y: player.y,
