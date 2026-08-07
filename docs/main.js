@@ -366,7 +366,81 @@ window.addEventListener("blur",()=>{
     keys = {};
 });
 
-// 방향키/A·D키 입력 매핑 완벽 수정 (A = 왼쪽 이동 및 왼쪽 바라보기, D = 오른쪽 이동 및 오른쪽 바라보기)
+// ... (위쪽 생략) ...
+
+// 방향키/A·D키 입력 매핑 완벽 수정
+function updatePlayer(){
+    if(!started) return;
+
+    let moveX = 0;
+    let moveY = 0;
+
+    // 방향키 입력 우선순위 조정: 이동하는 방향에 맞춰 lastDirection 즉시 변경
+    if(keys["a"]) { moveX = -1; lastDirection = "left"; }
+    else if(keys["d"]) { moveX = 1; lastDirection = "right"; }
+    
+    if(keys["w"]) { moveY = -1; if(!keys["a"] && !keys["d"]) lastDirection = "back"; }
+    else if(keys["s"]) { moveY = 1; if(!keys["a"] && !keys["d"]) lastDirection = "front"; }
+
+    if(moveX !== 0 || moveY !== 0){
+        let len = Math.sqrt(moveX * moveX + moveY * moveY);
+        moveX /= len;
+        moveY /= len;
+
+        let targetBaseY = player.isJumping ? player.baseY : player.y;
+        let nextX = player.x + moveX * player.speed;
+        let nextY = targetBaseY + moveY * player.speed;
+
+        // 경계 제한
+        if(nextX < 0) nextX = 0;
+        if(nextY < 0) nextY = 0;
+        if(nextX > canvas.width - CHAR_WIDTH) nextX = canvas.width - CHAR_WIDTH;
+        if(nextY > canvas.height - CHAR_HEIGHT) nextY = canvas.height - CHAR_HEIGHT;
+
+        // 충돌 로직
+        let collision = false;
+        for(let id in players){
+            if(id === socket.id) continue;
+            let p = players[id];
+            if(!p) continue;
+            if(Math.abs(nextX - p.x) < CHAR_WIDTH * 0.7 && Math.abs(nextY - p.y) < CHAR_HEIGHT * 0.7) {
+                collision = true;
+                break;
+            }
+        }
+
+        if(!collision) {
+            player.x = nextX;
+            if(!player.isJumping) {
+                player.baseY = nextY;
+                player.y = nextY;
+            } else {
+                player.baseY = nextY;
+            }
+        }
+    }
+
+    // ... (이하 점프 로직 및 소켓 emit은 동일) ...
+    if(player.isJumping){
+        player.y += player.vy;
+        player.vy += 0.5;
+        if(player.y >= player.baseY) {
+            player.y = player.baseY;
+            player.isJumping = false;
+            player.vy = 0;
+        }
+    }
+
+    socket.emit("move",{
+        x: player.x,
+        y: player.baseY,
+        avatar: avatarList[selectedAvatarIndex].prefix,
+        direction: lastDirection
+    });
+
+    requestAnimationFrame(updatePlayer);
+}
+// ... (나머지 하단 코드 동일) .../ 방향키/A·D키 입력 매핑 완벽 수정 (A = 왼쪽 이동 및 왼쪽 바라보기, D = 오른쪽 이동 및 오른쪽 바라보기)
 function updatePlayer(){
     if(!started) return;
 
